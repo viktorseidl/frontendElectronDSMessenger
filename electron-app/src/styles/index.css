@@ -1,0 +1,115 @@
+#titlebar {
+    width: 100%;
+    height: 30px; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+  }
+  
+  #titlebar button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  #titlebar button:hover {
+    background: #555;
+  }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light theme variables */
+  --primary: rgb(255, 119, 0);
+  --on-primary: rgb(255, 255, 255);
+  --primary-container: rgb(255, 204, 153);
+  --on-primary-container: rgb(89, 37, 0);
+  --secondary: rgb(0, 136, 255);
+  --on-secondary: rgb(240, 251, 255);
+  --secondary-container: rgb(225, 232, 235);
+  --on-secondary-container: rgb(20, 41, 80);
+  --tertiary: rgb(255, 187, 85);
+  --on-tertiary: rgb(30, 15, 0);
+  --tertiary-container: rgb(255, 229, 173);
+  --on-tertiary-container: rgb(80, 40, 0);
+  --error: rgb(186, 26, 26);
+  --on-error: rgb(255, 255, 255);
+  --error-container: rgb(255, 218, 214);
+  --on-error-container: rgb(65, 0, 2);
+  --caution: rgb(234, 194, 52);
+  --on-caution: rgb(255, 255, 255);
+  --background: rgb(255, 255, 250);
+  --on-background: rgb(50, 45, 40);
+  --surface: rgb(255, 255, 250);
+  --on-surface: rgb(50, 45, 40);
+  --surface-variant: rgb(245, 242, 235);
+  --on-surface-variant: rgb(90, 80, 70);
+  --outline: rgb(150, 135, 110);
+  --outline-variant: rgb(215, 200, 180);
+  --shadow: rgb(0, 0, 0);
+  --scrim: rgb(0, 0, 0);
+  --inverse-surface: rgb(60, 55, 45);
+  --inverse-on-surface: rgb(250, 250, 245);
+  --inverse-primary: rgb(255, 187, 85);
+  --elevation-level0: transparent;
+  --elevation-level1: rgb(250, 250, 245);
+  --elevation-level2: rgb(245, 245, 240);
+  --elevation-level3: rgb(240, 240, 235);
+  --elevation-level4: rgb(235, 235, 230);
+  --elevation-level5: rgb(230, 230, 225);
+  --surface-disabled: rgba(50, 45, 40, 0.12);
+  --on-surface-disabled: rgba(50, 45, 40, 0.38);
+  --backdrop: rgba(75, 65, 55, 0.4);
+}
+.dark {
+  /* Dark theme variables */
+  --primary: rgb(255, 183, 102);
+  --on-primary: rgb(70, 30, 0);
+  --primary-container: rgb(110, 60, 0);
+  --on-primary-container: rgb(255, 238, 210);
+  --secondary: rgb(102, 174, 255);
+  --on-secondary: rgb(240, 251, 255);
+  --secondary-container: rgb(60, 71, 90);
+  --on-secondary-container: rgb(200, 222, 255);
+  --tertiary: rgb(255, 165, 90);
+  --on-tertiary: rgb(50, 30, 0);
+  --tertiary-container: rgb(115, 70, 30);
+  --on-tertiary-container: rgb(255, 240, 205);
+  --error: rgb(233, 27, 27);
+  --on-error: rgb(105, 5, 5);
+  --error-container: rgba(12, 16, 27, 0.849);
+  --on-error-container: rgb(255, 220, 210);
+  --caution: rgb(234, 194, 52);
+  --on-caution: rgb(105, 105, 10);
+  --background: rgb(25, 25, 30);
+  --on-background: rgb(235, 235, 240);
+  --surface: rgb(25, 25, 30);
+  --on-surface: rgb(235, 235, 240);
+  --surface-variant: rgb(60, 60, 70);
+  --on-surface-variant: rgb(200, 200, 210);
+  --outline: rgb(120, 120, 130);
+  --outline-variant: rgb(80, 80, 90);
+  --shadow: rgb(0, 0, 0);
+  --scrim: rgb(0, 0, 0);
+  --inverse-surface: rgb(235, 235, 240);
+  --inverse-on-surface: rgb(45, 45, 50);
+  --inverse-primary: rgb(255, 145, 65);
+  --elevation-level0: transparent;
+  --elevation-level1: rgb(35, 35, 40);
+  --elevation-level2: rgb(45, 45, 50);
+  --elevation-level3: rgb(55, 55, 60);
+  --elevation-level4: rgb(60, 60, 65);
+  --elevation-level5: rgb(65, 65, 70);
+  --surface-disabled: rgba(235, 235, 240, 0.12);
+  --on-surface-disabled: rgba(235, 235, 240, 0.38);
+  --backdrop: rgba(50, 50, 55, 0.4);
+}
+.tabsgrounddark {
+  background-image: url("../renderer/src/assets/backdot.png");
+  background-size: 5px;
+  background-repeat: round;
+}
