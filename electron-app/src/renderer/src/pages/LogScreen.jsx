@@ -6,73 +6,65 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useFetchAuthAll } from '../services/useFetchAll'; 
 import imgs from '../assets/Logo.png'  
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { md5, sha256 } from 'node-forge';
 
 const LogScreen = () => {
-  const [host, sethost] = useState('');
-    const [err, seterr] = useState(true);
+  const [type, settype] = useState('verwaltung');
+    const [err, seterr] = useState(false); 
+    const _lockbtn = useRef(null);
+    const [logloader, setlogloader] = useState(false);
     const [logcookie, setlogcookie] = useState(false);
     const [showpass, setshowpass] = useState(false);
     const [user, setuser] = useState('');
     const [password, setpassword] = useState('');
     const [showloader, setshowloader] = useState(0);
+    const navigate = useNavigate()
   const {theme}=useTheme() 
-  /**
-   * SELECT TOP (1000) [ID]
-      ,[Anwender]
-      ,[Password]   md5
-      ,[Berechtigung-ID]
-      ,[Form]
-      ,[Menu]
-      ,[Berechtigt]
-      ,[Mitarbeiter]
-      ,[Vorlage]
-      ,[Changed]
-      ,[User]
-      ,[gelöscht]
-      ,[gelöschtDatum]
-      ,[gelöschtUser]
-      ,[Kennwort]
-      ,[Administrator]
-      ,[deaktiviert]
-  FROM [Medicarehsw].[dbo].[BerechtigungAnwender]
-   */
-  const removeCookie = async () => { 
-    const cookieName = 'dbConfig';
-    window.localStorage.removeItem('dbConfig')
-    /*try { 
-      const result = await window.api.electronCookies.removeCookie(cookieName); 
-      if (result) { 
-        return true
-      } else { 
-        return false
+  const loginUser=async()=>{
+    if(type&&(user.trim().length>0)&&(password.trim().length>0)){
+      seterr(false) 
+      _lockbtn.current.disabled = true;
+      setlogloader(true)
+      //preparedata 
+      const userpass=md5.create().update(password.toString()).digest().toHex()
+      const check=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=checkCredentials",'ssdsdsd',"POST", {
+                dbtype:type,
+                user:user.toLowerCase().toString(),
+                pass:userpass
+            },null);
+            console.log(check)
+      if(check.length>0){
+        sessionStorage.setItem('user',JSON.stringify(check[0]))
+        _lockbtn.current.disabled = false;
+        setlogloader(false)
+        navigate('/dashboard')
+      }else{
+        _lockbtn.current.disabled = false;
+        setlogloader(false)
+        seterr(true)
       }
-    } catch (error) {
-        return false
-    }*/
-  }; 
-  const getCookie = async () => { 
-    const cookieName = 'dbConfig';
-    try { 
-      const result = await window.api.electronCookies.getCookies(cookieName); 
-      if (result) { 
-        return true
-      } else { 
-        return false
-      }
-    } catch (error) {
-        return false
+      //window.api.logToFrontend(JSON.stringify(check))
+      console.log(check) 
+    }else{
+      seterr(true)
+      _lockbtn.current.disabled = false;
     }
-  }; 
+  } 
+  useEffect(()=>{
+    if(!localStorage.getItem('dbConfig')){
+      navigate('/')
+    }
+  },[])
   return (
     <div className={'pt-8 px-1 w-screen dark:text-gray-200 text-gray-800 dark:bg-gray-950 bg-blue-100 flex flex-col items-start justify-start h-screen tabsgrounddark '}>  
     <div className='w-full h-full  flex flex-col items-center justify-center'>
     <div className='w-full flex flex-col items-center justify-center h-full '>
                 <div className={' w-2/6 border  animate-slide-inleft dark:border-gray-800 border-gray-400 shadow-lg dark:shadow-blue-900/80 shadow-gray-500/80 dark:bg-[#0a0e16] bg-gray-200 rounded pt-10 flex flex-col items-center justify-center  -mt-20'}>  
-                <div className='w-full mb-6  text-3xl font-[arial] text-center' onClick={()=>removeCookie()} >Anmelde-Bereich</div>
+                <div className='w-full mb-6  text-3xl font-[arial] text-center' onClick={()=>localStorage.clear()} >Anmelde-Bereich</div>
                 <div className='w-full flex flex-col items-center justify-center'>
                 { 
                   err?
-                  <div className=' w-5/6 mb-4 dark:bg-pink-600 bg-red-600/40 p-2 rounded dark:text-white text-black text-sm'>
+                  <div className=' w-5/6 mb-4 dark:bg-pink-600 bg-red-600 p-2 rounded dark:text-white text-white text-sm'>
                   ERROR - Bitte überprüfen Sie die ihre Anmelde-Daten. 
                   </div>
                   :
@@ -85,11 +77,11 @@ const LogScreen = () => {
                         className=' w-5/6  mt-2  dark:placeholder:text-blue-400 placeholder:text-gray-500 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 ring-1 dark:ring-gray-700 ring-gray-400/90 rounded  outline-none py-2 px-3 text-sm'
                         placeholder="Host oder IP-Adresse"
                         maxLength={250}
-                        value={host}
-                        onChange={(e) => sethost(e.target.value)}
+                        value={type}
+                        onChange={(e) => settype(e.target.value)}
                         >
-                          <option >Verwaltung</option>
-                          <option >Pflege</option>
+                          <option value={'verwaltung'} >Verwaltung</option>
+                          <option value={'pflege'}>Pflege</option>
                         </select>
                     </label> 
                     <label className='w-full mt-4 flex flex-col items-center justify-start'> 
@@ -112,21 +104,9 @@ const LogScreen = () => {
                         onChange={(e) => setpassword(e.target.value)}
                         />
                         {showpass?<FaRegEye onClick={()=>setshowpass(false)} className='absolute inset right-[12%] top-[1.2rem] text-gray-500 hover:text-gray-400 cursor-pointer' />:<FaRegEyeSlash  onClick={()=>setshowpass(true)} className='cursor-pointer absolute inset right-[12%] top-[1.2rem] text-gray-500 hover:text-gray-400' />}
-                    </label>
-                    <label className='w-5/6 mt-4 flex flex-col items-start justify-start '> 
-                        <p className='w-full flex flex-row items-center justify-start'><a className='font-[arial] text-sm mr-2'>Angemeldet bleiben?</a>
-                        <input
-                        type="checkbox"
-                        className=' w-4 aspect-square dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 outline-none text-sm'
-                        placeholder="Passwort"
-                        maxLength={30}
-                        checked={logcookie}
-                        onChange={(e) => setlogcookie(!logcookie)}
-                        /> 
-                        </p>
-                    </label>
+                    </label> 
                     <div className='w-5/6 flex mb-8 flex-row items-end justify-end'>
-                    <Link to={'/dashboard'} className='py-2 px-4 text-sm dark:text-white text-black font-bold mt-14 rounded dark:bg-[#1f273f] bg-gray-300 dark:hover:bg-gray-700 hover:bg-gray-400/60 shadow-inner shadow-[rgba(255,255,255,0.1)] ring-1 dark:ring-gray-800 ring-gray-400'>Anmelden</Link>
+                    <button ref={_lockbtn} onClick={()=>loginUser()} className='py-2 px-4 text-sm dark:text-white text-black font-bold mt-14 rounded dark:bg-[#1f273f] bg-gray-300 dark:hover:bg-gray-700 hover:bg-gray-400/60 shadow-inner shadow-[rgba(255,255,255,0.1)] ring-1 dark:ring-gray-800 ring-gray-400 flex flex-row items-center justify-center'>{logloader==false?'Anmelden':<><Loader Fill={' fill-blue-600 '} Background={' text-blue-300 '}  Width={4}/> <a className='ml-2 font-normal'>...Daten werden geprüft</a></>}</button>
                     </div>
                     </div> 
                 </div>

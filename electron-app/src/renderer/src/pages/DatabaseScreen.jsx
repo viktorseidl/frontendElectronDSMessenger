@@ -26,10 +26,10 @@ const DatabaseScreen = () => {
   const [host, sethost] = useState('');
   const [err, seterr] = useState(false);
   const [dbname, setdbname] = useState('');
+  const [dbnamepflege, setdbnamepflege] = useState('');
   const [user, setuser] = useState('');
   const [password, setpassword] = useState('');
-  const [showloader, setshowloader] = useState(0);
-  const [retrievedPassword, setRetrievedPassword] = useState('');
+  const [showloader, setshowloader] = useState(0); 
 
   const handleCheckConnection = async () => { 
      seterr(false) 
@@ -38,6 +38,7 @@ const DatabaseScreen = () => {
       const check=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=testDBConnection",'ssdsdsd',"POST", {
           host:host,
           dbname:dbname,
+          dbnamepflege:dbnamepflege,
           user:user,
           pass:password
       },null);  
@@ -168,7 +169,7 @@ const DatabaseScreen = () => {
                 <div className='w-full flex flex-col items-center justify-center'>
                 { 
                   err?
-                  <div className=' w-5/6 mb-4 dark:bg-pink-600 bg-red-600/40 p-2 rounded dark:text-white text-black text-sm'>
+                  <div className=' w-5/6 mb-4 dark:bg-pink-600 bg-red-600 p-2 rounded dark:text-white text-white text-sm'>
                   ERROR - Bitte überprüfen Sie die Daten 
                   </div>
                   :
@@ -189,10 +190,20 @@ const DatabaseScreen = () => {
                         <input
                         type="text"
                         className=' w-5/6  mt-2  dark:placeholder:text-blue-400 placeholder:text-gray-500 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 ring-1 dark:ring-gray-700 ring-gray-400/90 rounded  outline-none py-2 px-3 text-sm'
-                        placeholder="Datenbank-Name"
+                        placeholder="Datenbank-Name Verwaltung"
                         maxLength={50}
                         value={dbname}
                         onChange={(e) => setdbname(e.target.value)}
+                        />
+                    </label>
+                    <label className='w-full mt-4 flex flex-col items-center justify-start'> 
+                        <input
+                        type="text"
+                        className=' w-5/6  mt-2  dark:placeholder:text-blue-400 placeholder:text-gray-500 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 ring-1 dark:ring-gray-700 ring-gray-400/90 rounded  outline-none py-2 px-3 text-sm'
+                        placeholder="Datenbank-Name Pflege (optional)"
+                        maxLength={50}
+                        value={dbnamepflege}
+                        onChange={(e) => setdbnamepflege(e.target.value)}
                         />
                     </label>
                     <label className='w-full mt-4 flex flex-col items-center justify-start'> 
