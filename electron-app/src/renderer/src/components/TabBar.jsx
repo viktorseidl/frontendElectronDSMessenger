@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react'
 import { MdDarkMode, MdLightMode } from 'react-icons/md'
-import { useTheme } from '../styles/ThemeContext'
-import { light, dark } from '../styles/schema'
+import { useTheme } from '../styles/ThemeContext' 
 const TabBar = ({handleMaximize,handleClose,handleMinimize,imgs}) => {
-    const {theme,toggleTheme}=useTheme();
-    const colors=theme?light:dark 
-    useEffect(()=>{},[theme])
+    const {theme,toggleTheme}=useTheme(); 
+    useEffect(()=>{
+      
+    },[theme])
   return (
     <div id="titlebar" className={'fixed top-0 left-0 w-full dark:bg-[#1b243b] bg-[#0c101b]'} > 
       <span className="font-[Arial] dark:text-white text-white text-sm flex flex-row items-center justify-center gap-x-2"><img src={imgs} className='w-10 h-2  ' />Messenger</span>

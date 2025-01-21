@@ -12,17 +12,18 @@ import { MdArrowBackIos, MdArrowForwardIos, MdCancel, MdClose, MdDeleteForever, 
 import RowMessage from '../components/RowMessage';
 import { util } from 'node-forge';
 import DataTableMailInbox from '../components/DataTableMailInbox';
+import DataTableMailOutbox from '../components/DataTableMailOutbox';
 
-const Dashboard = () => {
-  const [menubar, setmenubar] = useState(2); 
+const Sended = () => {
+  
   const [data, setdata] = useState([]); 
    
   const {theme}=useTheme() 
- 
+  
   const getAllMessages=async()=>{
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
     console.log(User)
-    const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getMessagesAllReceived&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
+    const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getMessagesAllSend&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
     if(query.length>0){
 setdata(query)
     } 
@@ -37,7 +38,7 @@ setdata(query)
      <div className='w-full h-full flex flex-col items-start justify-start animate-fadeInfast'>
 
      
-      <DataTableMailInbox Data={data.length>0?data:[]} />
+      <DataTableMailOutbox Data={data.length>0?data:[]} />
          
         
     </div>  
@@ -50,4 +51,4 @@ setdata(query)
         sdsdsds<br/> 
         </div>
  */
-export default Dashboard
+export default Sended

@@ -7,6 +7,9 @@ import { ThemeProvider, useTheme } from './styles/ThemeContext';
 import TabBar from './components/TabBar';
 import LogScreen from './pages/LogScreen';
 import Dashboard from './pages/Dashboard';
+import Sended from './pages/Sended';
+import Deleted from './pages/Deleted';
+import FileExplorer from './pages/FileExplorer';
 function App() { 
   const [data, setData] = useState(null);
   const ipcHandle = () => window.electron.ipcRenderer.send('ping') 
@@ -28,6 +31,9 @@ function App() {
         <Route path='/' element={<DatabaseScreen />} />
         <Route path='/overview' element={<LogScreen />} />
         <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/dashboardsend' element={<Sended />} />
+        <Route path='/dashboardtrash' element={<Deleted />} />
+        <Route path='/file-explorer' element={<FileExplorer />} />
       </Routes>
     </Router>
     </ThemeProvider>

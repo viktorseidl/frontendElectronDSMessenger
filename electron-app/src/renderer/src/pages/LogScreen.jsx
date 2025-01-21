@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useFetchAuthAll } from '../services/useFetchAll'; 
 import imgs from '../assets/Logo.png'  
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { md5, sha256 } from 'node-forge';
+import { md5, sha256, util } from 'node-forge';
 
 const LogScreen = () => {
   const [type, settype] = useState('verwaltung');
@@ -34,7 +34,7 @@ const LogScreen = () => {
             },null);
             console.log(check)
       if(check.length>0){
-        sessionStorage.setItem('user',JSON.stringify(check[0]))
+        window.sessionStorage.setItem('user',util.encode64(JSON.stringify(check[0])))
         _lockbtn.current.disabled = false;
         setlogloader(false)
         navigate('/dashboard')

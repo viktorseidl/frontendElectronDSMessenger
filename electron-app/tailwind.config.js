@@ -55,6 +55,16 @@ module.exports = {
             transform: "translateX(0%)",
           },
         },
+        "slidetop": {
+          "0%": {
+            "-webkit-transform": "translateY(120%)",
+            transform: "translateY(120%)",
+          },
+          "100%": {
+            "-webkit-transform": "translateY(0%)",
+            transform: "translateY(0%)",
+          },
+        },
         'fadeIn': {
           '0%': {
             opacity: 0,
@@ -87,6 +97,7 @@ module.exports = {
         "slide-in": "slide-in 0.5s ease-out",
         "slide-inleft": "slide-inleft 0.5s ease-out",
         "slide-inright": "slide-inright 0.5s ease-out",
+        "slide-tops": "slidetop 0.5s ease-out",
         'spin-slow': 'spin 3s linear infinite',
         'fadeInw': 'fadeInNav 1s',
         'fadeOut': 'fadeOut 1s',
