@@ -49,7 +49,7 @@ const RowMessageOut = ({item}) => {
                 </div>
                 :''
             }
-            <p className='pl-4 truncate'><b className='dark:text-white text-gray-700 text-lg mr-4'> {item.Betreff}</b>{item.Nachricht}</p>
+            <p className='pl-4 truncate'><b className='dark:text-white text-gray-700 text-[16px] mr-4'> {item.Betreff}</b>{item.Nachricht}</p>
             </div>
             <div className='text-sm flex flex-row items-start justify-start'>
 

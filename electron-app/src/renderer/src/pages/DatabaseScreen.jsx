@@ -135,7 +135,7 @@ const DatabaseScreen = () => {
     }*/
   }; 
   useEffect(()=>{  
-    checkCookie() 
+    checkCookie()  
   },[theme])
   return (
     <div className={'pt-8 px-1 w-screen dark:text-gray-200 text-gray-800 dark:bg-gray-950 bg-blue-100 tabsgrounddark flex flex-col items-start justify-start h-screen '}>  
@@ -178,6 +178,7 @@ const DatabaseScreen = () => {
                 </div>
                     <label className='w-full flex flex-col items-center justify-start'>  
                         <input
+                        onKeyDown={(event)=>{event.key==='Enter'?handleCheckConnection():''}}
                         type="text"
                         className=' w-5/6  mt-2  dark:placeholder:text-blue-400 placeholder:text-gray-500 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 ring-1 dark:ring-gray-700 ring-gray-400/90 rounded  outline-none py-2 px-3 text-sm'
                         placeholder="Host oder IP-Adresse"
@@ -188,6 +189,7 @@ const DatabaseScreen = () => {
                     </label>
                     <label className='w-full mt-4 flex flex-col items-center justify-start'> 
                         <input
+                        onKeyDown={(event)=>{event.key==='Enter'?handleCheckConnection():''}}
                         type="text"
                         className=' w-5/6  mt-2  dark:placeholder:text-blue-400 placeholder:text-gray-500 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 ring-1 dark:ring-gray-700 ring-gray-400/90 rounded  outline-none py-2 px-3 text-sm'
                         placeholder="Datenbank-Name Verwaltung"
@@ -198,6 +200,7 @@ const DatabaseScreen = () => {
                     </label>
                     <label className='w-full mt-4 flex flex-col items-center justify-start'> 
                         <input
+                        onKeyDown={(event)=>{event.key==='Enter'?handleCheckConnection():''}}
                         type="text"
                         className=' w-5/6  mt-2  dark:placeholder:text-blue-400 placeholder:text-gray-500 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 ring-1 dark:ring-gray-700 ring-gray-400/90 rounded  outline-none py-2 px-3 text-sm'
                         placeholder="Datenbank-Name Pflege (optional)"
@@ -208,6 +211,7 @@ const DatabaseScreen = () => {
                     </label>
                     <label className='w-full mt-4 flex flex-col items-center justify-start'> 
                         <input
+                        onKeyDown={(event)=>{event.key==='Enter'?handleCheckConnection():''}}
                         type="text"
                         className=' w-5/6  mt-2  dark:placeholder:text-blue-400 placeholder:text-gray-500 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 ring-1 dark:ring-gray-700 ring-gray-400/90 rounded  outline-none py-2 px-3 text-sm'
                         placeholder="Benutzername"
@@ -218,6 +222,7 @@ const DatabaseScreen = () => {
                     </label>
                     <label className='w-full mt-4 flex flex-col items-center justify-start'> 
                         <input
+                        onKeyDown={(event)=>{event.key==='Enter'?handleCheckConnection():''}}
                         type="password"
                         className=' w-5/6  mt-2  dark:placeholder:text-blue-400 placeholder:text-gray-500 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 ring-1 dark:ring-gray-700 ring-gray-400/90 rounded  outline-none py-2 px-3 text-sm'
                         placeholder="Passwort"

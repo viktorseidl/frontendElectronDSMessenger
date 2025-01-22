@@ -5,7 +5,11 @@ import { Link } from "react-router-dom";
 import RowMessage from "./RowMessage";
 import { FaSearch } from "react-icons/fa";
 import RowMessageDeleted from "./RowMessageDeleted";
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import { de } from 'date-fns/locale/de';
+registerLocale('de', de)
 const DataTableMailDeletedbox = ({ Data, updater }) => {
   const [filters, setFilters] = useState({
     Betrefftxt: "",
@@ -127,21 +131,25 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
         </label>
         <label className="w-full flex  flex-col items-start justify-start">
         <a className="w-full mb-2">von</a>
-        <input
-          type="date"
-          value={filters.dateFrom}
-          onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
-          className="w-5/6  ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
-          />
+        <DatePicker 
+        placeholderText="TT.MM.YYYY"
+        locale={'de'}
+        closeOnScroll={true}
+        dateFormat={'dd.MM.yyyy'}
+        className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
+        selected={filters.dateFrom} 
+        onChange={(date) => handleFilterChange("dateFrom", date)} /> 
         </label>
         <label className="w-full flex  flex-col items-start justify-start">
         <a className="w-full mb-2">bis</a>
-        <input
-          type="date"
-          value={filters.dateTo}
-          onChange={(e) => handleFilterChange("dateTo", e.target.value)}
-          className="w-5/6  ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
-          />
+        <DatePicker 
+        placeholderText="TT.MM.YYYY"
+        locale={'de'}
+        closeOnScroll={true}
+        dateFormat={'dd.MM.yyyy'}
+        className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
+        selected={filters.dateTo} 
+        onChange={(date) => handleFilterChange("dateTo", date)} />
           </label>
         {/*
         selectedTickets.length>0 ? 

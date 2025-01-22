@@ -14,6 +14,7 @@ import { util } from 'node-forge';
 import DataTableMailInbox from '../components/DataTableMailInbox';
 import DataTableMailOutbox from '../components/DataTableMailOutbox';
 import DataTableMailDeletedbox from '../components/DataTableMailDeletedbox';
+import FileCardGrid from '../components/FileCardGrid';
 
 const FileExplorer = () => {
   
@@ -38,7 +39,7 @@ setdata(query)
      <Sidebar />
      <div className='w-full h-full flex flex-col items-start justify-start animate-fadeInfast'>
 
-     
+     <FileCardGrid data={data} />
       {/*<DataTableMailDeletedbox Data={data.length>0?data:[]} />*/}
          
         

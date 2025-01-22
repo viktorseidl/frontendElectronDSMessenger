@@ -16,7 +16,7 @@ const RowMessageDeleted = ({item, erledigt,selected,selhandler}) => {
     </div>
     <div className='w-full col-span-11 px-8  py-2 pl-0 flex flex-col items-start justify-start gap-y-2'>
         <div className='w-full flex flex-row items-start justify-between'>
-            <b>{item.Betreff}</b>
+            <b className='text-sm text-[16px]'>{item.Betreff}</b>
             <div className='text-sm dark:text-white text-black font-sans font-semibold'>{item.FormattedDate}</div>
         </div>
         <div className='w-full flex flex-row items-start justify-between'>

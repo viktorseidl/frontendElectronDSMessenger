@@ -4,6 +4,13 @@ import { MdArrowBackIos, MdArrowForwardIos, MdClose, MdDelete, MdPerson } from "
 import { Link } from "react-router-dom";  
 import RowMessage from "./RowMessage";
 import { FaSearch } from "react-icons/fa";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import { de } from 'date-fns/locale/de';
+import { util } from "node-forge";
+import { useFetchAuthAll } from "../services/useFetchAll";
+registerLocale('de', de)
 
 const DataTableMailInbox = ({ Data, updater }) => {
   const [filters, setFilters] = useState({
@@ -84,6 +91,15 @@ const DataTableMailInbox = ({ Data, updater }) => {
     setCurrentPage(1); // Reset to first page when filters change
   };
    
+  const DeleteList=async()=>{
+    if(selectedTickets.length>0){
+        const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=DeleteMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {arr:JSON.stringify(selectedTickets)}, null);
+        console.log(query)
+
+    }
+    //updater()
+  }
    
   return (
     <div className='w-full mt-2  flex-grow max-h-full overflow-auto flex flex-col items-start justify-start '> 
@@ -126,36 +142,32 @@ const DataTableMailInbox = ({ Data, updater }) => {
         </label>
         <label className="w-full flex  flex-col items-start justify-start">
         <a className="w-full mb-2">von</a>
-        <input
-          type="date"
-          value={filters.dateFrom}
-          onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
-          className="w-5/6  ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
-          />
+        <DatePicker 
+        placeholderText="TT.MM.YYYY"
+        locale={'de'}
+        closeOnScroll={true}
+        dateFormat={'dd.MM.yyyy'}
+        className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
+        selected={filters.dateFrom} 
+        onChange={(date) => handleFilterChange("dateFrom", date)} /> 
         </label>
         <label className="w-full flex  flex-col items-start justify-start">
         <a className="w-full mb-2">bis</a>
-        <input
-          type="date"
-          value={filters.dateTo}
-          onChange={(e) => handleFilterChange("dateTo", e.target.value)}
-          className="w-5/6  ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
-          />
+        <DatePicker 
+        placeholderText="TT.MM.YYYY"
+        locale={'de'}
+        closeOnScroll={true}
+        dateFormat={'dd.MM.yyyy'}
+        className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 text-gray-800 dark:text-white  placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
+        selected={filters.dateTo} 
+        onChange={(date) => handleFilterChange("dateTo", date)} />
           </label>
-        {/*
-        selectedTickets.length>0 ? 
-        <button 
-          onClick={()=>DialogToogle()}
-          className=' md:col-start-8 lgo:col-start-8 osm:col-start-8 col-start-0 md:col-span-2 lgo:col-span-2 osm:col-span-2 col-span-10 w-full px-4 py-2 dark:bg-red-800 dark:hover:bg-red-700 dark:text-gray-300 text-gray-700 bg-blue-200 ring-1 dark:ring-gray-700/70 ring-gray-300/70 hover:bg-blue-100 shadow-xl text-sm rounded '
-        >
-          ({selectedTickets.length}) Löschen<MdDelete className="ml-2 inline" /> 
-        </button> : ""
-        */}
+        
       </div>
  
       <div className='p-2 w-full flex flex-row items-center justify-between '>
-                  <div className='flex flex-row items-center justify-start' >
-                      <label className='flex flex-row items-center justify-start'>
+                  <div className='flex flex-row items-center justify-start ' >
+                      <label className='flex flex-row items-center justify-start my-2'>
                       <input
                       type="checkbox" 
                       checked={selectedTickets.length===paginatedData.length}
@@ -164,6 +176,15 @@ const DataTableMailInbox = ({ Data, updater }) => {
                       />
                       <a className='text-sm'>Alle auswählen</a>
                       </label>
+                      {
+                          selectedTickets.length>0 ? 
+                          <button 
+                            onClick={()=>DeleteList()}
+                            className=' ml-10 w-auto px-4 py-1 dark:bg-red-800 dark:hover:bg-red-700 dark:text-gray-300 text-gray-700 bg-blue-200 ring-1 dark:ring-gray-700/70 ring-gray-300/70 hover:bg-blue-100 shadow-xl text-sm rounded '
+                          >
+                            ({selectedTickets.length}) Löschen<MdDelete className="ml-2 inline" /> 
+                          </button> : ""
+                      }
                       </div>
                   <div className='flex flex-row items-center justify-end'>
                       <div onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -192,32 +213,10 @@ const DataTableMailInbox = ({ Data, updater }) => {
           </div> 
           )} 
       </div>
-
-      {/* Pagination */}
-      {/*<div className="w-full flex flex-row items-start justify-between text-sm mt-1">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}className="w-full mt-1 flex flex-row items-start justify-start">
-          <span className="w-6 h-6 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 dark:hover:bg-gray-800 cursor-pointer rounded">
-          <MdArrowBackIos className="ml-1"/>
-          </span>
-        </button>
-        <span  className="w-full flex flex-row items-center justify-center mt-1">
-          Seite {currentPage} von {totalPages}
-        </span>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages} className="w-full  mt-1 flex flex-row items-end justify-end">
-          <span className="w-6 h-6 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 dark:hover:bg-gray-800 cursor-pointer rounded">
-            <MdArrowForwardIos className="ml-1"/>
-            </span>
-        </button>
-      </div>*/}
+ 
       <div className='p-2 w-full flex flex-row items-center justify-between '>
         <div className='flex flex-row items-center justify-start' >
-              <label className='flex flex-row items-center justify-start'>
+              <label className='flex flex-row items-center justify-start mt-2'>
               <input
               type="checkbox" 
               checked={selectedTickets.length===paginatedData.length}

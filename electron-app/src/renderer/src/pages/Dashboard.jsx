@@ -27,6 +27,7 @@ const Dashboard = () => {
 setdata(query)
     } 
   }
+  
   useEffect(()=>{
     getAllMessages()
   },[])
@@ -37,7 +38,7 @@ setdata(query)
      <div className='w-full h-full flex flex-col items-start justify-start animate-fadeInfast'>
 
      
-      <DataTableMailInbox Data={data.length>0?data:[]} />
+      <DataTableMailInbox Data={data.length>0?data:[]} updater={getAllMessages} />
          
         
     </div>  
