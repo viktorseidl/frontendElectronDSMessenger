@@ -1,5 +1,11 @@
-import { ipcMain,BrowserWindow,session,app } from 'electron'; 
-
+import { ipcMain,BrowserWindow,session,app,shell  } from 'electron'; 
+import { util } from 'node-forge'; 
+import pako from 'pako';
+const zlib = require('zlib');
+const { Buffer } = require('buffer');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 //import keytar from 'keytar';
 
 export async function initializeIpcHandlers() { 
@@ -89,7 +95,40 @@ export async function initializeIpcHandlers() {
         return false;
       }
     });
-     
+    ipcMain.handle('save-file', async (event, {pdfBase64,filename}) => {
+       console.log('works')
+       /*const dba=pdfBase64;
+       const gZipBuffer = Uint8Array.from(atob(dba), (c) => c.charCodeAt(0));
+       
+                   // Slice to remove gzip header (first 4 bytes)
+                   const compressedData = gZipBuffer.slice(4);
+       
+                   // Decompress the data using pako
+                   const decompressedData = pako.inflate(compressedData); 
+                   //console.log(util.decode64(dba))
+                   console.log(btoa(String.fromCharCode(...decompressedData))) */
+                   
+                   const compressedBuffer = Buffer.from(pdfBase64, 'base64');
+                   console.log(compressedBuffer)
+                   const actualData = compressedBuffer.slice(4);
+                   console.log(actualData)
+                   // Decompress the Buffer using zlib
+                   const decompressedBuffer = zlib.gunzipSync(actualData);
+                   console.log(decompressedBuffer) 
+                   const downloadsFolder = path.join(os.homedir(), 'Downloads');
+
+                    // Ensure the folder exists (it typically does, but for safety)
+                    if (!fs.existsSync(downloadsFolder)) {
+                        fs.mkdirSync(downloadsFolder, { recursive: true });
+                    } 
+                   console.log(fs.writeFileSync(path.join(downloadsFolder, filename), decompressedBuffer))
+
+        // Write the decompressed data to a file 
+
+        //console.log(`File decompressed and saved to ${path.join('downloads')}`);
+  
+         
+    });
 
   /*  
    

@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState((window.localStorage.getItem('theme') === 'false' || (!(window.localStorage.getItem('theme'))))?false:true);
+  const [theme, setTheme] = useState(window.localStorage.getItem('theme')==="false"?false:true);  
   if (window.localStorage.getItem('theme') === 'false' || (!(window.localStorage.getItem('theme')))) {
     document.documentElement.classList.add('dark')
     window.localStorage.setItem('theme', false); 
@@ -11,21 +11,21 @@ export const ThemeProvider = ({ children }) => {
     document.documentElement.classList.remove('dark')
     window.localStorage.setItem('theme', true); 
   }
-  useEffect(() => { 
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = window.localStorage.getItem('theme') || prefersDark?false:true;
-    setTheme(savedTheme);
+  useEffect(() => {  
   }, []);
 
   const toggleTheme = () => {
     let newTheme
-    if((!(window.localStorage.getItem('theme')))){
-      newTheme = (theme === false || theme === "false") ? true : false;
+    newTheme = (theme === false || theme === "false") ? true : false;
+    if(newTheme===false){
+      document.documentElement.classList.add('dark')
+      setTheme(newTheme);
+      window.localStorage.setItem('theme', newTheme);
     }else{
-      newTheme = (window.localStorage.getItem('theme') === false || window.localStorage.getItem('theme') === "false") ? true : false;
-    }
-    setTheme(newTheme);
-    window.localStorage.setItem('theme', newTheme); // Persist theme preference
+      document.documentElement.classList.remove('dark')
+      setTheme(newTheme);
+      window.localStorage.setItem('theme', newTheme);
+    } 
   };
 
   return (

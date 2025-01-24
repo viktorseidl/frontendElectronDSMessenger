@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv } from 'react-icons/fa';
 import pako from 'pako';
 import { MdArrowBackIos, MdArrowForwardIos, MdAttachment, MdClose, MdFilePresent } from 'react-icons/md';
-
+import { util } from 'node-forge'; 
+import { Si7Zip, SiJpeg } from "react-icons/si";
+import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt } from "react-icons/bs";
+import { IoImageSharp } from "react-icons/io5";
+import { AiOutlineGif } from "react-icons/ai"; 
 const FileCardGrid = ({ data }) => {
   // State to manage search term and selected filetype
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,14 +18,14 @@ const FileCardGrid = ({ data }) => {
   const filterData = () => {
     return data.filter(item => {
       const matchesSearchTerm = item.filename.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFileType = selectedFileType === 'all' || item.filetype === selectedFileType;
+      const matchesFileType = (selectedFileType === 'all' || item.filetype === selectedFileType);
       return matchesSearchTerm && matchesFileType;
     });
   };
 
   // Pagination: Show 5 items per page
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 28;
 
   const handlePageChange = (page) => { 
     if((page==0) || (page>totalPages)){
@@ -43,25 +47,14 @@ const FileCardGrid = ({ data }) => {
   const fileTypes = [
     'all', 
     'image/png', 
-    'image/jpeg', 
-    'image/gif', 
-    'image/webp', 
+    'image/jpeg',    
     'application/pdf', 
-    'text/plain', 
-    'text/html', 
-    'application/json', 
-    'application/zip', 
+    'text/plain',    
     'audio/mpeg', 
-    'video/mp4', 
-    'application/msword', 
-    'application/vnd.ms-powerpoint', 
-    'application/vnd.ms-excel', 
-    'text/csv', 
-    'application/xml', 
-    'application/octet-stream', 
-    'application/x-7z-compressed'
+    'video/mp4',  
+    'text/csv',  
     ];
-    const decompressBase64Image = (base64Data,filetype) => {
+    const decompressBase64Image = (base64Data ) => {
         try {
             // Decode the base64 string into a byte array
             const gZipBuffer = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
@@ -70,42 +63,136 @@ const FileCardGrid = ({ data }) => {
             const compressedData = gZipBuffer.slice(4);
 
             // Decompress the data using pako
-            const decompressedData = pako.inflate(compressedData);
-
-            // Convert decompressed data to base64 for the img src
-            return `data:`+filetype+`;base64,${btoa(String.fromCharCode(...decompressedData))}`;
+            const decompressedData = pako.inflate(compressedData); 
+            return btoa(String.fromCharCode(...decompressedData)) 
         } catch (error) {
             console.error("Error decompressing image: ", error);
             return ''; // Return empty string if there's an error
         }
-    };
-    const returnSizing=(size)=>{
-        if(size>999){
-            return Number(size/1000).toFixed(2)+' Kb'
-        }else if(size>999999){
-            return Number(size/1000000).toFixed(2)+' Mb'
-        }else if(size>999999999){
-            return Number(size/1000000000).toFixed(2)+' Gb'
-        }else{
-            return Number(size).toFixed(2)+' Bytes'
-        }
+    }; 
+    const returnIconType=(it)=>{ 
+      switch(it){
+        case "image/jpeg":
+          return <SiJpeg className='text-7xl' />
+        case "image/png":
+          return <BsFiletypePng className='text-7xl' />
+          case "image/webp":
+            return <IoImageSharp className='text-7xl' />
+        case "image/gif":
+          return <AiOutlineGif className='text-7xl' /> 
+        case "text/plain":
+          return <BsFiletypeTxt  className='text-7xl' /> 
+        case "text/html":
+          return <FaHtml5  className='text-7xl' /> 
+        case "text/css": 
+          return <FaCss3Alt  className='text-7xl' />
+        case "application/javascript":
+          return <FaJs  className='text-7xl'  />
+        case "application/json":
+          return <BsFiletypeJson  className='text-7xl' />
+        case "application/xml":
+          return <BsFiletypeXml  className='text-7xl' />
+        case "application/pkcs10":
+          return <MdFilePresent className='text-7xl' />
+        case "application/pgp-signature":
+          return <MdFilePresent className='text-7xl' />
+        case "application/pics-rules":
+          return <MdFilePresent className='text-7xl' />
+        case "application/pkcs7-mime":
+          return <MdFilePresent className='text-7xl' />
+        case "audio/mpeg":
+          return <BsFiletypeMp3 className='text-7xl' />
+        case "video/mp4":
+          return <BsFiletypeMp4 className='text-7xl' /> 
+        case "application/zip":
+          return <Si7Zip className='text-7xl' />
+        case "application/pdf":
+          return <FaFilePdf className='text-7xl' />
+        case "application/msword":
+          return <FaFileWord className='text-7xl' />
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          return <FaFileWord className='text-7xl' />
+        case "application/vnd.ms-powerpoint":
+          return <FaFilePowerpoint className='text-7xl' />
+        case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+          return <FaFilePowerpoint className='text-7xl' />
+        case "application/vnd.ms-excel":
+          return <FaFileExcel className='text-7xl' />
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+          return <FaFileExcel className='text-7xl' />
+        case "text/csv":
+          return <FaFileCsv className='text-7xl' />
+        default:
+          return <MdFilePresent className='text-7xl' />
+      }
+    }
+    const returnFiletype=(it)=>{ 
+      switch(it){
+        case "image/jpeg":
+          return 'JPEG'
+        case "image/png":
+          return 'PNG'
+        case "image/webp":
+          return 'WEBP'
+        case "image/gif":
+          return 'GIF'
+        case "text/plain":
+          return 'TXT'
+        case "text/html":
+          return 'HTML'
+        case "text/css":
+          return 'CSS'
+        case "application/javascript":
+          return 'JS'
+        case "application/json":
+          return 'JSON'
+        case "application/xml":
+          return 'XML'
+        case "application/pkcs10":
+          return 'PKCS10'
+        case "application/pgp-signature":
+          return 'ASC'
+        case "application/pics-rules":
+          return 'PRF'
+        case "application/pkcs7-mime":
+          return 'p7c'
+        case "audio/mpeg":
+          return 'MP3'
+        case "video/mp4":
+          return 'MP4' 
+        case "application/zip":
+          return 'ZIP'
+        case "application/pdf":
+          return 'PDF'
+        case "application/msword":
+          return 'Word'
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          return 'Word'
+        case "application/vnd.ms-powerpoint":
+          return 'Powerpoint'
+        case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+          return 'Powerpoint'
+        case "application/vnd.ms-excel":
+          return 'Excel'
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+          return 'Excel'
+        case "text/csv":
+          return 'CSV'
+        default:
+          return 'Octet-Stream'
+      }
     }
   // Open image dialog
-  const openImageDialog = (basefile, filetype) => {
-    // Check if the filetype is PDF
-    if (filetype === 'application/pdf') {
-      // If it's a PDF, open it in a new browser tab
-      const pdfData = decompressBase64Image(basefile,filetype); // Get the decompressed base64 string
-      const pdfWindow = window.open();
-      pdfWindow.document.write(`<iframe src="${pdfData}" width="100%" height="100%" frameborder="0"></iframe>`);
-    } else if(filetype.split('/')[0] === 'image') {
-      // If it's not a PDF, show the image in the dialog
+  const openImageDialog = async (basefile, filetype, fileName) => { 
+    //API FOR SAVING FILES LOCAL   ---- > window.api.electronFiles.saveFile(basefile,fileName)
+    
+    /*
+    {
+// If it's not a PDF, show the image in the dialog
       const decompImg = decompressBase64Image(basefile,filetype);
       setCurrentImage(decompImg);
       setIsDialogOpen(true);
-    }else{
-
-    }
+    }*/
   };
 
   // Close image dialog when clicked outside
@@ -113,8 +200,37 @@ const FileCardGrid = ({ data }) => {
     if (e.target === e.currentTarget) {
       setIsDialogOpen(false);
     }
-  };
-
+  }; 
+  function downloadPdf(base64Data, filetype,fileName) {
+    // Base64-Daten in Binärdaten umwandeln
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+  
+    // Blob aus Binärdaten erstellen
+    const blob = new Blob([byteArray], { type: filetype });
+  
+    // Temporäre URL für den Blob erstellen
+    const blobUrl = URL.createObjectURL(blob);
+  
+    // <a>-Element dynamisch erstellen
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = fileName; // Dateiname festlegen
+    document.body.appendChild(link);
+  
+    // Automatisch einen Klick auf den Link auslösen
+    link.click();
+  
+    // Den Link wieder aus dem DOM entfernen
+    document.body.removeChild(link);
+  
+    // Die Blob-URL freigeben
+    URL.revokeObjectURL(blobUrl);
+  }
   return (
     <div className=" flex-grow max-h-full overflow-auto flex flex-col items-start justify-start w-full py-4">
 
@@ -154,15 +270,17 @@ const FileCardGrid = ({ data }) => {
                     disabled={currentPage === 1}  className='w-6 aspect-square pl-2 py-1 cursor-pointer dark:hover:bg-gray-700 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-600 ring-gray-400'>
             <MdArrowBackIos />
             </div> 
+            <span className='w-auto flex flex-row gap-x-2'>
             {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
             onClick={() => handlePageChange(index + 1)}
-            className={`w-8 flex flex-col items-center justify-center aspect-square  ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
+            className={`w-6 flex flex-col items-center justify-center aspect-square  ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
           >
             {index + 1}
           </button>
         ))}
+        </span>
             <div onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className='w-6 aspect-square pl-1 py-1 cursor-pointer dark:hover:bg-gray-700 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded ml-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-600 ring-gray-400'>
             <MdArrowForwardIos />
             </div> 
@@ -171,34 +289,20 @@ const FileCardGrid = ({ data }) => {
 
       {/* Card Grid */}
       <div className='w-full dark:bg-gray-900 bg-white h-full  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 p-4'>
-      <div className="w-full h-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="w-full h-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-6">
 
         
         {displayedData.map((item) => (
-          <div key={item.anhangId+item.fileindex} className="dark:bg-gray-900 bg-gray-300/30 rounded-lg dark:shadow-blue-600/30 shadow-lg shadow-black/20 p-4 dark:ring-1 ring-1 dark:ring-gray-700 ring-gray-300">
-            {/* Image, Placeholder, or 7z Icon */}
-            {item.filetype.includes('image') ? (
-              <div
-                className="w-full h-40 cursor-pointer"
-                onClick={() => openImageDialog(item.basefile,item.filetype)}
-              >
-                <img
-                  src={decompressBase64Image(item.basefile)} 
-                  alt={item.filename}
-                  className="w-full h-full object-cover rounded-t-lg dark:bg-gray-800 bg-gray-300 flex flex-col items-center justify-center dark:text-gray-300 text-gray-500 "
-                />
-              </div>
-            ) :  (
-              <div onClick={() => openImageDialog(item.basefile,item.filetype)} className="w-full h-40 dark:bg-gray-800 bg-gray-300 flex items-center justify-center dark:text-gray-300 text-gray-500 text-2xl rounded-t-lg">
-                <span><MdFilePresent className='text-7xl' /></span>
-              </div>
-            )}
+          <div key={item.anhangId+item.fileindex} className="dark:bg-gray-900 bg-gray-300/30 rounded-lg dark:shadow-blue-600/30 shadow-lg shadow-black/20 p-4 dark:ring-1 ring-1 dark:ring-gray-700 ring-gray-300"> 
+             
+              <div onClick={() => openImageDialog(item.anhangId,item.fileindex,item.filetype,item.filename)} className="w-full aspect-square dark:bg-gray-800 bg-gray-300 flex items-center justify-center dark:text-gray-300 text-gray-500 text-2xl rounded-t-lg">
+                <span>{returnIconType(item.filetype)}</span>
+              </div> 
 
             {/* File Info */}
           <div className="mt-4 text-center">
-            <h3 className="font-semibold text-lg first-letter:uppercase truncate">{item.filename}</h3>
-                <p className="text-sm text-gray-500 truncate"><a className='dark:text-orange-400/90 text-blue-700'>{returnSizing(item.filesizeuncomp)}</a></p>
-                <p className="text-sm truncate"><a className=' dark:text-orange-400/90 text-blue-700 font-semibold uppercase'>{item.filetype.split('/')[1]}</a></p>
+            <h3 className="font-semibold text-lg first-letter:uppercase truncate">{item.filename}</h3> 
+                <p className="text-sm truncate"><a className=' dark:text-orange-400/90 text-blue-700 font-semibold uppercase'>{returnFiletype(item.filetype)}</a></p>
             </div>
           </div>
         ))} 
@@ -212,15 +316,17 @@ const FileCardGrid = ({ data }) => {
                     disabled={currentPage === 1}  className='w-6 aspect-square pl-2 py-1 cursor-pointer dark:hover:bg-gray-700 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-600 ring-gray-400'>
             <MdArrowBackIos />
             </div> 
+            <span className='w-auto flex flex-row gap-x-2'>
             {[...Array(totalPages)].map((_, index) => (
-          <button
-            key={index}
-            onClick={() => handlePageChange(index + 1)}
-            className={`w-8 flex flex-col items-center justify-center aspect-square  ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
-          >
-            {index + 1}
-          </button>
-        ))}
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`w-6 flex flex-col items-center justify-center aspect-square  ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
+              >
+                {index + 1}
+              </button>
+            ))}
+            </span>
             <div onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className='w-6 aspect-square pl-1 py-1 cursor-pointer dark:hover:bg-gray-700 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded ml-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-600 ring-gray-400'>
             <MdArrowForwardIos />
             </div> 

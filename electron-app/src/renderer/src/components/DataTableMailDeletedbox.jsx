@@ -9,8 +9,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
+import Dialog from "./Dialog";
+import { util } from "node-forge";
+import { useFetchAuthAll } from "../services/useFetchAll";
 registerLocale('de', de)
 const DataTableMailDeletedbox = ({ Data, updater }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentId, setCurrentId] = useState(null);
   const [filters, setFilters] = useState({
     Betrefftxt: "",
     Sendername: "Alle Empfänger",
@@ -89,7 +94,27 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
     setCurrentPage(1); // Reset to first page when filters change
   };
    
-   
+   const BackToInbox=async(e)=>{
+       closeDialog(e) 
+       if(currentId>0){
+           const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+           const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=movetoInbox&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {mid:currentId}, null);
+           if(query==true){
+             setCurrentId(null)
+             updater()
+           }
+       }
+     }
+     const openDialog = (id) => {  
+         setCurrentId(id)
+         setIsDialogOpen(true); 
+     };
+    
+     const closeDialog = (e) => {
+       if (e.target === e.currentTarget) {
+         setIsDialogOpen(false); 
+       }
+     };
   return (
     <div className='w-full mt-2  flex-grow max-h-full overflow-auto flex flex-col items-start justify-start  '> 
       {/* Filters */}
@@ -150,16 +175,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
         className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
         selected={filters.dateTo} 
         onChange={(date) => handleFilterChange("dateTo", date)} />
-          </label>
-        {/*
-        selectedTickets.length>0 ? 
-        <button 
-          onClick={()=>DialogToogle()}
-          className=' md:col-start-8 lgo:col-start-8 osm:col-start-8 col-start-0 md:col-span-2 lgo:col-span-2 osm:col-span-2 col-span-10 w-full px-4 py-2 dark:bg-red-800 dark:hover:bg-red-700 dark:text-gray-300 text-gray-700 bg-blue-200 ring-1 dark:ring-gray-700/70 ring-gray-300/70 hover:bg-blue-100 shadow-xl text-sm rounded '
-        >
-          ({selectedTickets.length}) Löschen<MdDelete className="ml-2 inline" /> 
-        </button> : ""
-        */}
+          </label> 
       </div>
  
       <div className='p-2 w-full flex flex-row items-center justify-between '>
@@ -183,7 +199,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
       {/* Table */}
       <div className='w-full dark:bg-gray-900 bg-white h-[77%]  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start divide-y dark:divide-gray-700 shadow-inner shadow-[rgba(0,0,0,0.3)] divide-gray-400 '>  
           {paginatedData?.map((item,index) => (
-           <Fragment key={item+index}><RowMessageDeleted item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={handleSelect} /> </Fragment>
+           <Fragment key={item+index}><RowMessageDeleted item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={openDialog} /> </Fragment>
           ))}
           {paginatedData.length === 0 && (
             <div className='w-full h-full'> 
@@ -212,6 +228,17 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
               </div> 
           </div>
       </div>
+      <Dialog 
+      show={isDialogOpen}
+      close={closeDialog}
+      title={'Wiederherstellung'}
+      message={'Möchten Sie die Nachrichten zurück in den Posteingang verschieben?'}
+      cancelBtn={true}
+      actionBtn1={false} 
+      actionBtn2={true} 
+      Btn2BgHover={' dark:bg-lime-600 bg-lime-600 dark:hover:bg-lime-700 hover:bg-lime-700 '} 
+      callbackBtn2={BackToInbox} 
+      />
     </div>
   );
 };

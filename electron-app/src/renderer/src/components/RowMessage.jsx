@@ -1,7 +1,7 @@
 import React, { useEffect }  from 'react'
 import { MdAttachment, MdDeleteForever, MdPriorityHigh } from 'react-icons/md'
 
-const RowMessage = ({item, erledigt,selected,selhandler}) => {
+const RowMessage = ({item, erledigt,selected,selhandler,deleter}) => {
     useEffect(()=>{
 
     },[selected.length])
@@ -38,7 +38,7 @@ const RowMessage = ({item, erledigt,selected,selhandler}) => {
             <div className='text-sm flex flex-row items-start justify-start'>
 
             
-            <div className='w-6 aspect-square cursor-pointer dark:hover:bg-gray-900 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner  shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
+            <div onClick={()=>deleter(item.ID)} className='w-6 aspect-square cursor-pointer dark:hover:bg-gray-900 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner  shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
                 <MdDeleteForever  title='Löschen' className='inline' />
             </div>
 
@@ -85,7 +85,7 @@ const RowMessage = ({item, erledigt,selected,selhandler}) => {
             <div className='text-sm flex flex-row items-start justify-start'>
 
             
-            <div className='w-6 aspect-square cursor-pointer dark:hover:bg-gray-900 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner  shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
+            <div onClick={()=>deleter(item.ID)} className='w-6 aspect-square cursor-pointer dark:hover:bg-gray-900 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner  shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
                 <MdDeleteForever  title='Löschen' className='inline' />
             </div>
 

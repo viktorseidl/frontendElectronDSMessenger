@@ -20,8 +20,7 @@ const Dashboard = () => {
   const {theme}=useTheme() 
  
   const getAllMessages=async()=>{
-    const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-    console.log(User)
+    const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user'))) 
     const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getMessagesAllReceived&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
     if(query.length>0){
 setdata(query)

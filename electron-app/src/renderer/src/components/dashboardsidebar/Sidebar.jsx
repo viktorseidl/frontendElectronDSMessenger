@@ -72,13 +72,13 @@ const Sidebar = () => {
         {
             menubar==3?
             <div onClick={()=>frameHandler(3)} className='dark:bg-blue-600/60 bg-blue-600/60 text-gray-200 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
-                <div title='Gelöschte Nachrichten' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/50 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <div title='Papierkorb' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/50 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdOutlineDeleteSweep   />
                 </div>
             </div>
             :
             <div onClick={()=>frameHandler(3)} className='text-gray-500 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
-                <div title='Gelöschte Nachrichten' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/50 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <div title='Papierkorb' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/50 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdOutlineDeleteSweep   />
                 </div>
             </div>
@@ -86,13 +86,13 @@ const Sidebar = () => {
         {
             menubar==4?
             <div onClick={()=>frameHandler(4)} className='dark:bg-blue-600/60 bg-blue-600/60 text-gray-200 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
-                <div title='Papierkorb' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <div title='Anhänge' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdFilePresent   />
                 </div>
             </div>
             :
             <div onClick={()=>frameHandler(4)} className='text-gray-500 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
-                <div title='Dateien' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <div title='Anhänge' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdFilePresent   />
                 </div>
             </div>

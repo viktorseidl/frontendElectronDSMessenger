@@ -16,7 +16,7 @@ export async function createMainWindow() {
       session: session,
       preload: join(__dirname, '/../preload/index.js'),
       contextIsolation: true,
-      nodeIntegration: false,
+      nodeIntegration: true,
       sandbox: false,
     },
     frame: false,

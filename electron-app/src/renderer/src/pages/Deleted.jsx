@@ -39,7 +39,7 @@ setdata(query)
      <div className='w-full h-full flex flex-col items-start justify-start animate-fadeInfast'>
 
      
-      <DataTableMailDeletedbox Data={data.length>0?data:[]} />
+      <DataTableMailDeletedbox Data={data.length>0?data:[]} updater={getAllMessages} />
          
         
     </div>  

@@ -2,6 +2,7 @@ import React, { useState, useMemo, Fragment } from "react";
 import PropTypes from "prop-types";
 import { MdArrowBackIos, MdArrowForwardIos, MdClose, MdDelete, MdPerson } from "react-icons/md";
 import { Link } from "react-router-dom";  
+import imgs from './../assets/Logo.png'
 import RowMessage from "./RowMessage";
 import { FaSearch } from "react-icons/fa";
 import DatePicker from "react-datepicker";
@@ -10,22 +11,26 @@ import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
 import { util } from "node-forge";
 import { useFetchAuthAll } from "../services/useFetchAll";
+import Dialog from "./Dialog";
 registerLocale('de', de)
 
 const DataTableMailInbox = ({ Data, updater }) => {
   const [filters, setFilters] = useState({
     Betrefftxt: "",
-    Sendername: "Alle Sender",
+    Sendername: "Alle Versender",
     dateFrom: "",
     dateTo: "",
   }); 
   const [selectedTickets, setSelectedTickets] = useState([]);
+  const [currentId, setCurrentId] = useState(null); 
   const [currentPage, setCurrentPage] = useState(1); 
+  const [isDialogOpen, setIsDialogOpen] = useState(false); 
+  const [isDialogOpenId, setIsDialogOpenId] = useState(false); 
   const rowsPerPage = 12;
   
   // Compute unique reasons with counters
   const reasonCounters = useMemo(() => {
-    const counts = { 'Alle Sender': Data.length };
+    const counts = { 'Alle Versender': Data.length };
     Data.forEach((item) => { 
       counts[item.Sendername] = (counts[item.Sendername] || 0) + 1;
     }); 
@@ -61,7 +66,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
         .includes(filters.Betrefftxt.toLowerCase());
 
       // Filter by reason
-      const reasonMatch = filters.Sendername === "Alle Sender" || item.Sendername === filters.Sendername;
+      const reasonMatch = filters.Sendername === "Alle Versender" || item.Sendername === filters.Sendername;
        
       // Filter by date range
       const createdDate = new Date(item.created * 1000); // Convert timestamp to Date
@@ -78,8 +83,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
   // Paginated data
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * rowsPerPage;
-    const exdata=filteredData.slice(startIndex, startIndex + rowsPerPage);
-    console.log(exdata)
+    const exdata=filteredData.slice(startIndex, startIndex + rowsPerPage); 
     return exdata
   }, [filteredData, currentPage]);
 
@@ -91,16 +95,46 @@ const DataTableMailInbox = ({ Data, updater }) => {
     setCurrentPage(1); // Reset to first page when filters change
   };
    
-  const DeleteList=async()=>{
+  const DeleteList=async(e)=>{
+    closeDialog(e) 
     if(selectedTickets.length>0){
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
         const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=DeleteMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {arr:JSON.stringify(selectedTickets)}, null);
-        console.log(query)
-
+        if(query==true){
+          setSelectedTickets([])
+          updater()
+        }
     }
-    //updater()
   }
-   
+  const DeleteID=async(e)=>{
+    closeDialogId(e) 
+    if(currentId>0){
+        const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=DeleteMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {mid:currentId}, null);
+        if(query==true){
+          setCurrentId(null)
+          updater()
+        }
+    }
+  }
+  const openDialog = () => { 
+      setIsDialogOpen(true); 
+  };
+  const openDialogId = (id) => {  
+      setCurrentId(id)
+      setIsDialogOpenId(true); 
+  };
+ 
+  const closeDialog = (e) => {
+    if (e.target === e.currentTarget) {
+      setIsDialogOpen(false); 
+    }
+  };
+  const closeDialogId = (e) => {
+    if (e.target === e.currentTarget) {
+      setIsDialogOpenId(false); 
+    }
+  };
   return (
     <div className='w-full mt-2  flex-grow max-h-full overflow-auto flex flex-col items-start justify-start '> 
       {/* Filters */}
@@ -114,7 +148,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
                   onChange={(e) => handleFilterChange("Betrefftxt", e.target.value)}
                   />
                   <FaSearch className='absolute inset left-4 text-2xl top-[0.4rem] dark:text-blue-200/60 text-gray-500/20 ' /> 
-                  <MdClose onClick={()=>handleFilterChange("Betrefftxt", "")} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400 cursor-pointer '} style={{display:filters.Betrefftxt.length>0?'block':'none'}} />
+                  <MdClose onClick={()=>handleFilterChange("Betrefftxt", "")} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400'} style={{display:filters.Betrefftxt.length>0?'block':'none'}} />
               </label>
           </div>
           <div className='w-20 p-5 h-full flex flex-col items-center justify-center'>
@@ -127,7 +161,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
       <div  className="w-full grid grid-cols-6 items-start justify-items-start gap-3 gap-x-4  text-sm px-4">
        
         <label className="w-full flex flex-col items-start justify-start">
-          <a className="w-full mb-2">Sender</a>
+          <a className="w-full mb-2">Versender</a>
         <select
           value={filters.Sendername}
           onChange={(e) => handleFilterChange("Sendername", e.target.value)}
@@ -135,7 +169,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
           >
           {Object.entries(reasonCounters).map(([Sendername, count]) => (
             <option key={Sendername} value={Sendername}>
-              {Sendername} ({count}) {console.log(Sendername)}
+              {Sendername} ({count})
             </option>
           ))}
         </select>
@@ -179,7 +213,8 @@ const DataTableMailInbox = ({ Data, updater }) => {
                       {
                           selectedTickets.length>0 ? 
                           <button 
-                            onClick={()=>DeleteList()}
+                            onClick={(e)=>openDialog(e)}
+                            title="Löschen"
                             className=' ml-10 w-auto px-4 py-1 dark:bg-red-800 dark:hover:bg-red-700 dark:text-gray-300 text-gray-700 bg-blue-200 ring-1 dark:ring-gray-700/70 ring-gray-300/70 hover:bg-blue-100 shadow-xl text-sm rounded '
                           >
                             ({selectedTickets.length}) Löschen<MdDelete className="ml-2 inline" /> 
@@ -203,7 +238,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
       {/* Table */}
       <div className='w-full dark:bg-gray-900 bg-white h-[77%]  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start divide-y dark:divide-gray-700 shadow-inner shadow-[rgba(0,0,0,0.3)] divide-gray-400'>  
           {paginatedData?.map((item,index) => (
-           <Fragment key={item+index}><RowMessage item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={handleSelect} /> </Fragment>
+           <Fragment key={item+index}><RowMessage item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={handleSelect} deleter={openDialogId} /> </Fragment>
           ))}
           {paginatedData.length === 0 && (
             <div className='w-full h-full'> 
@@ -239,6 +274,27 @@ const DataTableMailInbox = ({ Data, updater }) => {
               </div> 
           </div>
       </div>
+      <Dialog 
+      show={isDialogOpen}
+      close={closeDialog}
+      title={'Information'}
+      message={'Möchten Sie die Nachrichten wirklich löschen?'}
+      cancelBtn={true}
+      actionBtn1={true} 
+      Btn1BgHover={' dark:bg-red-600 bg-red-500 dark:hover:bg-red-700 hover:bg-red-700 '} 
+      callbackBtn1={DeleteList} 
+      />
+      <Dialog 
+      show={isDialogOpenId}
+      close={closeDialogId}
+      title={'Information'}
+      message={'Möchten Sie die Nachricht wirklich löschen?'}
+      cancelBtn={true}
+      actionBtn1={true} 
+      Btn1BgHover={' dark:bg-red-600 bg-red-500 dark:hover:bg-red-700 hover:bg-red-700 '} 
+      callbackBtn1={DeleteID} 
+      />
+      
     </div>
   );
 };

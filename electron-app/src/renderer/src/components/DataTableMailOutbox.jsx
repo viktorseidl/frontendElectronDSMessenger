@@ -13,7 +13,7 @@ registerLocale('de', de)
 const DataTableMailOutbox = ({ Data, updater }) => {
   const [filters, setFilters] = useState({
     Betrefftxt: "",
-    Sendername: "Alle Empfanger",
+    Sendername: "Alle Empfänger",
     dateFrom: "",
     dateTo: "",
   }); 
@@ -23,7 +23,7 @@ const DataTableMailOutbox = ({ Data, updater }) => {
   
   // Compute unique reasons with counters
   const reasonCounters = useMemo(() => {
-    const counts = { 'Alle Empfanger': Data.length };
+    const counts = { 'Alle Empfänger': Data.length };
     Data.forEach((item) => { 
         item.Sendername.forEach((ab)=>{
       counts[ab] = (counts[ab] || 0) + 1;
@@ -61,7 +61,7 @@ const DataTableMailOutbox = ({ Data, updater }) => {
         .includes(filters.Betrefftxt.toLowerCase());
 
       // Filter by reason
-      const reasonMatch = filters.Sendername === "Alle Empfanger" || item.Sendername.includes(filters.Sendername);
+      const reasonMatch = filters.Sendername === "Alle Empfänger" || item.Sendername.includes(filters.Sendername);
        
       // Filter by date range
       const createdDate = new Date(item.created * 1000); // Convert timestamp to Date
