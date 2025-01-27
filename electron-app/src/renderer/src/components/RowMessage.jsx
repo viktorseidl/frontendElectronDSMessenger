@@ -1,13 +1,14 @@
 import React, { useEffect }  from 'react'
-import { MdAttachment, MdDeleteForever, MdPriorityHigh } from 'react-icons/md'
+import { MdAttachment, MdDeleteForever, MdMarkEmailRead, MdPriorityHigh } from 'react-icons/md'
+import { Link } from 'react-router-dom'
 
-const RowMessage = ({item, erledigt,selected,selhandler,deleter}) => {
+const RowMessage = ({item, erledigt,selected,selhandler,deleter,markread}) => {
     useEffect(()=>{
 
     },[selected.length])
   return (
     erledigt==0?
-   <div className='w-full dark:bg-cyan-400/15 bg-orange-900/15 dark:hover:bg-blue-300/20 hover:bg-orange-900/20 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
+   <Link to={'/message/'+item.ID} state={item} className='w-full dark:bg-cyan-400/15 bg-orange-900/15 dark:hover:bg-blue-300/20 hover:bg-orange-900/20 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
     <div className='w-full flex flex-row items-center justify-center py-2'>
     <input
              type="checkbox"
@@ -27,9 +28,16 @@ const RowMessage = ({item, erledigt,selected,selhandler,deleter}) => {
         <div className='w-full flex flex-row items-start justify-between'>
             <div className='text-[13px] text-gray-500 font-[arial] w-[90%] flex flex-row items-center justify-start'>
             {
+                parseInt(item.Anhang)>0?
+                <div className='w-6 aspect-square dark:text-gray-400 cursor-pointer dark:bg-gray-900 bg-gray-100 shadow-inner  shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
+                    <MdAttachment  title='Nachricht beinhaltet Anhänge' className='inline' />
+                </div>
+                :''
+            }
+            {
                 item.Wichtig>0?
                 <div className='w-4 aspect-square cursor-pointer  dark:bg-red-800 bg-red-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-red-700 ring-red-600'>
-                <MdPriorityHigh  title='Wichtig' className='inline' />
+                <MdPriorityHigh  title='Als wichtig makiert' className='inline' />
                 </div>
                 :''
             }
@@ -38,16 +46,19 @@ const RowMessage = ({item, erledigt,selected,selhandler,deleter}) => {
             <div className='text-sm flex flex-row items-start justify-start'>
 
             
-            <div onClick={()=>deleter(item.ID)} className='w-6 aspect-square cursor-pointer dark:hover:bg-gray-900 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner  shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
+            <div onClick={()=>deleter(item.ID)} className='w-6 aspect-square cursor-pointer dark:bg-red-800 bg-red-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-red-700 ring-red-600'>
                 <MdDeleteForever  title='Löschen' className='inline' />
+            </div>
+            <div onClick={()=>markread(item.ID)} className='w-6 aspect-square cursor-pointer dark:bg-violet-800 bg-violet-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-violet-700 ring-violet-600'>
+                <MdMarkEmailRead  title='Gelesen makieren' className='inline' />
             </div>
 
             </div>
         </div>
     </div>
-</div> 
+</Link> 
    :
-   <div className='w-full dark:bg-gray-900 bg-white dark:hover:bg-orange-300/20 hover:bg-blue-500/10 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
+   <Link to={'/message/'+item.ID} state={item} className='w-full dark:bg-gray-900 bg-white dark:hover:bg-orange-300/20 hover:bg-blue-500/10 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
     <div className='w-full flex flex-row items-center justify-center py-2'>
     <input
             type="checkbox"
@@ -67,7 +78,7 @@ const RowMessage = ({item, erledigt,selected,selhandler,deleter}) => {
         <div className='w-full flex flex-row items-start justify-between'>
             <div className='text-[13px] text-gray-500 font-[arial] w-[90%] flex flex-row items-center justify-start'>
             {
-                item.Anhang>0?
+                parseInt(item.Anhang)>0?
                 <div className='w-6 aspect-square dark:text-gray-400 cursor-pointer dark:bg-gray-900 bg-gray-100 shadow-inner  shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
                     <MdAttachment  title='Nachricht beinhaltet Anhänge' className='inline' />
                 </div>
@@ -76,23 +87,21 @@ const RowMessage = ({item, erledigt,selected,selhandler,deleter}) => {
             {
                 item.Wichtig>0?
                 <div className='w-4 aspect-square cursor-pointer  dark:bg-red-800 bg-red-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-red-700 ring-red-600'>
-                <MdPriorityHigh  title='Wichtig' className='inline' />
+                <MdPriorityHigh  title='Als wichtig makiert' className='inline' />
                 </div>
                 :''
             }
             <p className=' truncate'>{item.Nachricht.trim().length>0?item.Nachricht:'...'}</p>
             </div>
-            <div className='text-sm flex flex-row items-start justify-start'>
-
-            
-            <div onClick={()=>deleter(item.ID)} className='w-6 aspect-square cursor-pointer dark:hover:bg-gray-900 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner  shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
+            <div className='text-sm flex flex-row items-start justify-start'>  
+            <div onClick={()=>deleter(item.ID)} className='w-6 aspect-square cursor-pointer dark:bg-red-800 bg-red-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-red-700 ring-red-600'>
                 <MdDeleteForever  title='Löschen' className='inline' />
-            </div>
+            </div> 
 
             </div>
         </div>
     </div>
-</div>                        
+</Link>                        
   )
 }
 

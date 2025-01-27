@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv } from 'react-icons/fa';
 import pako from 'pako';
-import { MdArrowBackIos, MdArrowForwardIos, MdAttachment, MdClose, MdFilePresent } from 'react-icons/md';
+import { MdArrowBackIos, MdArrowForwardIos, MdAttachment, MdClose, MdFilePresent, MdPerson } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt } from "react-icons/bs";
@@ -233,21 +233,28 @@ const FileCardGrid = ({ data }) => {
   }
   return (
     <div className=" flex-grow max-h-full overflow-auto flex flex-col items-start justify-start w-full py-4">
-
+<div className=' w-full h-20 flex flex-row items-center justify-end -mt-2'>
+          <div className='w-full px-4 '>
+              <label className='  w-full flex flex-col items-center justify-center relative'> 
+                  <input 
+                  className=' w-full font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none py-2 px-3 pl-14 text-sm'
+                  placeholder="Suche in Dateinamen..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <FaSearch className='absolute inset left-4 text-2xl top-[0.4rem] dark:text-blue-200/60 text-gray-500/20 ' /> 
+                  <MdClose onClick={()=>setSearchTerm("")} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400'} style={{display:searchTerm.length>0?'block':'none'}} />
+              </label>
+          </div>
+          <div className='w-20 p-5 h-full flex flex-col items-center justify-center'>
+              <div className='w-full aspect-square dark:bg-blue-200 bg-blue-300 text-gray-800 rounded-full flex flex-col items-center justify-center' >
+              <MdPerson className='text-2xl' />
+              </div>
+          </div>
+           </div>
       {/* Search and Filter */}
       <div className="w-full h-auto mb-4 flex md:flex-row sm:flex-col flex-col justify-between items-center md:gap-y-0 sm:gap-y-3 gap-y-3 px-4 ">
-        <label className='md:w-1/3 sm:w-full w-full flex flex-col items-center justify-center relative'>
-        <a className='mb-2 text-sm w-full '>Suche in Dateinamen</a>
-        <input
-          type="text"
-          placeholder="Suche in Dateinamen..."
-          className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none py-2 px-3 pl-14 text-sm ml-4"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <FaSearch className='absolute inset left-4 text-2xl top-[2.1rem] dark:text-blue-200/60 text-gray-500/20 ' /> 
-        <MdClose onClick={()=>setSearchTerm("")} className={'absolute cursor-pointer inset right-3 text-2xl top-[2.1rem] text-gray-500 hover:text-gray-400 '} style={{display:searchTerm.length>0?'block':'none'}} />
-        </label>
+         
         <label className='md:w-auto sm:w-full w-full flex flex-col items-center justify-center relative'>
         <select
           className="md:w-auto sm:w-full w-full font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none py-2 px-3  text-sm"

@@ -2,6 +2,7 @@ import { util } from 'node-forge'
 import React, { useEffect }  from 'react'
 import { FaShareFromSquare } from 'react-icons/fa6'
 import { MdAttachment, MdDeleteForever, MdPriorityHigh, MdShare } from 'react-icons/md'
+import { Link } from 'react-router-dom'
 
 const RowMessageOut = ({item}) => {
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
@@ -10,7 +11,7 @@ const RowMessageOut = ({item}) => {
 
     },[])
   return ( 
-   <div className='w-full dark:bg-cyan-400/15 bg-orange-900/15 dark:hover:bg-blue-300/20 hover:bg-orange-900/20 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
+   <Link to={'/message/'+item.ID} state={item} className='w-full dark:bg-cyan-400/15 bg-orange-900/15 dark:hover:bg-blue-300/20 hover:bg-orange-900/20 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
     <div className='w-full flex flex-row items-center justify-center py-2'>
     
     <div className='w-12 aspect-square dark:bg-blue-100 bg-blue-300 text-gray-800 rounded-full flex flex-col items-center justify-center' >
@@ -21,7 +22,7 @@ const RowMessageOut = ({item}) => {
         <div className='w-full flex flex-row items-start justify-between'>
         
             <b className='flex flex-row truncate'>
-            <a className='dark:text-gray-400 font-normal text-sm mr-1'>Gesendet an:</a><span className='w-6 aspect-square dark:text-gray-400 text-black/70 mr-4 flex flex-col items-center justify-center '>
+            <span className='dark:text-gray-400 font-normal text-sm mr-1'>Gesendet an:</span><span className='w-6 aspect-square dark:text-gray-400 text-black/70 mr-4 flex flex-col items-center justify-center '>
                 <FaShareFromSquare   className='inline' />
             </span> 
             {
@@ -45,7 +46,7 @@ const RowMessageOut = ({item}) => {
             {
                 item.Wichtig==0?
                 <div className='w-4 aspect-square cursor-pointer  dark:bg-red-800 bg-red-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-red-700 ring-red-600'>
-                <MdPriorityHigh  title='Wichtig' className='inline' />
+                <MdPriorityHigh  title='Als wichtig makiert' className='inline' />
                 </div>
                 :''
             }
@@ -59,7 +60,7 @@ const RowMessageOut = ({item}) => {
             </div>
         </div>
     </div>
-</div>           
+</Link>           
   )
 }
 

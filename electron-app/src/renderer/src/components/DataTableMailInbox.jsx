@@ -1,6 +1,6 @@
 import React, { useState, useMemo, Fragment } from "react";
 import PropTypes from "prop-types";
-import { MdArrowBackIos, MdArrowForwardIos, MdClose, MdDelete, MdPerson } from "react-icons/md";
+import { MdArrowBackIos, MdArrowForwardIos, MdCancel, MdChromeReaderMode, MdClose, MdDelete, MdMarkAsUnread, MdMarkChatRead, MdMarkEmailRead, MdPerson } from "react-icons/md";
 import { Link } from "react-router-dom";  
 import imgs from './../assets/Logo.png'
 import RowMessage from "./RowMessage";
@@ -25,6 +25,8 @@ const DataTableMailInbox = ({ Data, updater }) => {
   const [currentId, setCurrentId] = useState(null); 
   const [currentPage, setCurrentPage] = useState(1); 
   const [isDialogOpen, setIsDialogOpen] = useState(false); 
+  const [isDialogOpenMark, setIsDialogOpenMark] = useState(false); 
+  const [isDialogOpenMarkID, setIsDialogOpenMarkID] = useState(false); 
   const [isDialogOpenId, setIsDialogOpenId] = useState(false); 
   const rowsPerPage = 12;
   
@@ -106,6 +108,17 @@ const DataTableMailInbox = ({ Data, updater }) => {
         }
     }
   }
+  const MarkReadList=async(e)=>{
+    closeDialogMark(e) 
+    if(selectedTickets.length>0){
+        const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {arr:JSON.stringify(selectedTickets)}, null);
+        if(query==true){
+          setSelectedTickets([]) 
+          updater()
+        }
+    }
+  }
   const DeleteID=async(e)=>{
     closeDialogId(e) 
     if(currentId>0){
@@ -117,8 +130,26 @@ const DataTableMailInbox = ({ Data, updater }) => {
         }
     }
   }
+  const MarkReadID=async(e)=>{
+    closeDialogMarkID(e) 
+    if(currentId>0){
+        const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {mid:currentId}, null);
+        if(query==true){
+          setCurrentId(null)
+          updater()
+        }
+    }
+  }
   const openDialog = () => { 
       setIsDialogOpen(true); 
+  };
+  const openDialogMark = () => { 
+      setIsDialogOpenMark(true); 
+  };
+  const openDialogMarkID = (id) => { 
+      setCurrentId(id)
+      setIsDialogOpenMarkID(true); 
   };
   const openDialogId = (id) => {  
       setCurrentId(id)
@@ -128,6 +159,16 @@ const DataTableMailInbox = ({ Data, updater }) => {
   const closeDialog = (e) => {
     if (e.target === e.currentTarget) {
       setIsDialogOpen(false); 
+    }
+  };
+  const closeDialogMark = (e) => {
+    if (e.target === e.currentTarget) {
+      setIsDialogOpenMark(false); 
+    }
+  };
+  const closeDialogMarkID = (e) => {
+    if (e.target === e.currentTarget) {
+      setIsDialogOpenMarkID(false); 
     }
   };
   const closeDialogId = (e) => {
@@ -214,10 +255,30 @@ const DataTableMailInbox = ({ Data, updater }) => {
                           selectedTickets.length>0 ? 
                           <button 
                             onClick={(e)=>openDialog(e)}
-                            title="Löschen"
-                            className=' ml-10 w-auto px-4 py-1 dark:bg-red-800 dark:hover:bg-red-700 dark:text-gray-300 text-gray-700 bg-blue-200 ring-1 dark:ring-gray-700/70 ring-gray-300/70 hover:bg-blue-100 shadow-xl text-sm rounded '
+                            title="Auswahl Löschen"
+                            className=' ml-10 w-auto px-4 py-1 dark:bg-red-800 dark:hover:bg-red-700 dark:text-gray-300 text-gray-700 bg-red-300 ring-1 dark:ring-gray-700/70 ring-red-400/70 hover:bg-red-200 shadow-xl text-sm rounded '
                           >
                             ({selectedTickets.length}) Löschen<MdDelete className="ml-2 inline" /> 
+                          </button> : ""
+                      }
+                      {
+                          selectedTickets.length>0 ? 
+                          <button 
+                            onClick={(e)=>openDialogMark(e)}
+                            title="Auswahl als gelesen makieren"
+                            className=' ml-4 w-auto px-4 py-1 dark:bg-violet-900 dark:hover:bg-violet-800 dark:text-gray-300 text-gray-700 bg-violet-300 ring-1 dark:ring-gray-700/70 ring-violet-400/70 hover:bg-violet-200 shadow-xl text-sm rounded '
+                          >
+                            ({selectedTickets.length}) Gelesen makieren<MdMarkEmailRead className="ml-2 inline" /> 
+                          </button> : ""
+                      }
+                      {
+                          selectedTickets.length>0 ? 
+                          <button 
+                            onClick={()=>setSelectedTickets([])}
+                            title="Auswahl aufheben"
+                            className=' ml-4 w-auto px-4 py-1 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 text-gray-700 bg-gray-300 ring-1 dark:ring-gray-700/70 ring-gray-400/70 hover:bg-gray-200 shadow-xl text-sm rounded '
+                          >
+                            Auswahl aufheben<MdCancel className="ml-2 inline" /> 
                           </button> : ""
                       }
                       </div>
@@ -238,7 +299,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
       {/* Table */}
       <div className='w-full dark:bg-gray-900 bg-white h-[77%]  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start divide-y dark:divide-gray-700 shadow-inner shadow-[rgba(0,0,0,0.3)] divide-gray-400'>  
           {paginatedData?.map((item,index) => (
-           <Fragment key={item+index}><RowMessage item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={handleSelect} deleter={openDialogId} /> </Fragment>
+           <Fragment key={item+index}><RowMessage item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={handleSelect} deleter={openDialogId} markread={openDialogMarkID} /> </Fragment>
           ))}
           {paginatedData.length === 0 && (
             <div className='w-full h-full'> 
@@ -283,6 +344,28 @@ const DataTableMailInbox = ({ Data, updater }) => {
       actionBtn1={true} 
       Btn1BgHover={' dark:bg-red-600 bg-red-500 dark:hover:bg-red-700 hover:bg-red-700 '} 
       callbackBtn1={DeleteList} 
+      />
+      <Dialog 
+      show={isDialogOpenMark}
+      close={closeDialogMark}
+      title={'Information'}
+      message={'Möchten Sie die Nachrichten wirklich als gelesen makieren?'}
+      cancelBtn={true}
+      actionBtn1={false} 
+      actionBtn2={true} 
+      Btn2BgHover={' dark:bg-lime-600 bg-lime-600 dark:hover:bg-lime-700 hover:bg-lime-700 '} 
+      callbackBtn2={MarkReadList} 
+      />
+      <Dialog 
+      show={isDialogOpenMarkID}
+      close={closeDialogMarkID}
+      title={'Information'}
+      message={'Möchten Sie die Nachricht wirklich als gelesen makieren?'}
+      cancelBtn={true}
+      actionBtn1={false} 
+      actionBtn2={true} 
+      Btn2BgHover={' dark:bg-lime-600 bg-lime-600 dark:hover:bg-lime-700 hover:bg-lime-700 '} 
+      callbackBtn2={MarkReadID} 
       />
       <Dialog 
       show={isDialogOpenId}

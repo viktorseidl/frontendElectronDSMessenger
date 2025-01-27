@@ -2,7 +2,7 @@ import React,{useEffect, useRef, useState} from 'react'
 import Loader from '../components/Loader'
 import { useTheme } from '../styles/ThemeContext'
 import { light,dark } from '../styles/schema';
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useFetchAuthAll } from '../services/useFetchAll'; 
 import imgs from '../assets/Logo.png'  
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
@@ -15,6 +15,7 @@ import DataTableMailInbox from '../components/DataTableMailInbox';
 import DataTableMailOutbox from '../components/DataTableMailOutbox';
 import DataTableMailDeletedbox from '../components/DataTableMailDeletedbox';
 import FileCardGrid from '../components/FileCardGrid';
+import { RiMailAddFill } from 'react-icons/ri';
 
 const FileExplorer = () => {
   
@@ -45,6 +46,7 @@ setdata(query)
         
     </div>  
     </div>
+    
     </div>
   )
 }

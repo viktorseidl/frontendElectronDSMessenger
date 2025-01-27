@@ -1,14 +1,15 @@
 import React,{useEffect, useRef, useState} from 'react'
 import Loader from '../components/Loader'
+import { RiMailAddFill } from "react-icons/ri";
 import { useTheme } from '../styles/ThemeContext'
 import { light,dark } from '../styles/schema';
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useFetchAuthAll } from '../services/useFetchAll'; 
 import imgs from '../assets/Logo.png'  
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { FaSearch  } from "react-icons/fa";
 import Sidebar from '../components/dashboardsidebar/Sidebar';
-import { MdArrowBackIos, MdArrowForwardIos, MdCancel, MdClose, MdDeleteForever, MdPerson, MdPersonOutline, MdPersonPinCircle, MdPriorityHigh } from 'react-icons/md';
+import { MdArrowBackIos, MdArrowForwardIos, MdCancel, MdClose, MdDeleteForever, MdMessage, MdPerson, MdPersonOutline, MdPersonPinCircle, MdPriorityHigh, MdSend } from 'react-icons/md';
 import RowMessage from '../components/RowMessage';
 import { util } from 'node-forge';
 import DataTableMailInbox from '../components/DataTableMailInbox';
@@ -41,6 +42,9 @@ setdata(query)
          
         
     </div>  
+    </div>
+    <div className='fixed bottom-20 right-16'>
+      <Link to={'/new-message'} title='Neue Nachricht' className='group cursor-pointer  dark:bg-blue-600 dark:hover:bg-blue-700 bg-blue-600 hover:bg-blue-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><RiMailAddFill className='group-hover:size-[124%]' /></Link>
     </div>
     </div>
   )

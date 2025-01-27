@@ -4,9 +4,13 @@ import { HiChatBubbleLeftRight  } from 'react-icons/hi2';
 import { MdFilePresent, MdLogout, MdOutbox, MdOutlineDeleteSweep } from 'react-icons/md';
 import { BiMailSend  } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
+import { RiMailAddFill } from 'react-icons/ri';
+import { util } from 'node-forge';
+import { useFetchAuthAll } from '../../services/useFetchAll'; 
 
 const Sidebar = () => {  
-    const [menubar, setmenubar] = useState(); 
+    const [menubar, setmenubar] = useState();  
+    const [messages, setmessages] = useState(0); 
     const navigate=useNavigate()
     const logout=()=>{
         window.sessionStorage.clear()
@@ -22,10 +26,33 @@ const Sidebar = () => {
         }else if(num==4){
             navigate('/file-explorer') 
             
+        }else if(num==5){
+            navigate('/new-message') 
+            
         }
 
       }  
-      useEffect(()=>{
+      const getAllMessagesNew=async()=>{
+          const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user'))) 
+          const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getAllMessagesIntCount&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
+          console.log(query)
+          if(query>0){ 
+            setmessages(query)
+          } 
+        }
+        useEffect(() => {
+            // Call the function immediately
+            getAllMessagesNew();
+        
+            // Set up the interval to call the function every 10 seconds
+            const interval = setInterval(() => {
+              getAllMessagesNew();
+            }, 10000); // 10000ms = 10 seconds
+        
+            // Cleanup the interval on component unmount
+            return () => clearInterval(interval);
+          }, []); // Empty dependency array ensures it runs once on mount
+      useEffect(()=>{ 
         if(window.location.hash=='#/dashboard'){
             setmenubar(1)
         }else if(window.location.hash=='#/dashboardsend'){
@@ -34,6 +61,8 @@ const Sidebar = () => {
             setmenubar(3)
         }else if(window.location.hash=='#/file-explorer'){
             setmenubar(4)
+        }else if(window.location.hash=='#/new-message'){
+            setmenubar(5)
         }
       },[])
   return (
@@ -41,14 +70,30 @@ const Sidebar = () => {
      
         <div className='absolute inset-0 -left-1 -top-[0.1rem] w-14 bg-gray-900/90 border-r border-gray-800 max-h-[100.04%] overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-center justify-start '>
         {
+            menubar==5?
+            <div onClick={()=>frameHandler(5)} className=' dark:bg-blue-600/60 bg-blue-600/60 text-gray-200  p-1 text-xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
+                <div title='Neue Nachricht' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/50 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer '>
+                <RiMailAddFill  />
+                </div>
+            </div>
+            : 
+            <div onClick={()=>frameHandler(5)} className='text-gray-500 p-1 text-xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
+                <div title='Neue Nachricht' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/50 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer '>
+                <RiMailAddFill  />
+                </div>
+            </div>
+        }
+        {
             menubar==1?
-            <div onClick={()=>frameHandler(1)} className=' dark:bg-blue-600/60 bg-blue-600/60 text-gray-200  p-1 text-xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
+            <div onClick={()=>frameHandler(1)} className=' dark:bg-blue-600/60 bg-blue-600/60 text-gray-200  p-1 text-xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)] relative'>
+                {messages>0?<span className='absolute inset -top-1 right-1 py-0.5 px-1 text-sm bg-red-600 rounded'>{messages}</span>:''}
                 <div title='Posteingang' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/50 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer '>
                 <FaInbox  />
                 </div>
             </div>
             : 
-            <div onClick={()=>frameHandler(1)} className='text-gray-500 p-1 text-xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
+            <div onClick={()=>frameHandler(1)} className='text-gray-500 p-1 text-xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)] relative'>
+                 {messages>0?<span className='absolute inset -top-1 right-1 py-0.5 px-1 text-sm text-white bg-red-600 rounded'>{messages}</span>:''}
                 <div title='Posteingang' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/50 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer '>
                 <FaInbox  />
                 </div>
