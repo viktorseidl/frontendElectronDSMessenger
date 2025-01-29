@@ -11,7 +11,7 @@ const RowMessageOut = ({item}) => {
 
     },[])
   return ( 
-   <Link to={'/message/'+item.ID} state={item} className='w-full dark:bg-cyan-400/15 bg-orange-900/15 dark:hover:bg-blue-300/20 hover:bg-orange-900/20 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
+   <Link to={'/message/'+item.ID} state={item} className='w-full dark:bg-gray-900 bg-white dark:hover:bg-orange-300/20 hover:bg-blue-500/10 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
     <div className='w-full flex flex-row items-center justify-center py-2'>
     
     <div className='w-12 aspect-square dark:bg-blue-100 bg-blue-300 text-gray-800 rounded-full flex flex-col items-center justify-center' >

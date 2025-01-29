@@ -1,6 +1,6 @@
 import React, { useState, useMemo, Fragment } from "react";
 import PropTypes from "prop-types";
-import { MdArrowBackIos, MdArrowForwardIos, MdCancel, MdChromeReaderMode, MdClose, MdDelete, MdMarkAsUnread, MdMarkChatRead, MdMarkEmailRead, MdPerson } from "react-icons/md";
+import { MdArrowBackIos, MdArrowForwardIos, MdCancel, MdChromeReaderMode, MdClose, MdDelete, MdMarkAsUnread, MdMarkChatRead, MdMarkEmailRead, MdMarkEmailUnread, MdPerson } from "react-icons/md";
 import { Link } from "react-router-dom";  
 import imgs from './../assets/Logo.png'
 import RowMessage from "./RowMessage";
@@ -23,6 +23,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
   }); 
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [currentId, setCurrentId] = useState(null); 
+  const [readtype, setReadtype] = useState(''); 
   const [currentPage, setCurrentPage] = useState(1); 
   const [isDialogOpen, setIsDialogOpen] = useState(false); 
   const [isDialogOpenMark, setIsDialogOpenMark] = useState(false); 
@@ -112,9 +113,22 @@ const DataTableMailInbox = ({ Data, updater }) => {
     closeDialogMark(e) 
     if(selectedTickets.length>0){
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {arr:JSON.stringify(selectedTickets)}, null);
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=1','ssdsdsd',"PUT", {arr:JSON.stringify(selectedTickets)}, null);
         if(query==true){
           setSelectedTickets([]) 
+          setReadtype('')
+          updater()
+        }
+    }
+  }
+  const MarkUnreadList=async(e)=>{
+    closeDialogMark(e) 
+    if(selectedTickets.length>0){
+        const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=0','ssdsdsd',"PUT", {arr:JSON.stringify(selectedTickets)}, null);
+        if(query==true){
+          setSelectedTickets([]) 
+          setReadtype('')
           updater()
         }
     }
@@ -134,9 +148,22 @@ const DataTableMailInbox = ({ Data, updater }) => {
     closeDialogMarkID(e) 
     if(currentId>0){
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {mid:currentId}, null);
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=1','ssdsdsd',"PUT", {mid:currentId}, null);
         if(query==true){
           setCurrentId(null)
+          setReadtype('')
+          updater()
+        }
+    }
+  }
+  const MarkUnReadID=async(e)=>{
+    closeDialogMarkID(e) 
+    if(currentId>0){
+        const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=0','ssdsdsd',"PUT", {mid:currentId}, null);
+        if(query==true){
+          setCurrentId(null)
+          setReadtype('')
           updater()
         }
     }
@@ -144,11 +171,13 @@ const DataTableMailInbox = ({ Data, updater }) => {
   const openDialog = () => { 
       setIsDialogOpen(true); 
   };
-  const openDialogMark = () => { 
+  const openDialogMark = (e,b) => { 
       setIsDialogOpenMark(true); 
-  };
-  const openDialogMarkID = (id) => { 
+      setReadtype(b)
+    };
+    const openDialogMarkID = (id,b) => { 
       setCurrentId(id)
+      setReadtype(b)
       setIsDialogOpenMarkID(true); 
   };
   const openDialogId = (id) => {  
@@ -264,11 +293,21 @@ const DataTableMailInbox = ({ Data, updater }) => {
                       {
                           selectedTickets.length>0 ? 
                           <button 
-                            onClick={(e)=>openDialogMark(e)}
+                            onClick={(e)=>openDialogMark(e,1)}
                             title="Auswahl als gelesen makieren"
                             className=' ml-4 w-auto px-4 py-1 dark:bg-violet-900 dark:hover:bg-violet-800 dark:text-gray-300 text-gray-700 bg-violet-300 ring-1 dark:ring-gray-700/70 ring-violet-400/70 hover:bg-violet-200 shadow-xl text-sm rounded '
                           >
-                            ({selectedTickets.length}) Gelesen makieren<MdMarkEmailRead className="ml-2 inline" /> 
+                            ({selectedTickets.length}) Gelesen<MdMarkEmailRead className="ml-2 inline" /> 
+                          </button> : ""
+                      }
+                      {
+                          selectedTickets.length>0 ? 
+                          <button 
+                            onClick={(e)=>openDialogMark(e,0)}
+                            title="Auswahl als ungelesen makieren"
+                            className=' ml-4 w-auto px-4 py-1 dark:bg-yellow-900 dark:hover:bg-yellow-800 dark:text-gray-300 text-gray-700 bg-yellow-300 ring-1 dark:ring-gray-700/70 ring-yellow-400/70 hover:bg-yellow-200 shadow-xl text-sm rounded '
+                          >
+                            ({selectedTickets.length}) Ungelesen<MdMarkEmailUnread className="ml-2 inline" /> 
                           </button> : ""
                       }
                       {
@@ -278,7 +317,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
                             title="Auswahl aufheben"
                             className=' ml-4 w-auto px-4 py-1 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 text-gray-700 bg-gray-300 ring-1 dark:ring-gray-700/70 ring-gray-400/70 hover:bg-gray-200 shadow-xl text-sm rounded '
                           >
-                            Auswahl aufheben<MdCancel className="ml-2 inline" /> 
+                            Aufheben<MdCancel className="ml-2 inline" /> 
                           </button> : ""
                       }
                       </div>
@@ -349,23 +388,23 @@ const DataTableMailInbox = ({ Data, updater }) => {
       show={isDialogOpenMark}
       close={closeDialogMark}
       title={'Information'}
-      message={'Möchten Sie die Nachrichten wirklich als gelesen makieren?'}
+      message={'Möchten Sie die Nachrichten wirklich als '+(readtype==1?'gelesen makieren?':'ungelesen makieren?')}
       cancelBtn={true}
       actionBtn1={false} 
       actionBtn2={true} 
       Btn2BgHover={' dark:bg-lime-600 bg-lime-600 dark:hover:bg-lime-700 hover:bg-lime-700 '} 
-      callbackBtn2={MarkReadList} 
+      callbackBtn2={readtype==1?MarkReadList:MarkUnreadList} 
       />
       <Dialog 
       show={isDialogOpenMarkID}
       close={closeDialogMarkID}
       title={'Information'}
-      message={'Möchten Sie die Nachricht wirklich als gelesen makieren?'}
+      message={'Möchten Sie die Nachricht wirklich als '+(readtype==1?'gelesen makieren?':'ungelesen makieren?')}
       cancelBtn={true}
       actionBtn1={false} 
       actionBtn2={true} 
       Btn2BgHover={' dark:bg-lime-600 bg-lime-600 dark:hover:bg-lime-700 hover:bg-lime-700 '} 
-      callbackBtn2={MarkReadID} 
+      callbackBtn2={readtype==1?MarkReadID:MarkUnReadID} 
       />
       <Dialog 
       show={isDialogOpenId}

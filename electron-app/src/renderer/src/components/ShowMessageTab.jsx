@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaImage, FaFileAudio, FaAudible } from 'react-icons/fa';
 import pako from 'pako';
-import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdCamera, MdClose, MdDelete, MdFilePresent, MdGroups2, MdGroups3, MdMarkEmailRead, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdReply, MdReplyAll, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
+import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdBackspace, MdCamera, MdClose, MdDelete, MdFilePresent, MdGroups2, MdGroups3, MdMarkEmailRead, MdMoveToInbox, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdReply, MdReplyAll, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt, BsFillSendFill } from "react-icons/bs";
@@ -9,10 +9,13 @@ import { IoImageSharp, IoVolumeHighOutline } from "react-icons/io5";
 import { AiOutlineGif } from "react-icons/ai"; 
 import { FaPerson } from 'react-icons/fa6';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Dialog from './Dialog';
+import { useFetchAuthAll } from '../services/useFetchAll';
 const ShowMessageTab = () => {
   const locationData=useLocation(); 
   const navigate = useNavigate(); // For managing user back to source onClick={() => navigate(-1)}>Go Back
   const [addressant, setaddressant] = useState('');
+  const [btyper, setbtyper] = useState('');
   const [betreff, setbetreff] = useState('');
   const [nachricht, setNachricht] = useState(locationData.state===null?'':locationData.state.Nachricht);  
   const [isDialogOpen, setIsDialogOpen] = useState(false);  
@@ -72,7 +75,26 @@ const ShowMessageTab = () => {
           return <MdFilePresent className='text-7xl' />
       }
     } 
-
+  const BackToInbox=async(e)=>{ 
+        closeDialog(e)
+        const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=movetoInbox&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {mid:locationData.state.ID}, null);
+        if(query==true){
+          navigate(-1)
+        }          
+  }
+  const DeleteID=async(e)=>{ 
+      closeDialog(e) 
+      const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+      const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=DeleteMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {mid:locationData.state.ID}, null);
+      if(query==true){
+        navigate(-1)
+      } 
+    }
+  const  openDialog=(e,b)=>{
+    setIsDialogOpen(true)
+    setbtyper(b)
+  }
   // Close image dialog when clicked outside
   const closeDialog = (e) => {
     if (e.target === e.currentTarget) {
@@ -81,18 +103,19 @@ const ShowMessageTab = () => {
   };  
   //USED TO PASS DATA BY ROUTER ON ANSWER MESSAGE FOR EXAMPLE
   if(locationData.state===null){
-    console.log('NOSTATE SET') 
-  }else{
-    console.log('DATA TO ANSWER IS SET') 
+    navigate(-1)
   }
   return (
     <div className=" flex-grow max-h-full overflow-auto flex flex-col items-start justify-start w-full py-4">
-<div className=' w-full h-auto flex flex-row items-center justify-end -mt-2 -mb-[15px]'> 
-          <div className='w-full px-4 flex flex-row items-center justify-start gap-x-4'> 
-              <div className='  w-3/4 flex flex-row items-center justify-start gap-x-2'> 
+<div className=' w-full h-auto flex flex-row items-center justify-end -mt-2 -mb-[2px]'> 
+          <div className='w-full px-4 flex flex-col items-start justify-start gap-x-4'>
+          <div className='  w-3/4 flex flex-row items-center justify-start gap-x-2 mb-2'>
+          <button onClick={() => navigate(-1)} className='flex flex-row items-center justify-center ring-1 dark:ring-gray-800 ring-gray-800/20 px-2 py-0.5 rounded-sm dark:bg-slate-900 bg-gray-200 dark:text-blue-400 text-gray-600 shadow-inner dark:hover:bg-blue-500/30 hover:bg-black/10'><MdArrowBackIos className='mr-2' />Zurück</button>
+          </div>
+              <div className='  w-3/4 flex flex-row items-center justify-start gap-x-2 mb-2'> 
                   <div 
                   className=' w-auto font-[arial] dark:text-white text-black py-2 text-sm'
-                  ><b>Absender:</b></div>
+                  ><b>{locationData.state!=null&&Array.isArray(locationData.state.Sendername)===false?'Absender:':'Empfänger:'}</b></div>
                   <div 
                   className=' w-full font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 pl-4 text-sm'
                   ><b>{locationData.state===null?'':locationData.state.Sendername}</b></div>
@@ -208,7 +231,7 @@ const ShowMessageTab = () => {
 
       {/* Card Grid */}
       <div className='w-full dark:bg-gray-900 bg-white h-full  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 '>
-       <textarea disabled value={nachricht+"\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk"} onChange={(e) => setNachricht(e.target.value)} className='w-full h-full p-4 outline-none bg-transparent resize-none text-xl' placeholder='Schreiben Sie eine Nachricht...'> 
+       <textarea disabled value={nachricht+"\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk"} onChange={(e) => setNachricht(e.target.value)} className='w-full h-full p-4 outline-none bg-transparent resize-none text-xl overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200' placeholder='Schreiben Sie eine Nachricht...'> 
        </textarea>
       </div>
 
@@ -228,16 +251,38 @@ const ShowMessageTab = () => {
           </div>
         </div>
       )}
-       
-      <div className='fixed bottom-20 right-[11.4rem]'>
-      <div title='Antworten' className='group cursor-pointer  dark:bg-red-600 dark:hover:bg-red-700 bg-red-600 hover:bg-red-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><MdDelete className='group-hover:size-[124%]' /></div>
-    </div>
-      <div className='fixed bottom-20 right-[7.7rem]'>
-      <div title='Antworten' className='group cursor-pointer  dark:bg-violet-600 dark:hover:bg-violet-700 bg-violet-600 hover:bg-violet-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><MdMarkEmailRead className='group-hover:size-[124%]' /></div>
-    </div>
-      <div className='fixed bottom-20 right-16'>
-      <Link title='Antworten' to={'/new-message'} state={locationData.state} className='group cursor-pointer  dark:bg-blue-600 dark:hover:bg-blue-700 bg-blue-600 hover:bg-blue-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><MdReply className='group-hover:size-[124%]' /></Link>
-    </div>
+      {
+        locationData.state!=null&&locationData.state.gelöscht==1?
+          <div className='fixed bottom-20 right-[7.7rem]'>
+          <div onClick={(e)=>openDialog(e,0)} title='Wiederherstellen' className='group cursor-pointer  dark:bg-gray-600 dark:hover:bg-gray-700 bg-gray-600 hover:bg-gray-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><MdMoveToInbox className='group-hover:size-[124%]' /></div>
+        </div>:'' 
+      }
+       {
+        locationData.state!=null&&locationData.state.gelöscht===null?
+        <div className='fixed bottom-20 right-[7.7rem]'>
+        <div onClick={(e)=>openDialog(e,1)} title='Löschen' className='group cursor-pointer  dark:bg-red-600 dark:hover:bg-red-700 bg-red-600 hover:bg-red-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><MdDelete className='group-hover:size-[124%]' /></div>
+      </div> 
+      :''
+      }
+      {
+          locationData.state!=null&&Array.isArray(locationData.state.Sendername)===false?
+          <div className='fixed bottom-20 right-16'>
+          <Link title='Antworten' to={'/new-message'} state={locationData.state} className='group cursor-pointer  dark:bg-blue-600 dark:hover:bg-blue-700 bg-blue-600 hover:bg-blue-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><MdReply className='group-hover:size-[124%]' /></Link>
+        </div>:''
+       }
+       <Dialog 
+      show={isDialogOpen}
+      close={closeDialog}
+      title={'Information'}
+      message={btyper==1?'Möchten Sie die Nachricht wirklich löschen?':'Möchten Sie die Nachricht wirklich wiederherstellen?'}
+      cancelBtn={true}
+      actionBtn1={btyper==1?true:false} 
+      actionBtn2={btyper==1?false:true} 
+      Btn2BgHover={' dark:bg-lime-600 bg-lime-500 dark:hover:bg-lime-700 hover:bg-lime-700 '} 
+      Btn1BgHover={' dark:bg-red-600 bg-red-500 dark:hover:bg-red-700 hover:bg-red-700 '} 
+      callbackBtn2={BackToInbox} 
+      callbackBtn1={DeleteID} 
+      />
     </div>
   );
 };

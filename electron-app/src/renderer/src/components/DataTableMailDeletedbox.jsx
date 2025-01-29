@@ -18,7 +18,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
   const [currentId, setCurrentId] = useState(null);
   const [filters, setFilters] = useState({
     Betrefftxt: "",
-    Sendername: "Alle Empfänger",
+    Sendername: "Alle Versender",
     dateFrom: "",
     dateTo: "",
   }); 
@@ -28,7 +28,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
   
   // Compute unique reasons with counters
   const reasonCounters = useMemo(() => {
-    const counts = { 'Alle Empfänger': Data.length };
+    const counts = { 'Alle Versender': Data.length };
     Data.forEach((item) => { 
       counts[item.Sendername] = (counts[item.Sendername] || 0) + 1;
     }); 
@@ -64,7 +64,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
         .includes(filters.Betrefftxt.toLowerCase());
 
       // Filter by reason
-      const reasonMatch = filters.Sendername === "Alle Empfänger" || item.Sendername === filters.Sendername;
+      const reasonMatch = filters.Sendername === "Alle Versender" || item.Sendername === filters.Sendername;
        
       // Filter by date range
       const createdDate = new Date(item.created * 1000); // Convert timestamp to Date
@@ -141,7 +141,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
       <div  className="w-full grid grid-cols-6 items-start justify-items-start gap-3 gap-x-4  text-sm px-4">
        
         <label className="w-full flex flex-col items-start justify-start">
-          <a className="w-full mb-2">Empfänger</a>
+          <a className="w-full mb-2">Versender</a>
         <select
           value={filters.Sendername}
           onChange={(e) => handleFilterChange("Sendername", e.target.value)}

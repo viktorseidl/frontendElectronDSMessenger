@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaImage, FaFileAudio, FaAudible } from 'react-icons/fa';
 import pako from 'pako';
-import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdCamera, MdClose, MdFilePresent, MdGroups2, MdGroups3, MdMovie, MdNote, MdPerson, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
+import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdCamera, MdClose, MdFilePresent, MdGroups2, MdGroups3, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt, BsFillSendFill } from "react-icons/bs";
@@ -9,9 +9,17 @@ import { IoImageSharp, IoVolumeHighOutline } from "react-icons/io5";
 import { AiOutlineGif } from "react-icons/ai"; 
 import { FaPerson } from 'react-icons/fa6';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import { de } from 'date-fns/locale/de';
+import DialogGroupUserSelect from './DialogGroupUserSelect';
+registerLocale('de-DE', de) 
 const NewMessageTab = () => {
   const locationData=useLocation(); 
   const navigate = useNavigate(); // For managing user back to source onClick={() => navigate(-1)}>Go Back
+  const [versandterminierung, setversandterminierung] = useState(new Date());
+  const [priority, setpriority] = useState(0);
   const [addressant, setaddressant] = useState('');
   const [betreff, setbetreff] = useState('');
   const [nachricht, setNachricht] = useState('');  
@@ -31,6 +39,11 @@ const NewMessageTab = () => {
       console.log('File:', file.name);
     });
   }; 
+  const handleDateChange = (date) => {
+    // Get the selected files
+     
+  }; 
+   
     const returnIconType=(it)=>{ 
       switch(it){
         case "image/jpeg":
@@ -121,17 +134,17 @@ const NewMessageTab = () => {
           <div className='w-full px-4 flex flex-row items-center justify-start gap-x-4'>
               
               <label className='  w-3/4 flex flex-col items-center justify-center relative'> 
-                  <input 
-                  className=' w-full font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none py-2 px-3 pl-14 text-sm'
-                  placeholder="Empfänger hinzufügen"
-                  value={addressant}
-                  onChange={(e) => setaddressant(e.target.value)}
-                  />
+                  <div 
+                  className=' w-full font-[arial]  text-blue-200/60 text-gray-500 rounded dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none py-2 px-3 pl-14 text-sm' 
+                  >{/*locationData.state===null?'Empfänger hinzufügen':(Array.isArray(addressant)?(addressant.map((item,index)=>(
+
+                  ))):'')*/} Empfänger hinzufügen
+                  </div>
                   <MdGroups2 className='absolute inset left-4 text-2xl top-[0.4rem] dark:text-blue-200/60 text-gray-500/20 ' /> 
                   <MdClose onClick={()=>setaddressant("")} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400'} style={{display:addressant.length>0?'block':'none'}} />
               </label>
               <div className='w-auto h-full flex flex-row items-center justify-start '>
-              <button title='Gruppe auswählen als Empfänger' className='py-2 rounded outline-none ring-1 dark:ring-gray-700 ring-gray-700/30 px-2 flex flex-col items-center justify-center dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-white text-gray-800'><MdGroups3 className='inline' /></button>
+              <button onClick={()=>setIsDialogOpen(true)} title='Gruppe auswählen als Empfänger' className='py-2 rounded outline-none ring-1 dark:ring-gray-700 ring-gray-700/30 px-2 flex flex-col items-center justify-center dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-white text-gray-800'><MdGroups3 className='inline' /></button>
               </div>
           </div>
           <div className='w-20 p-5 h-full flex flex-col items-center justify-center'>
@@ -156,10 +169,28 @@ const NewMessageTab = () => {
               </label>
           </div>
       <div className='w-auto px-4 flex flex-row items-start justify-start gap-x-4 '>
+        {
+          priority==0?
+          <button onClick={()=>setpriority(1)} title='Als wichtig kennzeichnen' className='py-2 rounded outline-none ring-1 dark:ring-gray-700 ring-gray-700/30 px-2 flex flex-col items-center justify-center dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-white text-gray-800'><MdPriorityHigh className='inline' /></button>
+          :
+          <button onClick={()=>setpriority(0)} title='Kennzeichnung aufheben' className='py-2 rounded outline-none ring-1 dark:ring-red-700 ring-red-700 px-2 flex flex-col items-center justify-center dark:bg-red-800 dark:hover:bg-red-700 bg-red-700 hover:bg-red-600 dark:text-white text-white'><MdPriorityHigh className='inline' /></button>
+        }
         <button onClick={handleButtonClick} title='Dateien hinzufügen' className='py-2 rounded outline-none ring-1 dark:ring-gray-700 ring-gray-700/30 px-2 flex flex-col items-center justify-center dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-white text-gray-800'><MdAttachFile className='inline' /></button>
-        <button title='Zustellung terminieren' className='py-2 rounded outline-none ring-1 dark:ring-gray-700 ring-gray-700/30 px-2 flex flex-col items-center justify-center dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-white text-gray-800'><MdTimer className='inline' /></button>
+        <DatePicker 
+                placeholderText="TT.MM.YYYY"
+                locale={'de'}
+                timeIntervals={10}
+                timeFormat='HH:mm'
+                title='Terminierung'
+                timeCaption="Zeit"
+                closeOnScroll={true}
+                dateFormat={'Pp'}
+                showTimeSelect
+                className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
+                selected={versandterminierung} 
+                onChange={(date) => setversandterminierung(date)} /> 
       </div>
-      </div>
+      </div> 
       <div className='text-white mb-4 h-20 w-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-wrap items-center justify-start  gap-2 ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 p-2'>   
         <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
           <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
@@ -221,7 +252,7 @@ const NewMessageTab = () => {
 
       {/* Card Grid */}
       <div className='w-full dark:bg-gray-900 bg-white h-full  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 '>
-       <textarea value={nachricht} onChange={(e) => setNachricht(e.target.value)} className='w-full h-full p-4 bg-transparent outline-none resize-none text-xl' placeholder='Schreiben Sie eine Nachricht...'>
+       <textarea value={nachricht} onChange={(e) => setNachricht(e.target.value)} className='w-full h-full p-4 bg-transparent outline-none resize-none text-xl overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200' placeholder='Schreiben Sie eine Nachricht...'>
 
        </textarea>
       </div>
@@ -231,17 +262,13 @@ const NewMessageTab = () => {
          
       </div>
 
-      {/* Image Modal Dialog */}
-      {isDialogOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-          onClick={'closeDialog'}
-        >
-          <div className="bg-white p-4 rounded-lg">
-             
-          </div>
-        </div>
-      )}
+      <DialogGroupUserSelect 
+      show={isDialogOpen}
+      close={closeDialog}
+      title={'Empfänger'}
+      message={null}
+      cancelBtn={true}   
+      />
       {
         nachricht.trim().length>0?
       <div className='fixed bottom-20 right-16'>
