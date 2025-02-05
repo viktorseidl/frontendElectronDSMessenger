@@ -95,26 +95,12 @@ export async function initializeIpcHandlers() {
         return false;
       }
     });
-    ipcMain.handle('save-file', async (event, {pdfBase64,filename}) => {
-       console.log('works')
-       /*const dba=pdfBase64;
-       const gZipBuffer = Uint8Array.from(atob(dba), (c) => c.charCodeAt(0));
-       
-                   // Slice to remove gzip header (first 4 bytes)
-                   const compressedData = gZipBuffer.slice(4);
-       
-                   // Decompress the data using pako
-                   const decompressedData = pako.inflate(compressedData); 
-                   //console.log(util.decode64(dba))
-                   console.log(btoa(String.fromCharCode(...decompressedData))) */
-                   
-                   const compressedBuffer = Buffer.from(pdfBase64, 'base64');
-                   console.log(compressedBuffer)
-                   const actualData = compressedBuffer.slice(4);
-                   console.log(actualData)
+    ipcMain.handle('save-file', async (event, {pdfBase64,filename}) => { 
+                  
+                   const compressedBuffer = Buffer.from(pdfBase64, 'base64'); 
+                   const actualData = compressedBuffer.slice(4); 
                    // Decompress the Buffer using zlib
-                   const decompressedBuffer = zlib.gunzipSync(actualData);
-                   console.log(decompressedBuffer) 
+                   const decompressedBuffer = zlib.gunzipSync(actualData); 
                    const downloadsFolder = path.join(os.homedir(), 'Downloads');
 
                     // Ensure the folder exists (it typically does, but for safety)
@@ -122,10 +108,12 @@ export async function initializeIpcHandlers() {
                         fs.mkdirSync(downloadsFolder, { recursive: true });
                     } 
                    console.log(fs.writeFileSync(path.join(downloadsFolder, filename), decompressedBuffer))
-
-        // Write the decompressed data to a file 
-
-        //console.log(`File decompressed and saved to ${path.join('downloads')}`);
+                   const filePath =path.join(downloadsFolder, filename);
+                   shell.openPath(filePath)
+                   .then(() => console.log('File opened successfully'))
+                   .catch(err => console.error('Error opening file:', err));
+                    
+                   return true
   
          
     });

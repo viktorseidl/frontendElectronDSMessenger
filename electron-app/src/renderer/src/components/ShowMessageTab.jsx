@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaImage, FaFileAudio, FaAudible } from 'react-icons/fa';
 import pako from 'pako';
-import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdBackspace, MdCamera, MdClose, MdDelete, MdFilePresent, MdGroups2, MdGroups3, MdMarkEmailRead, MdMoveToInbox, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdReply, MdReplyAll, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
+import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdBackspace, MdCamera, MdClose, MdDelete, MdDownload, MdFilePresent, MdGroups2, MdGroups3, MdMarkEmailRead, MdMoveToInbox, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdReply, MdReplyAll, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt, BsFillSendFill } from "react-icons/bs";
@@ -15,64 +15,74 @@ const ShowMessageTab = () => {
   const locationData=useLocation(); 
   const navigate = useNavigate(); // For managing user back to source onClick={() => navigate(-1)}>Go Back
   const [addressant, setaddressant] = useState('');
+  const [attaches, setattaches] = useState([]);
   const [btyper, setbtyper] = useState('');
   const [betreff, setbetreff] = useState('');
   const [nachricht, setNachricht] = useState(locationData.state===null?'':locationData.state.Nachricht);  
   const [isDialogOpen, setIsDialogOpen] = useState(false);  
+    const returnSizeValue=(size)=>{ 
+      if(size>50000){
+        return (Number(size/1000000).toFixed(2)+'Mb')
+      }else if(size>900){
+        return (Number(size/1000).toFixed(2)+'Kb')
+      }else{
+        return (Number(size).toFixed(0)+'byte')
+      }
+    }
     const returnIconType=(it)=>{ 
       switch(it){
         case "image/jpeg":
-          return <SiJpeg className='text-7xl' />
+          return <SiJpeg />
         case "image/png":
-          return <BsFiletypePng className='text-7xl' />
+          return <BsFiletypePng />
           case "image/webp":
-            return <IoImageSharp className='text-7xl' />
+            return <IoImageSharp />
         case "image/gif":
-          return <AiOutlineGif className='text-7xl' /> 
+          return <AiOutlineGif /> 
         case "text/plain":
-          return <BsFiletypeTxt  className='text-7xl' /> 
+          return <BsFiletypeTxt  /> 
         case "text/html":
-          return <FaHtml5  className='text-7xl' /> 
+          return <FaHtml5  /> 
         case "text/css": 
-          return <FaCss3Alt  className='text-7xl' />
+          return <FaCss3Alt  />
         case "application/javascript":
-          return <FaJs  className='text-7xl'  />
+          return <FaJs   />
         case "application/json":
-          return <BsFiletypeJson  className='text-7xl' />
+          return <BsFiletypeJson  />
         case "application/xml":
-          return <BsFiletypeXml  className='text-7xl' />
+          return <BsFiletypeXml  />
         case "application/pkcs10":
-          return <MdFilePresent className='text-7xl' />
+          return <MdFilePresent />
         case "application/pgp-signature":
-          return <MdFilePresent className='text-7xl' />
+          return <MdFilePresent />
         case "application/pics-rules":
-          return <MdFilePresent className='text-7xl' />
+          return <MdFilePresent />
         case "application/pkcs7-mime":
-          return <MdFilePresent className='text-7xl' />
+          return <MdFilePresent />
         case "audio/mpeg":
-          return <BsFiletypeMp3 className='text-7xl' />
+          return <FaFileAudio />
         case "video/mp4":
-          return <BsFiletypeMp4 className='text-7xl' /> 
+          return <MdMovie /> 
         case "application/zip":
-          return <Si7Zip className='text-7xl' />
+          return <Si7Zip />
         case "application/pdf":
-          return <FaFilePdf className='text-7xl' />
+          return <FaFilePdf />
         case "application/msword":
-          return <FaFileWord className='text-7xl' />
+          return <FaFileWord />
         case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          return <FaFileWord className='text-7xl' />
+          return <FaFileWord />
         case "application/vnd.ms-powerpoint":
-          return <FaFilePowerpoint className='text-7xl' />
+          return <FaFilePowerpoint />
         case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-          return <FaFilePowerpoint className='text-7xl' />
+          return <FaFilePowerpoint />
         case "application/vnd.ms-excel":
-          return <FaFileExcel className='text-7xl' />
+          return <FaFileExcel />
         case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-          return <FaFileExcel className='text-7xl' />
+          return <FaFileExcel />
         case "text/csv":
-          return <FaFileCsv className='text-7xl' />
+          return <FaFileCsv />
         default:
-          return <MdFilePresent className='text-7xl' />
+          return <MdFilePresent />
       }
     } 
   const BackToInbox=async(e)=>{ 
@@ -105,9 +115,26 @@ const ShowMessageTab = () => {
   if(locationData.state===null){
     navigate(-1)
   }
+  const getAttachments = async(id)=>{ 
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getAttachmentsOnAttachmentId&a="+util.encode64(id),'ssdsdsd',"GET", null, null);
+        if(query.length>0){
+          setattaches(query)
+        }  
+  } 
+  const saveFileandOpen=async (id,idindex)=>{ 
+        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getFileToSaveOnIdAndIndex&a="+util.encode64(id+'.'+idindex),'ssdsdsd',"GET", null, null);
+        if(query.length>0){ 
+          const a = await window.api.electronFiles.saveFile(query[0].Mail,query[0].Name)  
+        }
+  }
+  useEffect(()=>{
+    if(locationData.state&&locationData.state.Anhang!="0"){
+      getAttachments(locationData.state.Anhang) 
+    }
+  },[])  
   return (
     <div className=" flex-grow max-h-full overflow-auto flex flex-col items-start justify-start w-full py-4">
-<div className=' w-full h-auto flex flex-row items-center justify-end -mt-2 -mb-[2px]'> 
+<div className=' w-full h-auto flex flex-row items-center justify-end -mt-2 -mb-[2px]'>  
           <div className='w-full px-4 flex flex-col items-start justify-start gap-x-4'>
           <div className='  w-3/4 flex flex-row items-center justify-start gap-x-2 mb-2'>
           <button onClick={() => navigate(-1)} className='flex flex-row items-center justify-center ring-1 dark:ring-gray-800 ring-gray-800/20 px-2 py-0.5 rounded-sm dark:bg-slate-900 bg-gray-200 dark:text-blue-400 text-gray-600 shadow-inner dark:hover:bg-blue-500/30 hover:bg-black/10'><MdArrowBackIos className='mr-2' />Zurück</button>
@@ -141,10 +168,15 @@ const ShowMessageTab = () => {
                 ><b>{locationData.state===null?'':locationData.state.Betreff}</b></div>
             </div> 
         </div>     
-      </div> 
-      <div className='h-full aspect-square cursor-pointer  dark:bg-red-800 bg-red-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded  flex flex-col items-center justify-center ring-1 dark:ring-red-700 ring-red-600'>
-                      <MdPriorityHigh  title='Als wichtig makiert' className='inline text-xl' />
-                      </div>
+      </div>
+      {
+        locationData.state===null?'':
+        locationData.state.Wichtig==1?
+            <div className='h-full aspect-square cursor-pointer  dark:bg-red-800 bg-red-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded  flex flex-col items-center justify-center ring-1 dark:ring-red-700 ring-red-600'>
+              <MdPriorityHigh  title='Als wichtig makiert' className='inline text-xl' />
+            </div>
+            :''
+      } 
       </div>
       <div className="h-auto w-full mt-0 flex flex-row items-start justify-start mb-4">
       <div className='w-2/3 pl-5 '>
@@ -154,84 +186,48 @@ const ShowMessageTab = () => {
                 className=' w-auto font-[arial] dark:text-white text-black py-2 text-sm'
                 ><b>Datum:</b></div>
                 <div 
-                className=' w-auto font-[arial] ml-1  dark:text-white rounded text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 text-sm'
+                className=' w-auto font-[arial] ml-1  dark:text-white rounded text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 text-sm'  
                 ><b>{locationData.state===null?'':(locationData.state.Datum.split(' ')[0].split('-')[2]+'.'+locationData.state.Datum.split(' ')[0].split('-')[1]+'.'+locationData.state.Datum.split(' ')[0].split('-')[0]+' '+locationData.state.Datum.split(' ')[1].split('.')[0])}</b></div>
             </div> 
         </div> 
       </div>  
       </div>
-      <div className="h-auto hidden w-full mt-0 flex flex-row items-start justify-start  gap-x-2 mb-6">
-      <div className='w-auto  '>
-        <div className='w-full pl-4 flex flex-row items-center justify-start'> 
-            <div className='  w-full flex flex-row items-center justify-start'> 
-                <div 
-                className=' w-auto font-[arial] dark:text-white text-black py-2 text-sm'
-                ><b>Anhänge:</b></div> 
-            </div> 
-        </div>     
-      </div>  
-      <div className='w-11/12  '>
-        <div className='w-full px-1 flex flex-row items-center justify-start gap-x-2'>
-        <div className='text-white mb-0 h-20 w-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-wrap items-center justify-start  gap-2 ring-1 dark:ring-gray-700/90 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 p-2 bg-white dark:bg-gray-800'>   
-        
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-          <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-          <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-          <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-          <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-        </div>   
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-          <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-          <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-          <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-          <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-        </div>   
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-          <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-          <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-          <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-          <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-        </div>   
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-          <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-          <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-          <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-          <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-        </div>   
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-          <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-          <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-          <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-          <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-        </div>   
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-          <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-          <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-          <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-          <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-        </div>   
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-          <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-          <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-          <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-          <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-        </div>   
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-          <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-          <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-          <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-          <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-        </div>   
- 
-      </div>
-      </div>
-      </div>
-      </div>
+      {
+        attaches.length>0?
+          <div className="h-auto w-full mt-0 flex flex-row items-start justify-start  gap-x-2 mb-6">
+          <div className='w-auto  '>
+            <div className='w-full pl-4 flex flex-row items-center justify-start'> 
+                <div className='  w-full flex flex-row items-center justify-start'> 
+                    <div 
+                    className=' w-auto font-[arial] dark:text-white text-black py-2 text-sm'
+                    ><b>Anhänge:</b></div> 
+                </div> 
+            </div>     
+          </div>  
+          <div className='w-11/12  '>
+            <div className='w-full px-1 flex flex-row items-center justify-start gap-x-2'>
+            <div className='text-white mb-0 min-h-auto max-h-20 w-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-wrap items-center justify-start  gap-2 ring-1 dark:ring-gray-700/90 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 p-2 bg-white dark:bg-gray-800'>  
+            {
+              attaches.length>0&&attaches.map((item,index)=>(
+                <div onClick={()=>saveFileandOpen(item.ID,item.Pos)} key={item.Name+item.Pos+item.ID} title={item.Name} className='w-60 cursor-pointer flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-800 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
+                  <div className='w-auto select-none flex flex-col items-center justify-center'>{returnIconType(item.filetype)}</div>
+                  <div className='w-20 max-w-14 select-none flex flex-row items-center justify-start text-[10px] truncate'>{returnSizeValue(item.filesizeuncomp)}</div>
+                  <div className='w-full select-none text-sm truncate'>{item.Name}</div>
+                  <div className='w-auto  flex flex-col items-center justify-center'><MdDownload className='cursor-pointer' /></div>
+                </div>   
+              ))
+            }  
+          </div>
+          </div>
+          </div>
+          </div> 
+          :''
+      }
       
 
       {/* Card Grid */}
       <div className='w-full dark:bg-gray-900 bg-white h-full  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 '>
-       <textarea disabled value={nachricht+"\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk\n\nsjsdsdhs\n\njsdhsdjdhsjk"} onChange={(e) => setNachricht(e.target.value)} className='w-full h-full p-4 outline-none bg-transparent resize-none text-xl overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200' placeholder='Schreiben Sie eine Nachricht...'> 
+       <textarea disabled value={nachricht} onChange={(e) => setNachricht(e.target.value)} className='w-full h-full p-4 outline-none bg-transparent resize-none text-xl overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200' placeholder='Schreiben Sie eine Nachricht...'> 
        </textarea>
       </div>
 
@@ -240,7 +236,7 @@ const ShowMessageTab = () => {
          
       </div>
 
-      {/* Image Modal Dialog */console.log(locationData.state)}
+      
       {isDialogOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"

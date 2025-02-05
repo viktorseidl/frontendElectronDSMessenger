@@ -7,6 +7,7 @@ import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt } from "react-icons/bs";
 import { IoImageSharp } from "react-icons/io5";
 import { AiOutlineGif } from "react-icons/ai"; 
+import { useFetchAuthAll } from '../services/useFetchAll';
 const FileCardGrid = ({ data }) => {
   // State to manage search term and selected filetype
   const [searchTerm, setSearchTerm] = useState('');
@@ -182,8 +183,16 @@ const FileCardGrid = ({ data }) => {
           return 'Octet-Stream'
       }
     }
+    const saveFileandOpen=async (id,idindex)=>{
+      const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+          const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getFileToSaveOnIdAndIndex&a="+util.encode64(id+'.'+idindex),'ssdsdsd',"GET", null, null);
+          if(query.length>0){ 
+            const a = await window.api.electronFiles.saveFile(query[0].Mail,query[0].Name)  
+          }
+    }
   // Open image dialog
   const openImageDialog = async (basefile, filetype, fileName) => { 
+
     //API FOR SAVING FILES LOCAL   ---- > window.api.electronFiles.saveFile(basefile,fileName)
     
     /*
@@ -251,7 +260,7 @@ const FileCardGrid = ({ data }) => {
               <MdPerson className='text-2xl' />
               </div>
           </div>
-           </div>
+          </div>
       {/* Search and Filter */}
       <div className="w-full h-auto mb-4 flex md:flex-row sm:flex-col flex-col justify-between items-center md:gap-y-0 sm:gap-y-3 gap-y-3 px-4 ">
          
@@ -302,7 +311,7 @@ const FileCardGrid = ({ data }) => {
         {displayedData.map((item) => (
           <div key={item.anhangId+item.fileindex} className="dark:bg-gray-900 bg-gray-300/30 rounded-lg dark:shadow-blue-600/30 shadow-lg shadow-black/20 p-4 dark:ring-1 ring-1 dark:ring-gray-700 ring-gray-300"> 
              
-              <div onClick={() => openImageDialog(item.anhangId,item.fileindex,item.filetype,item.filename)} className="w-full aspect-square dark:bg-gray-800 bg-gray-300 flex items-center justify-center dark:text-gray-300 text-gray-500 text-2xl rounded-t-lg">
+              <div onClick={() => saveFileandOpen(item.anhangId,item.fileindex)} className="w-full aspect-square dark:bg-gray-800 bg-gray-300 flex items-center justify-center dark:text-gray-300 text-gray-500 text-2xl rounded-t-lg">
                 <span>{returnIconType(item.filetype)}</span>
               </div> 
 

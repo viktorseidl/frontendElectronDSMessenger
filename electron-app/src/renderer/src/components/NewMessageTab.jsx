@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaImage, FaFileAudio, FaAudible } from 'react-icons/fa';
 import pako from 'pako';
 import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdCamera, MdClose, MdFilePresent, MdGroups2, MdGroups3, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
@@ -20,9 +20,9 @@ const NewMessageTab = () => {
   const navigate = useNavigate(); // For managing user back to source onClick={() => navigate(-1)}>Go Back
   const [versandterminierung, setversandterminierung] = useState(new Date());
   const [priority, setpriority] = useState(0);
-  const [addressant, setaddressant] = useState('');
+  const [addressant, setaddressant] = useState([]);
   const [betreff, setbetreff] = useState('');
-  const [nachricht, setNachricht] = useState('');  
+  const [nachricht, setNachricht] = useState('');    
   const [isDialogOpen, setIsDialogOpen] = useState(false); 
   const fileInputRef = useRef(null);
   const handleButtonClick = () => {
@@ -31,6 +31,9 @@ const NewMessageTab = () => {
       fileInputRef.current.click();
     }
   }; 
+  const formattedAddresses = useMemo(() => {
+    return addressant.map(addr => addr.toUpperCase()); // Example transformation
+}, [addressant]);
   const handleFileChange = (event) => {
     // Get the selected files
     const files = Array.from(event.target.files);
@@ -39,6 +42,14 @@ const NewMessageTab = () => {
       console.log('File:', file.name);
     });
   }; 
+  const removeItem = (itemToRemove) => {
+    setaddressant((prevItems) => prevItems.filter(item => item !== itemToRemove));
+  };
+  const addItem = (newItem) => {
+    setaddressant((prevItems) => 
+        prevItems.includes(newItem) ? prevItems : [...prevItems, newItem]
+    );
+};
   const handleDateChange = (date) => {
     // Get the selected files
      
@@ -114,7 +125,8 @@ const NewMessageTab = () => {
       //setaddressant(locationData.state.Sendername)
     }else{    
       console.log(locationData.state)
-      setaddressant(locationData.state.Sender)
+      console.log('isstate')
+      setaddressant([locationData.state.Sender.trim().toString()])
       setbetreff("RE: "+locationData.state.Betreff)
       setNachricht("\n\n---------------------------------------------------------------------------------------------------------------------------\nDatum: "+(locationData.state.Datum.split(' ')[0].split('-')[2]+'.'+locationData.state.Datum.split(' ')[0].split('-')[1]+'.'+locationData.state.Datum.split(' ')[0].split('-')[0]+' '+locationData.state.Datum.split(' ')[1].split('.')[0])+"\nAbsender: "+locationData.state.Sender+"\nBetreff: "+locationData.state.Betreff+"\nNachricht: \n\n"+locationData.state.Nachricht)
     }
@@ -135,13 +147,16 @@ const NewMessageTab = () => {
               
               <label className='  w-3/4 flex flex-col items-center justify-center relative'> 
                   <div 
-                  className=' w-full font-[arial]  text-blue-200/60 text-gray-500 rounded dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none py-2 px-3 pl-14 text-sm' 
-                  >{/*locationData.state===null?'Empfänger hinzufügen':(Array.isArray(addressant)?(addressant.map((item,index)=>(
-
-                  ))):'')*/} Empfänger hinzufügen
+                  className=' w-full font-[arial] max-h-16 overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200  text-blue-200/60 text-gray-500 rounded dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90  flex-wrap  flex flex-row items-start justify-start outline-none gap-1 py-2 pr-8 pl-14 text-sm' 
+                  >{locationData.state!=null&&formattedAddresses.length>0?
+                    formattedAddresses.map((item,index)=>(
+                    <div key={item+index+'addresser'} className='dark:bg-lime-700 dark:hover:bg-lime-600 ring-1 dark:ring-gray-800 ring-gray-400 bg-blue-200 rounded px-2 py-1 w-auto dark:text-white text-black shadow-lg shadow-[rgba(0,0,0,0.12)] flex flex-row items-center justify-start '><a>{item}</a><MdClose className='ml-2 cursor-pointer' /></div>
+                  ))
+                  :
+                  'Empfänger hinzufügen'}  
                   </div>
                   <MdGroups2 className='absolute inset left-4 text-2xl top-[0.4rem] dark:text-blue-200/60 text-gray-500/20 ' /> 
-                  <MdClose onClick={()=>setaddressant("")} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400'} style={{display:addressant.length>0?'block':'none'}} />
+                  <MdClose onClick={()=>setaddressant([])} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400'} style={{display:formattedAddresses.length>0?'block':'none'}} />
               </label>
               <div className='w-auto h-full flex flex-row items-center justify-start '>
               <button onClick={()=>setIsDialogOpen(true)} title='Gruppe auswählen als Empfänger' className='py-2 rounded outline-none ring-1 dark:ring-gray-700 ring-gray-700/30 px-2 flex flex-col items-center justify-center dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-white text-gray-800'><MdGroups3 className='inline' /></button>
@@ -191,63 +206,17 @@ const NewMessageTab = () => {
                 onChange={(date) => setversandterminierung(date)} /> 
       </div>
       </div> 
-      <div className='text-white mb-4 h-20 w-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-wrap items-center justify-start  gap-2 ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 p-2'>   
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
+      <div className='text-white mb-4 min-h-20 max-h-32 w-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-wrap items-center justify-start  gap-2 ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 p-2'>  
+        <div className='w-60 flex flex-col items-start justify-start dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'> 
+        <div className='w-full flex flex-row items-center justify-start gap-x-4 '>
           <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
           <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
           <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
           <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
         </div> 
-        <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-                  <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-                  <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-                  <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-                  <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-                </div>   
-                <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-                  <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-                  <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-                  <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-                  <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-                </div>   
-                <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-                  <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-                  <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-                  <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-                  <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-                </div>   
-                <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-                  <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-                  <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-                  <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-                  <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-                </div>   
-                <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-                  <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-                  <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-                  <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-                  <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-                </div>   
-                <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-                  <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-                  <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-                  <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-                  <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-                </div>   
-                <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-                  <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-                  <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-                  <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-                  <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-                </div>   
-                <div className='w-60 flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
-                  <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-                  <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-                  <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-                  <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-                </div>   
-  
- 
+        <div className='w-full flex flex-row items-center justify-center mt-3'><div className='w-[90%] dark:bg-gray-500 bg-gray-700 rounded flex flex-row items-start justify-start'>
+          <div className='w-[30%] rounded dark:bg-lime-500 bg-lime-500 py-1'></div></div></div>
+        </div> 
       </div>
 
       {/* Card Grid */}
@@ -256,11 +225,7 @@ const NewMessageTab = () => {
 
        </textarea>
       </div>
-
-      {/* Pagination */}
-      <div className="h-auto w-full mt-6 flex justify-center px-4">
-         
-      </div>
+ 
 
       <DialogGroupUserSelect 
       show={isDialogOpen}
@@ -268,6 +233,9 @@ const NewMessageTab = () => {
       title={'Empfänger'}
       message={null}
       cancelBtn={true}   
+      SelectedUsers={addressant} 
+      addUser={addItem} 
+      deleteUser={removeItem}
       />
       {
         nachricht.trim().length>0?
