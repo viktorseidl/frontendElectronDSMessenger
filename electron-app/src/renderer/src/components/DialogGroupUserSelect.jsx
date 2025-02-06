@@ -1,10 +1,13 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react'
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import imgs from './../assets/Logo.png'
 import { MdOutlineGroupAdd, MdPerson } from 'react-icons/md'
 import { useFetchAuthAll } from '../services/useFetchAll'
 import { util } from 'node-forge'
+import { useLocation } from 'react-router-dom'
 const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, actionBtn1=false, actionBtn2=false, Btn2BgHover=null, Btn1BgHover=null, callbackBtn1=null, callbackBtn2=null,Btn2Txt=null, SelectedUsers, addUser, deleteUser}) => {
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+    const _allSelector=useRef('')
+    const localdata=useLocation().state
     const [isUserOrGroup,setIsUserOrGroup]=useState(false)
     const [fullList,setfullList]=useState([]) 
     const [selectedGroups, setSelectedGroups] = useState([]); 
@@ -45,17 +48,29 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
             count: uniqueMitarbeiter.size
         }));
     };
-    const getLists=async()=>{
-        
+    const getLists=async()=>{ 
         const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getAllEmpfänger&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
         if(query.length>0){
             setfullList(query)
             setgruppenList(getDistinctGruppenWithCount(query))
         }
     }
+    const handleAllSelect=()=>{
+        let isset=_allSelector.current.checked
+        
+            console.log(localdata)
+            filteredList.forEach(item=>{
+                if(isset==true){
+                    addUser(item.Anwender)
+                }else{
+                    deleteUser(item.Anwender)    
+                } 
+            });
+            addUser(localdata.Sender)
+    }
     useEffect(()=>{
         getLists()
-    },[isUserOrGroup])
+    },[])
   return (
     <Fragment>
         {show && (
@@ -71,35 +86,14 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
                       <div className="w-full dark:bg-gray-900 bg-white px-6 py-4 dark:text-white text-black text-sm font-[Arial]">
                          
 
-                        {
-                            isUserOrGroup?
-                            <div className='w-full min-h-[150px] max-h-[380px] ring-1 flex flex-col items-start justify-start dark:ring-gray-400 ring-gray-500 mt-10 divide-y dark:divide-gray-700 divide-gray-400'>
-
-
-                                <div className='w-full flex flex-row items-center justify-start py-2 dark:hover:bg-white/10 bg-black/10 cursor-pointer px-2'> 
-                                <div className='w-14 mx-2 aspect-square rounded-full flex flex-col items-center justify-center dark:bg-blue-900/60 bg-gray-900/20 dark:text-gray-300 text-gray-800'>
-                                <MdOutlineGroupAdd />
-                                </div> 
-                                <div className='w-full ml-2'>
-                                    Gruppenname
-                                </div>
-                                <div className='w-32 '>
-                                    Benutzerzahl
-                                </div>
-                            </div> 
-
-
-                                <div className='hidden w-full py-16 flex flex-col items-center justify-center'>
-                                    Keine Gruppen vorhanden
-                                </div>
-                            </div>
-                            :
+                         
                             <Fragment>
                             <div className='flex flex-row items-center justify-start mt-4 gap-x-4 pb-4' >
                                 <label className='flex flex-row items-center justify-start mb-2'>
                                 <input
+                                ref={_allSelector}
                                 type="checkbox"  
-                                onChange={() => 'selectAll()'} 
+                                onChange={() => handleAllSelect()} 
                                 className=' w-4 aspect-square mr-2 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 outline-none text-sm'  
                                 />
                                 <a className='text-sm'>Alle auswählen</a>
@@ -123,7 +117,7 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
                                     <div key={item+index+'leute'} className='w-full flex flex-row items-center justify-start py-2 dark:hover:bg-white/10 bg-black/10 cursor-pointer px-2'>
                                         <input
                                         type="checkbox" 
-                                        defaultChecked={SelectedUsers.includes(item.Anwender)}
+                                        checked={SelectedUsers.includes(item.Anwender)}
                                         onChange={()=>handleselect(item.Anwender)} 
                                         className=' w-4 aspect-square mr-2 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 outline-none text-sm'  
                                         />
@@ -150,8 +144,7 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
                                     Keine Benutzer vorhanden
                                 </div>
                             </div>
-                            </Fragment>
-                        }
+                            </Fragment> 
 
 
                       </div>

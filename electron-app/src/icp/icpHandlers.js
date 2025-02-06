@@ -116,7 +116,7 @@ export async function initializeIpcHandlers() {
                    return true
   
          
-    });
+    }); 
 
   /*  
    

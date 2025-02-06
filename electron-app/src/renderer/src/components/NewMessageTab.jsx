@@ -14,9 +14,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
 import DialogGroupUserSelect from './DialogGroupUserSelect';
+import Dialog from './Dialog';
 registerLocale('de-DE', de) 
 const NewMessageTab = () => {
+  const Usender=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const locationData=useLocation(); 
+  const [files, setFiles] = useState([]);
   const navigate = useNavigate(); // For managing user back to source onClick={() => navigate(-1)}>Go Back
   const [versandterminierung, setversandterminierung] = useState(new Date());
   const [priority, setpriority] = useState(0);
@@ -24,100 +27,160 @@ const NewMessageTab = () => {
   const [betreff, setbetreff] = useState('');
   const [nachricht, setNachricht] = useState('');    
   const [isDialogOpen, setIsDialogOpen] = useState(false); 
+  const [isDialogOpenToBigFiles, setIsDialogOpenToBigFiles] = useState(false);  
   const fileInputRef = useRef(null);
-  const handleButtonClick = () => {
-    // Trigger a click event on the hidden file input
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  }; 
-  const formattedAddresses = useMemo(() => {
-    return addressant.map(addr => addr.toUpperCase()); // Example transformation
-}, [addressant]);
-  const handleFileChange = (event) => {
-    // Get the selected files
-    const files = Array.from(event.target.files);
-    console.log('Selected files:', files);
-    files.forEach((file) => {
-      console.log('File:', file.name);
-    });
-  }; 
-  const removeItem = (itemToRemove) => {
-    setaddressant((prevItems) => prevItems.filter(item => item !== itemToRemove));
-  };
-  const addItem = (newItem) => {
-    setaddressant((prevItems) => 
-        prevItems.includes(newItem) ? prevItems : [...prevItems, newItem]
-    );
-};
-  const handleDateChange = (date) => {
-    // Get the selected files
-     
-  }; 
-   
-    const returnIconType=(it)=>{ 
-      switch(it){
-        case "image/jpeg":
-          return <SiJpeg className='text-7xl' />
-        case "image/png":
-          return <BsFiletypePng className='text-7xl' />
-          case "image/webp":
-            return <IoImageSharp className='text-7xl' />
-        case "image/gif":
-          return <AiOutlineGif className='text-7xl' /> 
-        case "text/plain":
-          return <BsFiletypeTxt  className='text-7xl' /> 
-        case "text/html":
-          return <FaHtml5  className='text-7xl' /> 
-        case "text/css": 
-          return <FaCss3Alt  className='text-7xl' />
-        case "application/javascript":
-          return <FaJs  className='text-7xl'  />
-        case "application/json":
-          return <BsFiletypeJson  className='text-7xl' />
-        case "application/xml":
-          return <BsFiletypeXml  className='text-7xl' />
-        case "application/pkcs10":
-          return <MdFilePresent className='text-7xl' />
-        case "application/pgp-signature":
-          return <MdFilePresent className='text-7xl' />
-        case "application/pics-rules":
-          return <MdFilePresent className='text-7xl' />
-        case "application/pkcs7-mime":
-          return <MdFilePresent className='text-7xl' />
-        case "audio/mpeg":
-          return <BsFiletypeMp3 className='text-7xl' />
-        case "video/mp4":
-          return <BsFiletypeMp4 className='text-7xl' /> 
-        case "application/zip":
-          return <Si7Zip className='text-7xl' />
-        case "application/pdf":
-          return <FaFilePdf className='text-7xl' />
-        case "application/msword":
-          return <FaFileWord className='text-7xl' />
-        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          return <FaFileWord className='text-7xl' />
-        case "application/vnd.ms-powerpoint":
-          return <FaFilePowerpoint className='text-7xl' />
-        case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-          return <FaFilePowerpoint className='text-7xl' />
-        case "application/vnd.ms-excel":
-          return <FaFileExcel className='text-7xl' />
-        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-          return <FaFileExcel className='text-7xl' />
-        case "text/csv":
-          return <FaFileCsv className='text-7xl' />
-        default:
-          return <MdFilePresent className='text-7xl' />
-      }
-    } 
 
-  // Close image dialog when clicked outside
-  const closeDialog = (e) => {
-    if (e.target === e.currentTarget) {
-      setIsDialogOpen(false);
-    }
-  };  
+const handleButtonClick = () => {
+  // Trigger a click event on the hidden file input
+  if (fileInputRef.current) {
+    fileInputRef.current.click();
+  }
+}; 
+const formattedAddresses = useMemo(() => {
+  return addressant.map(addr => addr); // Example transformation
+}, [addressant]);
+const getTotalFileSize = (files) => {
+return files.reduce((total, file) => total + file.size, 0);
+};
+const handleFileChange = (event) => {
+  // Get the selected files
+  let uploadedCount = 0;
+  const fils = Array.from(event.target.files);
+  //setFiles(fils);
+  /*console.log('Selected files:', files);*/
+    let filescount=getTotalFileSize(files)
+    console.log(filescount)
+    fils.forEach((file) => { 
+    if(!files.some(item=>item.name===file.name)){ 
+      filescount=filescount+file.size
+      if(filescount>10000000){
+        setIsDialogOpenToBigFiles(true)
+      }else{
+        setFiles((previousItem)=>previousItem.some(item=>item.name===file.name)?previousItem:[...previousItem,file])
+      }
+    }      
+  });    
+}; 
+const handleSend = async ()=>{
+  const Users=addressant.length>0?addressant:null;
+  const Betreffs=betreff.trim().length>1?betreff.trim():null;
+  const Prio=priority
+  const Datum=Math.floor(versandterminierung.getTime() / 1000);
+  const Dateien=files
+  const Message=nachricht
+  console.log('workssending')
+  if(Users&&(Betreffs)&&(Message)){
+    const formData = new FormData();
+    if(Dateien.length>0){
+      Dateien.forEach((d) => {
+        formData.append("file[]", d);
+      });
+    } 
+    Users.forEach((u) => {
+      formData.append("empfanger[]", u); 
+    });
+    formData.append("sender", Usender.Name); 
+    formData.append("prio", Prio); 
+    formData.append("date", Datum);
+    formData.append("betr", Betreffs);
+    formData.append("mess", Message);
+    const data=await fetch("http://localhost/electronbackend/UploadSender.php", {
+      method: "POST",
+      body: formData,
+    });
+    console.log(data)
+  } 
+}
+const removeFile = (itemToRemove) => {
+  setFiles((prevItems) => prevItems.filter(item => item.name !== itemToRemove));
+}; 
+
+const removeItem = (itemToRemove) => {
+  setaddressant((prevItems) => prevItems.filter(item => item !== itemToRemove));
+};
+
+const addItem = (newItem) => { 
+  setaddressant((prevItems) => 
+    prevItems.some(item => item === newItem) ? prevItems : [...prevItems, newItem]
+);
+};
+   
+const returnSizeValue=(size)=>{ 
+  if(size>50000){
+    return (Number(size/1000000).toFixed(2)+'MB')
+  }else if(size>900){
+    return (Number(size/1000).toFixed(2)+'KB')
+  }else{
+    return (Number(size).toFixed(0)+'Byte')
+  }
+}
+const returnIconType=(it)=>{ 
+  switch(it){
+    case "image/jpeg":
+      return <SiJpeg />
+    case "image/png":
+      return <BsFiletypePng />
+      case "image/webp":
+        return <IoImageSharp />
+    case "image/gif":
+      return <AiOutlineGif /> 
+    case "text/plain":
+      return <BsFiletypeTxt  /> 
+    case "text/html":
+      return <FaHtml5  /> 
+    case "text/css": 
+      return <FaCss3Alt  />
+    case "application/javascript":
+      return <FaJs   />
+    case "application/json":
+      return <BsFiletypeJson  />
+    case "application/xml":
+      return <BsFiletypeXml  />
+    case "application/pkcs10":
+      return <MdFilePresent />
+    case "application/pgp-signature":
+      return <MdFilePresent />
+    case "application/pics-rules":
+      return <MdFilePresent />
+    case "application/pkcs7-mime":
+      return <MdFilePresent />
+    case "audio/mpeg":
+      return <BsFiletypeMp3 />
+    case "video/mp4":
+      return <BsFiletypeMp4 /> 
+    case "application/zip":
+      return <Si7Zip />
+    case "application/pdf":
+      return <FaFilePdf />
+    case "application/msword":
+      return <FaFileWord />
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      return <FaFileWord />
+    case "application/vnd.ms-powerpoint":
+      return <FaFilePowerpoint />
+    case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+      return <FaFilePowerpoint />
+    case "application/vnd.ms-excel":
+      return <FaFileExcel />
+    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      return <FaFileExcel />
+    case "text/csv":
+      return <FaFileCsv />
+    default:
+      return <MdFilePresent />
+  }
+}  
+// Close image dialog when clicked outside
+const closeDialogToBigFiles = (e) => {
+  if (e.target === e.currentTarget) {
+    setIsDialogOpenToBigFiles(false);
+  }
+};  
+const closeDialog = (e) => {
+  if (e.target === e.currentTarget) {
+    setIsDialogOpen(false);
+  }
+};  
   //USED TO PASS DATA BY ROUTER ON ANSWER MESSAGE FOR EXAMPLE
   useEffect(()=>{
     if(locationData.state===null){
@@ -150,7 +213,7 @@ const NewMessageTab = () => {
                   className=' w-full font-[arial] max-h-16 overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200  text-blue-200/60 text-gray-500 rounded dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90  flex-wrap  flex flex-row items-start justify-start outline-none gap-1 py-2 pr-8 pl-14 text-sm' 
                   >{locationData.state!=null&&formattedAddresses.length>0?
                     formattedAddresses.map((item,index)=>(
-                    <div key={item+index+'addresser'} className='dark:bg-lime-700 dark:hover:bg-lime-600 ring-1 dark:ring-gray-800 ring-gray-400 bg-blue-200 rounded px-2 py-1 w-auto dark:text-white text-black shadow-lg shadow-[rgba(0,0,0,0.12)] flex flex-row items-center justify-start '><a>{item}</a><MdClose className='ml-2 cursor-pointer' /></div>
+                    <div key={item+index+'addresser'} className='dark:bg-lime-700 dark:hover:bg-lime-600 ring-1 dark:ring-gray-800 ring-gray-400 bg-blue-200 rounded px-2 py-1 w-auto dark:text-white text-black shadow-lg shadow-[rgba(0,0,0,0.12)] flex flex-row items-center justify-start '><a>{item}</a><MdClose onClick={()=>removeItem(item)} className='ml-2 cursor-pointer' /></div>
                   ))
                   :
                   'Empfänger hinzufügen'}  
@@ -206,18 +269,25 @@ const NewMessageTab = () => {
                 onChange={(date) => setversandterminierung(date)} /> 
       </div>
       </div> 
-      <div className='text-white mb-4 min-h-20 max-h-32 w-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-wrap items-center justify-start  gap-2 ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 p-2'>  
-        <div className='w-60 flex flex-col items-start justify-start dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'> 
+      {
+        files.length>0?
+      <div className='text-white mb-4 min-h-14 max-h-32 w-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-wrap items-center justify-start  gap-2 ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 p-2'>  
+      {
+        files.map((item,index)=>(
+        <div key={item.name+index} className='w-60 flex flex-col items-start justify-start dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-900 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'> 
         <div className='w-full flex flex-row items-center justify-start gap-x-4 '>
-          <div className='w-auto select-none flex flex-col items-center justify-center'><FaFilePdf /></div>
-          <div className='w-auto max-w-14 select-none flex flex-row items-center justify-start text-xs truncate'>1410,5 kb</div>
-          <div className='w-full select-none text-sm truncate'>sjdhsjkhdjkshdjsdjhsjkdhsjkkjd</div>
-          <div className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
-        </div> 
-        <div className='w-full flex flex-row items-center justify-center mt-3'><div className='w-[90%] dark:bg-gray-500 bg-gray-700 rounded flex flex-row items-start justify-start'>
-          <div className='w-[30%] rounded dark:bg-lime-500 bg-lime-500 py-1'></div></div></div>
-        </div> 
+          <div className='w-auto select-none flex flex-col items-center justify-center'>{returnIconType(item.type)}</div>
+          <div className='w-24 select-none flex flex-row items-center justify-start text-xs truncate  text-[10px]'>{returnSizeValue(item.size)}</div>
+          <div className='w-full select-none text-sm truncate'>{item.name}</div>
+          <div onClick={()=>removeFile(item.name)} className='w-auto  flex flex-col items-center justify-center'><MdClose className='cursor-pointer' /></div>
+        </div>  
+        </div>
+        ))
+      }
       </div>
+      :
+      ''
+      }
 
       {/* Card Grid */}
       <div className='w-full dark:bg-gray-900 bg-white h-full  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 '>
@@ -226,7 +296,14 @@ const NewMessageTab = () => {
        </textarea>
       </div>
  
-
+      <Dialog 
+      show={isDialogOpenToBigFiles}
+      close={closeDialogToBigFiles}
+      title={'Information'}
+      message={'Jede Nachricht kann nur Anhänge mit einer maximalen Größe von 10 MB versendet werden. Daher werden nur die ausgewählten Dateien berücksichtigt.'}
+      cancelBtn={true}   
+      
+      />
       <DialogGroupUserSelect 
       show={isDialogOpen}
       close={closeDialog}
@@ -238,9 +315,9 @@ const NewMessageTab = () => {
       deleteUser={removeItem}
       />
       {
-        nachricht.trim().length>0?
+        betreff.trim().length>0&&nachricht.trim().length>0&&addressant.length>0?
       <div className='fixed bottom-20 right-16'>
-      <Link to={'/new-message'} title='Nachricht senden' className='group cursor-pointer  dark:bg-blue-600 dark:hover:bg-blue-700 bg-blue-600 hover:bg-blue-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><BsFillSendFill className='group-hover:size-[124%]' /></Link>
+      <div onClick={()=>handleSend()} title='Nachricht senden' className='group cursor-pointer  dark:bg-blue-600 dark:hover:bg-blue-700 bg-blue-600 hover:bg-blue-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><BsFillSendFill className='group-hover:size-[124%]' /></div>
     </div>:''
       }
     </div>

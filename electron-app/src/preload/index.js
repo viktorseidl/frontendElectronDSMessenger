@@ -25,7 +25,7 @@ const api = {
       ipcRenderer.invoke('check-cookie', { cookieName }), 
   }, 
   electronFiles: {
-    saveFile: async (pdfBase64,filename) => ipcRenderer.invoke('save-file', {pdfBase64,filename}),
+    saveFile: async (pdfBase64,filename) => ipcRenderer.invoke('save-file', {pdfBase64,filename}), 
   },
 }
  
