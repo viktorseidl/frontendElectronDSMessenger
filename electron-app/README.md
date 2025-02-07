@@ -14,12 +14,7 @@ Due to its cross-platform compatibility, the application is automatically availa
 
 ### Screens
 
-<div style="width: 100%;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-  justify-items: center;
-  gap: 1rem;">
+<div style="width: 100%;display: grid;grid-template-columns: repeat(2, minmax(0, 1fr));align-items: start;justify-items: center;gap: 1rem;">
 <img style="width:80%;" src="./src/Screen1.png"> 
 <img style="width:80%;" src="./src/Screen2.png"> 
 <img style="width:80%;" src="./src/Screen3.png"> 
