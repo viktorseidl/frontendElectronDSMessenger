@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 const RowMessageOut = ({item}) => {
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-    console.log(User)
+    console.log(item.Sendername)
     useEffect(()=>{
 
     },[])
@@ -27,7 +27,7 @@ const RowMessageOut = ({item}) => {
             </span> 
             {
                 item.Sendername.map((it,index)=>(
-                    <div key={it+index} title={'Gesendet an '+it} className='w-8  text-xs dark:bg-blue-100 bg-gray-100 text-gray-800 rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
+                    <div key={it+index} title={'Gesendet an '+it} className='min-w-16 max-w-20  text-xs dark:bg-blue-100 bg-gray-100 text-gray-800 rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
                         <b className='text-xs'>{it}</b> 
                     </div>
                 ))

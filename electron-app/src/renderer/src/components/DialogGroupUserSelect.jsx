@@ -134,7 +134,9 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
                                     </div>
                                 ))
                                 :
-                                'sds'
+                                <div className='w-full py-20 flex flex-col items-center justify-center'> 
+                                    Keine Empfänger gefunden
+                                </div>
                             }
 
                              

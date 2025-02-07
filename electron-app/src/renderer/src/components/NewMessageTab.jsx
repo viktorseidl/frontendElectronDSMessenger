@@ -65,7 +65,7 @@ const handleSend = async ()=>{
   const Users=addressant.length>0?addressant:null;
   const Betreffs=betreff.trim().length>1?betreff.trim():null;
   const Prio=priority
-  const Datum=Math.floor(versandterminierung.getTime() / 1000);
+  const Datum=Math.floor(versandterminierung.getTime() / 1000)+3600;
   const Dateien=files
   const Message=nachricht
   console.log('workssending')
@@ -256,7 +256,7 @@ const closeDialog = (e) => {
         <button onClick={handleButtonClick} title='Dateien hinzufügen' className='py-2 rounded outline-none ring-1 dark:ring-gray-700 ring-gray-700/30 px-2 flex flex-col items-center justify-center dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-white text-gray-800'><MdAttachFile className='inline' /></button>
         <DatePicker 
                 placeholderText="TT.MM.YYYY"
-                locale={'de'}
+                locale={de}
                 timeIntervals={10}
                 timeFormat='HH:mm'
                 title='Terminierung'
