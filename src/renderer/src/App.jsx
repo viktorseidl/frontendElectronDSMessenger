@@ -12,6 +12,7 @@ import Deleted from './pages/Deleted';
 import FileExplorer from './pages/FileExplorer';
 import NewMessage from './pages/NewMessage';
 import ShowMessage from './pages/ShowMessage';
+import ExternalLogScreen from './pages/ExternalLogScreen';
 function App() { 
   const [data, setData] = useState(null);
   const ipcHandle = () => window.electron.ipcRenderer.send('ping') 
@@ -31,6 +32,7 @@ function App() {
     <Router>
       <Routes>
         <Route path='/' element={<DatabaseScreen />} />
+        <Route path='/extlogin' element={<ExternalLogScreen />} />
         <Route path='/overview' element={<LogScreen />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/dashboardsend' element={<Sended />} />

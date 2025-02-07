@@ -147,9 +147,5 @@ export async function initializeIpcHandlers() {
       return { success: false, error: error.message };
     }
   });
-
-  // Cookie handlers
-  
-
-  ;*/
+ */
 }

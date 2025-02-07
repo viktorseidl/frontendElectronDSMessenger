@@ -15,6 +15,7 @@ import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
 import DialogGroupUserSelect from './DialogGroupUserSelect';
 import Dialog from './Dialog';
+import DialogLoader from './DialogLoader';
 registerLocale('de-DE', de) 
 const NewMessageTab = () => {
   const Usender=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
@@ -26,8 +27,10 @@ const NewMessageTab = () => {
   const [addressant, setaddressant] = useState([]);
   const [betreff, setbetreff] = useState('');
   const [nachricht, setNachricht] = useState('');    
+  const [sendstatus, setsendstatus] = useState(null); 
   const [isDialogOpen, setIsDialogOpen] = useState(false); 
   const [isDialogOpenToBigFiles, setIsDialogOpenToBigFiles] = useState(false);  
+  const [isDialogOpenSending, setIsDialogOpenSending] = useState(false);  
   const fileInputRef = useRef(null);
 
 const handleButtonClick = () => {
@@ -42,12 +45,9 @@ const formattedAddresses = useMemo(() => {
 const getTotalFileSize = (files) => {
 return files.reduce((total, file) => total + file.size, 0);
 };
-const handleFileChange = (event) => {
-  // Get the selected files
+const handleFileChange = (event) => { 
   let uploadedCount = 0;
-  const fils = Array.from(event.target.files);
-  //setFiles(fils);
-  /*console.log('Selected files:', files);*/
+  const fils = Array.from(event.target.files); 
     let filescount=getTotalFileSize(files)
     console.log(filescount)
     fils.forEach((file) => { 
@@ -70,6 +70,7 @@ const handleSend = async ()=>{
   const Message=nachricht
   console.log('workssending')
   if(Users&&(Betreffs)&&(Message)){
+    setIsDialogOpenSending(true)
     const formData = new FormData();
     if(Dateien.length>0){
       Dateien.forEach((d) => {
@@ -88,7 +89,17 @@ const handleSend = async ()=>{
       method: "POST",
       body: formData,
     });
-    console.log(data)
+    const d=await data.json() 
+    if(d==true){
+      //show success
+      setsendstatus(true)
+      setTimeout(()=>{
+        setIsDialogOpenSending(false)
+        navigate(-1)
+      },2000)
+    }else{
+      //show error
+    }
   } 
 }
 const removeFile = (itemToRemove) => {
@@ -171,6 +182,11 @@ const returnIconType=(it)=>{
   }
 }  
 // Close image dialog when clicked outside
+const closeDialogSending = (e) => {
+  if (e.target === e.currentTarget) {
+    setIsDialogOpenSending(false);
+  }
+};  
 const closeDialogToBigFiles = (e) => {
   if (e.target === e.currentTarget) {
     setIsDialogOpenToBigFiles(false);
@@ -211,7 +227,7 @@ const closeDialog = (e) => {
               <label className='  w-3/4 flex flex-col items-center justify-center relative'> 
                   <div 
                   className=' w-full font-[arial] max-h-16 overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200  text-blue-200/60 text-gray-500 rounded dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90  flex-wrap  flex flex-row items-start justify-start outline-none gap-1 py-2 pr-8 pl-14 text-sm' 
-                  >{locationData.state!=null&&formattedAddresses.length>0?
+                  >{formattedAddresses.length>0?
                     formattedAddresses.map((item,index)=>(
                     <div key={item+index+'addresser'} className='dark:bg-lime-700 dark:hover:bg-lime-600 ring-1 dark:ring-gray-800 ring-gray-400 bg-blue-200 rounded px-2 py-1 w-auto dark:text-white text-black shadow-lg shadow-[rgba(0,0,0,0.12)] flex flex-row items-center justify-start '><a>{item}</a><MdClose onClick={()=>removeItem(item)} className='ml-2 cursor-pointer' /></div>
                   ))
@@ -296,13 +312,19 @@ const closeDialog = (e) => {
        </textarea>
       </div>
  
+      <DialogLoader 
+      show={isDialogOpenSending}
+      close={closeDialogSending}
+      title={'Information'}
+      message={sendstatus}
+      cancelBtn={false}    
+      />
       <Dialog 
       show={isDialogOpenToBigFiles}
       close={closeDialogToBigFiles}
       title={'Information'}
       message={'Jede Nachricht kann nur Anhänge mit einer maximalen Größe von 10 MB versendet werden. Daher werden nur die ausgewählten Dateien berücksichtigt.'}
-      cancelBtn={true}   
-      
+      cancelBtn={true}    
       />
       <DialogGroupUserSelect 
       show={isDialogOpen}

@@ -37,7 +37,19 @@ export async function createMainWindow() {
   if (isDev) {
     mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
   } else {
+    const args = process.argv.slice(1);
+    let route = "/";
+    if (args.length > 0) {
+      // shell commando --->   electron path/to/main.js "user=johndoe" "token=abcd1234"
+      // Convert arguments into a query string format
+      const queryString = 'user='+args[0]+'&token='+args[1];
+      route = `/extlogin?${queryString}`; // Open login page with query params
+      mainWindow.loadFile(path.join(__dirname, '../../out/renderer/index.html'), {
+        hash: route, // Uses hash routing to navigate inside React
+      });
+    }else{
     mainWindow.loadFile(path.join(__dirname, '../../out/renderer/index.html'));
+    }
   }
 
 
