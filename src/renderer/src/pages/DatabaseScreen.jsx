@@ -14,13 +14,7 @@ const DatabaseScreen = () => {
   //window.api.logToFrontend(JSON.stringify(store)) 
   const {theme}=useTheme()
   const colors=theme?light:dark 
-    /**
-     * TestDatabase
-     * host: 'SERVER-DS-2016\SQLEXPRESS02'
-     * database: 'Medicarehsw'
-     * username: 'sa'
-     * password: ''
-     */
+    
   const navigate=useNavigate();
   
   const [host, sethost] = useState('');
@@ -76,18 +70,7 @@ const DatabaseScreen = () => {
       navigate('/overview');
     }else{
       return false;
-    }
-    /*try {
-      const cookieName = 'dbConfig';
-      const cookie = await window.api.electronCookies.checkCookie(cookieName);
-      if (cookie) { 
-        navigate('/overview');
-      } else { 
-        return false;
-      }
-    } catch (error) {
-      return false;
-    }*/
+    } 
   };  
   const removeCookie = async () => { 
     const cookieName = 'dbConfig';
