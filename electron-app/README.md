@@ -14,11 +14,11 @@ Due to its cross-platform compatibility, the application is automatically availa
 
 ### Screens
 
-| LOGIN |INBOX|
+| LOGIN | INBOX |
 | <img style="width:80%;" src="./src/Screen1.png"> | <img style="width:80%;" src="./src/Screen2.png"> |
-| FILE EXPLORER |NEW MESSAGE|
+| FILE EXPLORER | NEW MESSAGE |
 | <img style="width:80%;" src="./src/Screen3.png"> | <img style="width:80%;" src="./src/Screen4.png"> |
-| LIGHT MODE |INBOX LIGHT MODE|
+| LIGHT MODE | INBOX LIGHT MODE |
 | <img style="width:80%;" src="./src/Screen5.png"> | <img style="width:80%;" src="./src/Screen6.png"> |
 
 ### Build
