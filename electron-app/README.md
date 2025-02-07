@@ -14,12 +14,12 @@ Due to its cross-platform compatibility, the application is automatically availa
 
 ### Screens
 
-<img class="50%" src="./src/Screen1.png"> 
-<img class="50%" src="./src/Screen2.png"> 
-<img class="50%" src="./src/Screen3.png"> 
-<img class="50%" src="./src/Screen4.png"> 
-<img class="50%" src="./src/Screen5.png"> 
-<img class="50%" src="./src/Screen6.png">
+<img class="width:50%;" src="./src/Screen1.png"> 
+<img class="width:50%;" src="./src/Screen2.png"> 
+<img class="width:50%;" src="./src/Screen3.png"> 
+<img class="width:50%;" src="./src/Screen4.png"> 
+<img class="width:50%;" src="./src/Screen5.png"> 
+<img class="width:50%;" src="./src/Screen6.png">
 
 ### Build
 
