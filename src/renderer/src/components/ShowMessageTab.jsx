@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaImage, FaFileAudio, FaAudible } from 'react-icons/fa';
 import pako from 'pako';
-import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdBackspace, MdCamera, MdClose, MdDelete, MdDownload, MdFilePresent, MdGroups2, MdGroups3, MdMarkEmailRead, MdMoveToInbox, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdReply, MdReplyAll, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
+import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdBackspace, MdCamera, MdClose, MdDelete, MdDownload, MdFilePresent, MdGroups2, MdGroups3, MdMarkEmailRead, MdMarkEmailUnread, MdMoveToInbox, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdReply, MdReplyAll, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt, BsFillSendFill } from "react-icons/bs";
@@ -16,10 +16,12 @@ const ShowMessageTab = () => {
   const navigate = useNavigate(); // For managing user back to source onClick={() => navigate(-1)}>Go Back
   const [addressant, setaddressant] = useState('');
   const [attaches, setattaches] = useState([]);
+  const [btyperMark, setbtyperMark] = useState('');
   const [btyper, setbtyper] = useState('');
   const [betreff, setbetreff] = useState('');
   const [nachricht, setNachricht] = useState(locationData.state===null?'':locationData.state.Nachricht);  
   const [isDialogOpen, setIsDialogOpen] = useState(false);  
+  const [isDialogOpenMark, setIsDialogOpenMark] = useState(false);  
     const returnSizeValue=(size)=>{ 
       if(size>50000){
         return (Number(size/1000000).toFixed(2)+'Mb')
@@ -93,6 +95,22 @@ const ShowMessageTab = () => {
           navigate(-1)
         }          
   }
+  const messageMarker=async(e)=>{ 
+        closeDialogMark(e) 
+        if(btyperMark==1){ //Markread
+              const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+              const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=1','ssdsdsd',"PUT", {arr:JSON.stringify([locationData.state.ID])}, null);
+              if(query==true){
+                navigate(-1)
+              }      
+        }else{
+            const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+            const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=0','ssdsdsd',"PUT", {arr:JSON.stringify([locationData.state.ID])}, null);
+            if(query==true){
+              navigate(-1)
+            }
+        }
+  }
   const DeleteID=async(e)=>{ 
       closeDialog(e) 
       const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
@@ -105,10 +123,19 @@ const ShowMessageTab = () => {
     setIsDialogOpen(true)
     setbtyper(b)
   }
+  const  openDialogMark=(e,b)=>{
+    setIsDialogOpenMark(true)
+    setbtyperMark(b)
+  }
   // Close image dialog when clicked outside
   const closeDialog = (e) => {
     if (e.target === e.currentTarget) {
       setIsDialogOpen(false);
+    }
+  };  
+  const closeDialogMark = (e) => {
+    if (e.target === e.currentTarget) {
+      setIsDialogOpenMark(false);
     }
   };  
   //USED TO PASS DATA BY ROUTER ON ANSWER MESSAGE FOR EXAMPLE
@@ -248,6 +275,18 @@ const ShowMessageTab = () => {
         </div>
       )}
       {
+        locationData.state!=null&&locationData.state.gelöscht===null&&Array.isArray(locationData.state.Sendername)===false&&locationData.state.Erledigt==1?
+          <div className='fixed bottom-20 right-[11.4rem]'>
+          <div onClick={(e)=>openDialogMark(e,0)} title='Ungelesen markieren' className='group cursor-pointer  dark:bg-yellow-500 dark:hover:bg-yellow-600 bg-yellow-500 hover:bg-yellow-600 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><MdMarkEmailUnread className='group-hover:size-[124%]' /></div>
+        </div>:'' 
+      }
+      {
+        locationData.state!=null&&locationData.state.gelöscht===null&&Array.isArray(locationData.state.Sendername)===false&&locationData.state.Erledigt==0?
+          <div className='fixed bottom-20 right-[11.4rem]'>
+          <div onClick={(e)=>openDialogMark(e,1)} title='Gelesen markieren' className='group cursor-pointer  dark:bg-violet-600 dark:hover:bg-violet-700 bg-violet-600 hover:bg-violet-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><MdMarkEmailRead className='group-hover:size-[124%]' /></div>
+        </div>:'' 
+      }
+      {
         locationData.state!=null&&locationData.state.gelöscht==1?
           <div className='fixed bottom-20 right-[7.7rem]'>
           <div onClick={(e)=>openDialog(e,0)} title='Wiederherstellen' className='group cursor-pointer  dark:bg-gray-600 dark:hover:bg-gray-700 bg-gray-600 hover:bg-gray-700 hoverbtnsendbtn p-3 rounded-2xl shadow-lg flex flex-col items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-3xl'><MdMoveToInbox className='group-hover:size-[124%]' /></div>
@@ -278,6 +317,16 @@ const ShowMessageTab = () => {
       Btn1BgHover={' dark:bg-red-600 bg-red-500 dark:hover:bg-red-700 hover:bg-red-700 '} 
       callbackBtn2={BackToInbox} 
       callbackBtn1={DeleteID} 
+      />
+       <Dialog 
+      show={isDialogOpenMark}
+      close={closeDialogMark}
+      title={'Information'}
+      message={btyperMark==1?'Möchten Sie die Nachricht wirklich als gelesen markieren?':'Möchten Sie die Nachricht wirklich als ungelesen markieren?'}
+      cancelBtn={true} 
+      actionBtn2={btyperMark==1?true:true} 
+      Btn2BgHover={' dark:bg-lime-600 bg-lime-500 dark:hover:bg-lime-700 hover:bg-lime-700 '}  
+      callbackBtn2={messageMarker}  
       />
     </div>
   );

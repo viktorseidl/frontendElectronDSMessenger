@@ -25,8 +25,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [currentPage, setCurrentPage] = useState(1); 
   const rowsPerPage = 12;
-  
-  // Compute unique reasons with counters
+   
   const reasonCounters = useMemo(() => {
     const counts = { 'Alle Versender': Data.length };
     Data.forEach((item) => { 
@@ -34,28 +33,11 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
     }); 
     return counts;
   }, [Data]);
+     
    
-   const handleSelect = (id) => {
-    
-    setSelectedTickets((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((selectedId) => selectedId !== id)
-        : [...prevSelected, id]
-    ); 
-  }; 
-  const selectAll = () => {
-    let narr=[];
-    if(selectedTickets.length!=paginatedData.length){
-      paginatedData.map((item)=>{
-        narr.push(item.ID)
-      })
-    }
-    setSelectedTickets(narr)
-  };
-  // Filtered data based on ticket number, date, and reason
   const filteredData = useMemo(() => {  
     if (Data.length === 0) {
-      return []; // Return an empty array if there's no data
+      return [];  
     }
     return Data.filter((item) => {
       // Filter by ticket number
@@ -77,14 +59,12 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
     });
     //return Data
   }, [Data, filters]);
-
-  // Paginated data
+ 
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * rowsPerPage;
-    const exdata=filteredData.slice(startIndex, startIndex + rowsPerPage);
-    console.log(exdata)
+    const exdata=filteredData.slice(startIndex, startIndex + rowsPerPage); 
     return exdata
-  }, [filteredData, currentPage]);
+  }, [filteredData, currentPage, Data]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
@@ -100,8 +80,8 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
            const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
            const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=movetoInbox&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {mid:currentId}, null);
            if(query==true){
-             setCurrentId(null)
              updater()
+             setCurrentId(null) 
            }
        }
      }
@@ -128,7 +108,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
                   onChange={(e) => handleFilterChange("Betrefftxt", e.target.value)}
                   />
                   <FaSearch className='absolute inset left-4 text-2xl top-[0.4rem] dark:text-blue-200/60 text-gray-500/20 ' /> 
-                  <MdClose onClick={()=>handleFilterChange("Betrefftxt", "")} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400 cursor-pointer '} style={{display:filters.Betrefftxt.length>0?'block':'none'}} />
+                  <MdClose onClick={()=>handleFilterChange("Betrefftxt", "")} className={'absolute inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400 cursor-pointer '} style={{display:filters.Betrefftxt.length>0?'block':'none'}} />
               </label>
           </div>
           <div className='w-20 p-5 h-full flex flex-col items-center justify-center'>
@@ -198,8 +178,8 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
 
       {/* Table */}
       <div className='w-full dark:bg-gray-900 bg-white h-[77%]  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start divide-y dark:divide-gray-700 shadow-inner shadow-[rgba(0,0,0,0.3)] divide-gray-400 '>  
-          {paginatedData?.map((item,index) => (
-           <Fragment key={item+index}><RowMessageDeleted item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={openDialog} /> </Fragment>
+          {Data.length>0&&paginatedData?.map((item,index) => (
+           <RowMessageDeleted  key={item.ID} item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={openDialog} />
           ))}
           {paginatedData.length === 0 && (
             <div className='w-full h-full'> 

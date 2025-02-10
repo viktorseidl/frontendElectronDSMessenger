@@ -2,16 +2,17 @@ import { BrowserWindow, shell,session,app } from 'electron';
 import { join } from 'path';
 import path from 'path'
 import { is } from '@electron-toolkit/utils';
-import icon from '../../resources/icon.png?asset'; 
+import icon from '../../resources/icon.ico';
 export async function createMainWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     show: false,
+    //icon: path.join(__dirname,'/../renderer/src/assets/icon.ico'),
     backgroundColor: '#0c101b',
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
-    ...(process.platform === 'linux' ? { icon } : {}),
+    //...(process.platform === 'linux' ? { icon } : { icon }),
     webPreferences: {
       session: session,
       preload: join(__dirname, '/../preload/index.js'),

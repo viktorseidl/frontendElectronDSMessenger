@@ -5,6 +5,19 @@
   "main": "./out/main/index.js",
   "author": "Fernando Viktor Seidl",
   "homepage": "https://www.data-schafhausen.com",
+  "build": {
+    "productName":"Messenger",
+    "icon": "./build/icon",
+    "win": {
+      "icon": "./build/icon.png"
+    },
+    "nsis":{
+      "oneClick":false,
+      "allowToChangeInstallationDirectory":true,
+      "license":"license.md"
+    }
+  },
+
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
@@ -30,6 +43,7 @@
     "tailwind-scrollbar": "^3.1.0"
   },
   "devDependencies": {
+    "@electron-forge/maker-squirrel": "^6.4.2",
     "@electron-toolkit/eslint-config": "^1.0.2",
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@vitejs/plugin-react": "^4.3.1",

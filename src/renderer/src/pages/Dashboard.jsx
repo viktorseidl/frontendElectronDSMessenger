@@ -23,9 +23,7 @@ const Dashboard = () => {
   const getAllMessages=async()=>{
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user'))) 
     const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getMessagesAllReceived&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
-    if(query.length>0){
-setdata(query)
-    } 
+    Array.isArray(query)?setdata(query):''
   }
   
   useEffect(()=>{
@@ -48,10 +46,5 @@ setdata(query)
     </div>
     </div>
   )
-}
-/**
- * <div className='  h-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200'>
-        sdsdsds<br/> 
-        </div>
- */
+} 
 export default Dashboard

@@ -18,29 +18,26 @@ const ExternalLogScreen = () => {
     const navigate = useNavigate()
   const {theme}=useTheme() 
   const loginUser=async()=>{
-    const u = searchParams.getAll('user');
-    const p = searchParams.getAll('token');
-    //if(user.trim().length>0&&(password.trim().length>0)){
-      /*seterr(false)  
-      setlogloader(true)
-      //preparedata 
-      const userpass=md5.create().update(password.toString()).digest().toHex()
-      const check=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=checkCredentials",'ssdsdsd',"POST", { 
-                user:user.toLowerCase().toString(),
-                pass:userpass
+    //MUST BE RECEIVED AS URLENCODED
+    const u = searchParams.getAll('user')[0];
+    const p = searchParams.getAll('token')[0]; //must be md5
+     
+    if(u.trim().length>0&&(p.trim().length>0)){ 
+      const check=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=checkCredentialsExternal",'ssdsdsd',"POST", { 
+                user:u.toLowerCase().toString(),
+                pass:p
             },null); 
+             
       if(check.length>0){
-        window.sessionStorage.setItem('user',util.encode64(JSON.stringify(check[0]))) 
-        setlogloader(false)
+        window.sessionStorage.setItem('user',util.encode64(JSON.stringify(check[0])))  
         navigate('/dashboard')
-      }else{ 
-        setlogloader(false)
-        seterr(true)
+      }else{  
+        navigate('/overview')
       } 
     }else{
-      seterr(true) */
-   // }
-   alert('worked with Params : '+u+' ... '+p)
+      navigate('/overview')
+    }
+   
   } 
   
   useEffect(()=>{ 

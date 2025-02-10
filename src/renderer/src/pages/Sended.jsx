@@ -25,9 +25,7 @@ const Sended = () => {
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
     console.log(User)
     const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getMessagesAllSend&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
-    if(query.length>0){
-setdata(query)
-    } 
+    Array.isArray(query)?setdata(query):''
   }
   useEffect(()=>{
     getAllMessages()

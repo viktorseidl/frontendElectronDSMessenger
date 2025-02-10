@@ -103,13 +103,14 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
                                 <option value='all'>Alle Gruppen</option>
                                     {
                                         gruppenList.length>0&&gruppenList.map((item,index)=>(
-                                            <option key={item.Gruppe+index+'grupselectoropt'} value={item.Gruppe}>{item.Gruppe} {fullList.filter((i)=>i.Gruppe!=null?i.Gruppe.toLowerCase()==item.Gruppe.toLowerCase():'').length}</option>
+                                            item.Gruppe=="null"||item.Gruppe.trim()===""?'':
+                                            <option key={item.Gruppe+index+'grupselectoropt'} value={item.Gruppe}>{item.Gruppe} ({fullList.filter((i)=>i.Gruppe!=null?i.Gruppe.toLowerCase()==item.Gruppe.toLowerCase():'').length})</option>
                                         ))
                                     }
                                 </select>
                                 </div>
                             </div>
-                            <div className='w-full min-h-[150px] max-h-[380px] overflow-auto ring-1 flex flex-col items-start justify-start dark:ring-gray-400 ring-gray-500 divide-y dark:divide-gray-700 divide-gray-400'>
+                            <div className='w-full min-h-[150px] max-h-[380px] overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 ring-1 flex flex-col items-start justify-start dark:ring-gray-400 ring-gray-500 divide-y dark:divide-gray-700 divide-gray-400'>
 
                             {
                                 filteredList.length>0?

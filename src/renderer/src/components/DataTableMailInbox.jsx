@@ -338,7 +338,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
       {/* Table */}
       <div className='w-full dark:bg-gray-900 bg-white h-[77%]  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start divide-y dark:divide-gray-700 shadow-inner shadow-[rgba(0,0,0,0.3)] divide-gray-400'>  
           {paginatedData?.map((item,index) => (
-           <Fragment key={item+index}><RowMessage item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={handleSelect} deleter={openDialogId} markread={openDialogMarkID} /> </Fragment>
+           <RowMessage  key={item+index} item={item} erledigt={item.Erledigt} selected={selectedTickets} selhandler={handleSelect} deleter={openDialogId} markread={openDialogMarkID} /> 
           ))}
           {paginatedData.length === 0 && (
             <div className='w-full h-full'> 
