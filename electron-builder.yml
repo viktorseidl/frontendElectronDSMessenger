@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: electron-app
+productName: Messenger
 directories:
   buildResources: build
 files:
@@ -11,8 +11,8 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: electron-app
-  icon:build/icon.png
+  executableName: Messenger
+  icon:build/icon.ico
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

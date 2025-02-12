@@ -50,7 +50,9 @@ const LogScreen = () => {
       _lockbtn.current.disabled = false;
     }
   } 
-  
+  const checkdelCookie=()=>{
+    window.localStorage.removeItem('dbConfig')
+  }
   useEffect(()=>{
     if(!localStorage.getItem('dbConfig')){
       navigate('/')
@@ -119,7 +121,7 @@ const LogScreen = () => {
     <div className='w-full fixed bottom-[2%] left-0 flex flex-row items-center justify-center'>
           <div className='py-2 px-6 border animate-slide-inright dark:border-gray-800 border-gray-400 shadow-lg dark:shadow-blue-900/30 shadow-gray-500/80 dark:bg-[#0a0e16]/80 bg-gray-100/80 rounded-lg  flex flex-row items-center justify-center'>
           <img src={imgs} className='w-10 h-2  mr-4 ' />
-          <span className='text-sm dark:text-gray-400 text-gray-500'>Messenger Version 1.0.0</span>
+          <span onClick={()=>checkdelCookie()} className='text-sm dark:text-gray-400 text-gray-500'>Messenger Version 1.0.0</span>
           </div>
         </div>
     </div>

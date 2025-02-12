@@ -9,7 +9,7 @@
     "productName":"Messenger",
     "icon": "./build/icon",
     "win": {
-      "icon": "./build/icon.png"
+      "icon": "./build/icon.ico"
     },
     "nsis":{
       "oneClick":false,

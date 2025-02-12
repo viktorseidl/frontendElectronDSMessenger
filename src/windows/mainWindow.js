@@ -2,13 +2,13 @@ import { BrowserWindow, shell,session,app } from 'electron';
 import { join } from 'path';
 import path from 'path'
 import { is } from '@electron-toolkit/utils';
-import icon from '../../resources/icon.ico';
+import icon from './../renderer/src/assets/icon.ico';
 export async function createMainWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     show: false,
-    //icon: path.join(__dirname,'/../renderer/src/assets/icon.ico'),
+    //icon: icon,
     backgroundColor: '#0c101b',
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',

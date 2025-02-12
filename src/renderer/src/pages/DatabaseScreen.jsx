@@ -98,6 +98,7 @@ const DatabaseScreen = () => {
         return false
     }
   }; 
+  
   const setCookie = async () => { 
     const cookie = {
       url: '', // The URL for the cookie
@@ -117,7 +118,7 @@ const DatabaseScreen = () => {
         return false
     }*/
   }; 
-  useEffect(()=>{  
+  useEffect(()=>{   
     checkCookie()  
   },[theme])
   return (
