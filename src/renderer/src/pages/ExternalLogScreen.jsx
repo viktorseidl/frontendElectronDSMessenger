@@ -1,33 +1,25 @@
-import React,{useEffect, useRef, useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import Loader from '../components/Loader'
-import { useTheme } from '../styles/ThemeContext'
-import { light,dark } from '../styles/schema';
-import { Link, useNavigate,useSearchParams } from 'react-router-dom'
+import { useTheme } from '../styles/ThemeContext' 
+import { useNavigate,useSearchParams } from 'react-router-dom'
 import { useFetchAuthAll } from '../services/useFetchAll'; 
-import imgs from '../assets/Logo.png'  
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { md5, sha256, util } from 'node-forge';
+import imgs from '../assets/Logo.png'   
+import { util } from 'node-forge';
+import DecText from '../utils/DecText';
 
 const ExternalLogScreen = () => {
     const [searchParams] = useSearchParams(); 
-    
-    const [password, setpassword] = useState('');  
-    const [user, setuser] = useState('');  
-    const [err, seterr] = useState(false);  
-    const [logloader, setlogloader] = useState(false);  
-    const navigate = useNavigate()
-  const {theme}=useTheme() 
+    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''  
+    const navigate = useNavigate() 
   const loginUser=async()=>{
     //MUST BE RECEIVED AS URLENCODED
     const u = searchParams.getAll('user')[0];
-    const p = searchParams.getAll('token')[0]; //must be md5
-     
+    const p = searchParams.getAll('token')[0]; //must be md5 
     if(u.trim().length>0&&(p.trim().length>0)){ 
-      const check=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=checkCredentialsExternal",'ssdsdsd',"POST", { 
+      const check=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=checkCredentialsExternal",'ssdsdsd',"POST", { 
                 user:u.toLowerCase().toString(),
                 pass:p
-            },null); 
-             
+            },null);  
       if(check.length>0){
         window.sessionStorage.setItem('user',util.encode64(JSON.stringify(check[0])))  
         navigate('/dashboard')
@@ -36,10 +28,8 @@ const ExternalLogScreen = () => {
       } 
     }else{
       navigate('/overview')
-    }
-   
-  } 
-  
+    } 
+  }  
   useEffect(()=>{ 
     if(!localStorage.getItem('dbConfig')){
         navigate('/')

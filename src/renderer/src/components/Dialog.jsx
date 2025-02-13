@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect } from 'react'
 import imgs from './../assets/Logo.png'
-const Dialog = ({show, close, title, message, cancelBtn=false, actionBtn1=false, actionBtn2=false, Btn2BgHover=null, Btn1BgHover=null, callbackBtn1=null, callbackBtn2=null,Btn2Txt=null}) => {
-     
+const Dialog = ({show, close, title, message, cancelBtn=false, actionBtn1=false, actionBtn2=false, Btn2BgHover=null, Btn1BgHover=null, callbackBtn1=null, callbackBtn2=null,Btn2Txt=null}) => { 
     useEffect(()=>{
 
     },[])

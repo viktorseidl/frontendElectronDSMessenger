@@ -1,23 +1,23 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaImage, FaFileAudio, FaAudible } from 'react-icons/fa';
-import pako from 'pako';
-import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdCamera, MdClose, MdFilePresent, MdGroups2, MdGroups3, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
+import { FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv } from 'react-icons/fa'; 
+import { MdAttachFile, MdClose, MdFilePresent, MdGroups2, MdGroups3, MdNote, MdPerson, MdPriorityHigh } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt, BsFillSendFill } from "react-icons/bs";
-import { IoImageSharp, IoVolumeHighOutline } from "react-icons/io5";
-import { AiOutlineGif } from "react-icons/ai"; 
-import { FaPerson } from 'react-icons/fa6';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { IoImageSharp  } from "react-icons/io5";
+import { AiOutlineGif } from "react-icons/ai";  
+import { useLocation, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import { registerLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
 import DialogGroupUserSelect from './DialogGroupUserSelect';
 import Dialog from './Dialog';
 import DialogLoader from './DialogLoader';
+import DecText from '../utils/DecText';
 registerLocale('de-DE', de) 
 const NewMessageTab = () => {
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
   const Usender=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const locationData=useLocation(); 
   const [files, setFiles] = useState([]);
@@ -85,7 +85,7 @@ const handleSend = async ()=>{
     formData.append("date", Datum);
     formData.append("betr", Betreffs);
     formData.append("mess", Message);
-    const data=await fetch("http://localhost/electronbackend/UploadSender.php", {
+    const data=await fetch("http://"+apache+"/electronbackend/UploadSender.php", {
       method: "POST",
       body: formData,
     });

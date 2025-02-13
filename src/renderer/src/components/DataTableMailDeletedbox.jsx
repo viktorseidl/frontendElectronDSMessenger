@@ -1,19 +1,18 @@
-import React, { useState, useMemo, Fragment } from "react";
-import PropTypes from "prop-types";
-import { MdArrowBackIos, MdArrowForwardIos, MdClose, MdDelete, MdPerson } from "react-icons/md";
-import { Link } from "react-router-dom";  
-import RowMessage from "./RowMessage";
+import React, { useState, useMemo  } from "react"; 
+import { MdArrowBackIos, MdArrowForwardIos, MdClose, MdPerson } from "react-icons/md"; 
 import { FaSearch } from "react-icons/fa";
 import RowMessageDeleted from "./RowMessageDeleted";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import { registerLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
 import Dialog from "./Dialog";
 import { util } from "node-forge";
 import { useFetchAuthAll } from "../services/useFetchAll";
+import DecText from "../utils/DecText";
 registerLocale('de', de)
 const DataTableMailDeletedbox = ({ Data, updater }) => {
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:'' 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [filters, setFilters] = useState({
@@ -72,29 +71,27 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
-  };
-   
+  }; 
    const BackToInbox=async(e)=>{
        closeDialog(e) 
        if(currentId>0){
            const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-           const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=movetoInbox&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {mid:currentId}, null);
+           const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=movetoInbox&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {mid:currentId}, null);
            if(query==true){
              updater()
              setCurrentId(null) 
            }
        }
-     }
-     const openDialog = (id) => {  
+  } 
+  const openDialog = (id) => {  
          setCurrentId(id)
          setIsDialogOpen(true); 
-     };
-    
-     const closeDialog = (e) => {
+  }; 
+  const closeDialog = (e) => {
        if (e.target === e.currentTarget) {
          setIsDialogOpen(false); 
        }
-     };
+  };
   return (
     <div className='w-full mt-2  flex-grow max-h-full overflow-auto flex flex-col items-start justify-start  '> 
       {/* Filters */}

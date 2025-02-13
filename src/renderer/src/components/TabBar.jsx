@@ -3,8 +3,7 @@ import { MdDarkMode, MdLightMode } from 'react-icons/md'
 import { useTheme } from '../styles/ThemeContext' 
 const TabBar = ({handleMaximize,handleClose,handleMinimize,imgs}) => {
     const {theme,toggleTheme}=useTheme(); 
-    useEffect(()=>{
-      
+    useEffect(()=>{ 
     },[theme])
   return (
     <div id="titlebar" className={'fixed top-0 left-0 w-full dark:bg-[#1b243b] bg-[#0c101b]'} > 

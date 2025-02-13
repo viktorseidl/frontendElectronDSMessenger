@@ -1,24 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaImage, FaFileAudio, FaAudible } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaFileAudio } from 'react-icons/fa';
 import pako from 'pako';
-import { Md3Mp, MdArrowBackIos, MdArrowForwardIos, MdAttachFile, MdAttachment, MdBackspace, MdCamera, MdClose, MdDelete, MdDownload, MdFilePresent, MdGroups2, MdGroups3, MdMarkEmailRead, MdMarkEmailUnread, MdMoveToInbox, MdMovie, MdNote, MdPerson, MdPriorityHigh, MdReply, MdReplyAll, MdSend, MdTimer, MdVideoFile } from 'react-icons/md';
+import { MdArrowBackIos, MdDelete, MdDownload, MdFilePresent, MdMarkEmailRead, MdMarkEmailUnread, MdMoveToInbox, MdMovie, MdPerson, MdPriorityHigh, MdReply } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
-import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt, BsFillSendFill } from "react-icons/bs";
-import { IoImageSharp, IoVolumeHighOutline } from "react-icons/io5";
-import { AiOutlineGif } from "react-icons/ai"; 
-import { FaPerson } from 'react-icons/fa6';
+import { BsFiletypeJson, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt } from "react-icons/bs";
+import { IoImageSharp } from "react-icons/io5";
+import { AiOutlineGif } from "react-icons/ai";  
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Dialog from './Dialog';
 import { useFetchAuthAll } from '../services/useFetchAll';
+import DecText from '../utils/DecText';
 const ShowMessageTab = () => {
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
   const locationData=useLocation(); 
-  const navigate = useNavigate(); // For managing user back to source onClick={() => navigate(-1)}>Go Back
-  const [addressant, setaddressant] = useState('');
+  const navigate = useNavigate(); // For managing user back to source onClick={() => navigate(-1)}>Go Back 
   const [attaches, setattaches] = useState([]);
   const [btyperMark, setbtyperMark] = useState('');
-  const [btyper, setbtyper] = useState('');
-  const [betreff, setbetreff] = useState('');
+  const [btyper, setbtyper] = useState(''); 
   const [nachricht, setNachricht] = useState(locationData.state===null?'':locationData.state.Nachricht);  
   const [isDialogOpen, setIsDialogOpen] = useState(false);  
   const [isDialogOpenMark, setIsDialogOpenMark] = useState(false);  
@@ -90,7 +89,7 @@ const ShowMessageTab = () => {
   const BackToInbox=async(e)=>{ 
         closeDialog(e)
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=movetoInbox&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {mid:locationData.state.ID}, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=movetoInbox&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"PUT", {mid:locationData.state.ID}, null);
         if(query==true){
           navigate(-1)
         }          
@@ -99,13 +98,13 @@ const ShowMessageTab = () => {
         closeDialogMark(e) 
         if(btyperMark==1){ //Markread
               const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-              const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=1','ssdsdsd',"PUT", {arr:JSON.stringify([locationData.state.ID])}, null);
+              const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=1','ssdsdsd',"PUT", {arr:JSON.stringify([locationData.state.ID])}, null);
               if(query==true){
                 navigate(-1)
               }      
         }else{
             const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-            const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=0','ssdsdsd',"PUT", {arr:JSON.stringify([locationData.state.ID])}, null);
+            const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=0','ssdsdsd',"PUT", {arr:JSON.stringify([locationData.state.ID])}, null);
             if(query==true){
               navigate(-1)
             }
@@ -114,7 +113,7 @@ const ShowMessageTab = () => {
   const DeleteID=async(e)=>{ 
       closeDialog(e) 
       const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-      const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=DeleteMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {mid:locationData.state.ID}, null);
+      const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=DeleteMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {mid:locationData.state.ID}, null);
       if(query==true){
         navigate(-1)
       } 
@@ -143,13 +142,13 @@ const ShowMessageTab = () => {
     navigate(-1)
   }
   const getAttachments = async(id)=>{ 
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getAttachmentsOnAttachmentId&a="+util.encode64(id),'ssdsdsd',"GET", null, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getAttachmentsOnAttachmentId&a="+util.encode64(id),'ssdsdsd',"GET", null, null);
         if(query.length>0){
           setattaches(query)
         }  
   } 
   const saveFileandOpen=async (id,idindex)=>{ 
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getFileToSaveOnIdAndIndex&a="+util.encode64(id+'.'+idindex),'ssdsdsd',"GET", null, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getFileToSaveOnIdAndIndex&a="+util.encode64(id+'.'+idindex),'ssdsdsd',"GET", null, null);
         if(query.length>0){ 
           const a = await window.api.electronFiles.saveFile(query[0].Mail,query[0].Name)  
         }

@@ -1,14 +1,15 @@
-import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import imgs from './../assets/Logo.png'
-import { MdOutlineGroupAdd, MdPerson } from 'react-icons/md'
+import { MdPerson } from 'react-icons/md'
 import { useFetchAuthAll } from '../services/useFetchAll'
 import { util } from 'node-forge'
 import { useLocation } from 'react-router-dom'
+import DecText from '../utils/DecText'
 const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, actionBtn1=false, actionBtn2=false, Btn2BgHover=null, Btn1BgHover=null, callbackBtn1=null, callbackBtn2=null,Btn2Txt=null, SelectedUsers, addUser, deleteUser}) => {
+    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
     const _allSelector=useRef('')
-    const localdata=useLocation().state
-    const [isUserOrGroup,setIsUserOrGroup]=useState(false)
+    const localdata=useLocation().state 
     const [fullList,setfullList]=useState([]) 
     const [selectedGroups, setSelectedGroups] = useState([]); 
     const handleGroupSelection = (e) => {
@@ -49,7 +50,7 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
         }));
     };
     const getLists=async()=>{ 
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getAllEmpfänger&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getAllEmpfänger&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
         if(query.length>0){
             setfullList(query)
             setgruppenList(getDistinctGruppenWithCount(query))
@@ -83,10 +84,7 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
                         <span className="font-[Arial] dark:text-white text-white text-sm flex flex-row items-center justify-center gap-x-2">
                           <img src={imgs} className='w-10 h-2  ' />{title}</span> 
                       </div>
-                      <div className="w-full dark:bg-gray-900 bg-white px-6 py-4 dark:text-white text-black text-sm font-[Arial]">
-                         
-
-                         
+                      <div className="w-full dark:bg-gray-900 bg-white px-6 py-4 dark:text-white text-black text-sm font-[Arial]"> 
                             <Fragment>
                             <div className='flex flex-row items-center justify-start mt-4 gap-x-4 pb-4' >
                                 <label className='flex flex-row items-center justify-start mb-2'>
@@ -110,8 +108,7 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
                                 </select>
                                 </div>
                             </div>
-                            <div className='w-full min-h-[150px] max-h-[380px] overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 ring-1 flex flex-col items-start justify-start dark:ring-gray-400 ring-gray-500 divide-y dark:divide-gray-700 divide-gray-400'>
-
+                            <div className='w-full min-h-[150px] max-h-[380px] overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 ring-1 flex flex-col items-start justify-start dark:ring-gray-400 ring-gray-500 divide-y dark:divide-gray-700 divide-gray-400'> 
                             {
                                 filteredList.length>0?
                                 filteredList.map((item,index)=>(
@@ -138,18 +135,12 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
                                 <div className='w-full py-20 flex flex-col items-center justify-center'> 
                                     Keine Empfänger gefunden
                                 </div>
-                            }
-
-                             
-
-
+                            } 
                                 <div className='hidden w-full py-16 flex flex-col items-center justify-center'>
                                     Keine Benutzer vorhanden
                                 </div>
                             </div>
-                            </Fragment> 
-
-
+                            </Fragment>  
                       </div>
                       <div className="w-full dark:bg-gray-900 bg-white px-6 py-4 dark:text-white text-white text-sm font-[Arial] flex flex-row items-end justify-end gap-x-4">
                         {
@@ -164,7 +155,7 @@ const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, ac
                         }
                         {
                             cancelBtn?
-                            <button onClick={(e)=>close(e)} className="px-2 py-1 dark:bg-gray-600 bg-gray-500 rounded dark:hover:bg-gray-700 hover:bg-gray-700">Abbrechen</button>
+                            <button onClick={(e)=>close(e)} className="px-2 py-1 dark:bg-gray-600 bg-gray-500 rounded dark:hover:bg-gray-700 hover:bg-gray-700">Schliessen</button>
                             :''
                         }
                       </div>

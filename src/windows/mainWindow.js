@@ -8,7 +8,7 @@ export async function createMainWindow() {
     width: 1200,
     height: 800,
     show: false,
-    //icon: icon,
+    icon: path.join(__dirname, './../renderer/src/assets/icon.ico'),
     backgroundColor: '#0c101b',
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',

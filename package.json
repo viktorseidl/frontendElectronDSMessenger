@@ -6,18 +6,17 @@
   "author": "Fernando Viktor Seidl",
   "homepage": "https://www.data-schafhausen.com",
   "build": {
-    "productName":"Messenger",
-    "icon": "./build/icon",
+    "productName": "Messenger",
+    "icon": "./src/renderer/src/assets/icon",
     "win": {
-      "icon": "./build/icon.ico"
+      "icon": "./src/renderer/src/assets/icon.ico"
     },
-    "nsis":{
-      "oneClick":false,
-      "allowToChangeInstallationDirectory":true,
-      "license":"license.md"
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": false,
+      "license": "license.md"
     }
   },
-
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
@@ -49,7 +48,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
     "electron": "^31.0.2",
-    "electron-builder": "^24.13.3",
+    "electron-builder": "^25.1.8",
     "electron-vite": "^2.3.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.3",

@@ -1,13 +1,10 @@
-import React, { useState, useMemo, Fragment } from "react";
-import PropTypes from "prop-types";
-import { MdArrowBackIos, MdArrowForwardIos, MdClose, MdDelete, MdPerson } from "react-icons/md";
-import { Link } from "react-router-dom";  
-import RowMessage from "./RowMessage";
+import React, { useState, useMemo, Fragment } from "react"; 
+import { MdArrowBackIos, MdArrowForwardIos, MdClose, MdPerson } from "react-icons/md"; 
 import { FaSearch } from "react-icons/fa";
 import RowMessageOut from "./RowMessageOut";  
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import { registerLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
 registerLocale('de', de)
 const DataTableMailOutbox = ({ Data, updater }) => {
@@ -16,8 +13,7 @@ const DataTableMailOutbox = ({ Data, updater }) => {
     Sendername: "Alle Empfänger",
     dateFrom: "",
     dateTo: "",
-  }); 
-  const [selectedTickets, setSelectedTickets] = useState([]);
+  });  
   const [currentPage, setCurrentPage] = useState(1); 
   const rowsPerPage = 12;
   
@@ -31,24 +27,7 @@ const DataTableMailOutbox = ({ Data, updater }) => {
     }); 
     return counts;
   }, [Data]);
-   
-   const handleSelect = (id) => {
-    
-    setSelectedTickets((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((selectedId) => selectedId !== id)
-        : [...prevSelected, id]
-    ); 
-  }; 
-  const selectAll = () => {
-    let narr=[];
-    if(selectedTickets.length!=paginatedData.length){
-      paginatedData.map((item)=>{
-        narr.push(item.ID)
-      })
-    }
-    setSelectedTickets(narr)
-  };
+     
   // Filtered data based on ticket number, date, and reason
   const filteredData = useMemo(() => {  
     if (Data.length === 0) {
@@ -89,9 +68,7 @@ const DataTableMailOutbox = ({ Data, updater }) => {
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
-  };
-   
-   
+  }; 
   return (
     <div className='w-full mt-2  flex-grow max-h-full overflow-auto flex flex-col items-start justify-start '> 
       {/* Filters */}
@@ -105,7 +82,7 @@ const DataTableMailOutbox = ({ Data, updater }) => {
                   onChange={(e) => handleFilterChange("Betrefftxt", e.target.value)}
                   />
                   <FaSearch className='absolute inset left-4 text-2xl top-[0.4rem] dark:text-blue-200/60 text-gray-500/20 ' /> 
-                  <MdClose onClick={()=>handleFilterChange("Betrefftxt", "")} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400 cursor-pointer '} style={{display:filters.Betrefftxt.length>0?'block':'none'}} />
+                  <MdClose onClick={()=>handleFilterChange("Betrefftxt", "")} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400 '} style={{display:filters.Betrefftxt.length>0?'block':'none'}} />
               </label>
           </div>
           <div className='w-20 p-5 h-full flex flex-col items-center justify-center'>
@@ -203,8 +180,5 @@ const DataTableMailOutbox = ({ Data, updater }) => {
       </div>
     </div>
   );
-};
-
-
-
+}; 
 export default DataTableMailOutbox;

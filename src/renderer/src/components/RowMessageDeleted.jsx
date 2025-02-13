@@ -1,10 +1,8 @@
-import React, { useEffect }  from 'react'
-import { MdAttachment, MdDeleteForever, MdMoveToInbox, MdPriorityHigh, MdRestoreFromTrash } from 'react-icons/md'
+import React   from 'react'
+import { MdAttachment, MdMoveToInbox, MdPriorityHigh } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 
-const RowMessageDeleted = ({item, erledigt,selected,selhandler}) => {
-
-     
+const RowMessageDeleted = ({item, erledigt,selected,selhandler}) => { 
   return (
     erledigt==0?
    <div className='w-full dark:bg-cyan-400/15 bg-orange-900/15 dark:hover:bg-blue-300/20 hover:bg-orange-900/20 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
@@ -80,8 +78,7 @@ const RowMessageDeleted = ({item, erledigt,selected,selhandler}) => {
             
             <div onClick={()=>selhandler(item.ID)} className='w-6 aspect-square cursor-pointer dark:hover:bg-gray-900 dark:bg-gray-800 bg-gray-100 hover:bg-gray-200 shadow-inner  shadow-[rgba(0,0,0,0.1)] rounded mr-2 flex flex-col items-center justify-center ring-1 dark:ring-gray-700 ring-gray-300'>
                 <MdMoveToInbox  title='Wiederherstellen' className='inline' />
-            </div>
-
+            </div> 
             </div>
         </div>
     </div>

@@ -1,9 +1,8 @@
  import imgs from './assets/Logo.png'
- import { HashRouter as Router, Route, Routes, Link } from 'react-router-dom';
+ import { HashRouter as Router, Route, Routes } from 'react-router-dom';
  import DatabaseScreen from './pages/DatabaseScreen'; 
-import { useEffect, useState } from 'react';
-import { MdDarkMode, MdLightMode} from 'react-icons/md'
-import { ThemeProvider, useTheme } from './styles/ThemeContext'; 
+import { useState } from 'react'; 
+import { ThemeProvider } from './styles/ThemeContext'; 
 import TabBar from './components/TabBar';
 import LogScreen from './pages/LogScreen';
 import Dashboard from './pages/Dashboard';
@@ -13,9 +12,7 @@ import FileExplorer from './pages/FileExplorer';
 import NewMessage from './pages/NewMessage';
 import ShowMessage from './pages/ShowMessage';
 import ExternalLogScreen from './pages/ExternalLogScreen';
-function App() { 
-  const [data, setData] = useState(null);
-  const ipcHandle = () => window.electron.ipcRenderer.send('ping') 
+function App() {   
   const handleMaximize = () => {
     window.api.windowControls.maximize();
   };

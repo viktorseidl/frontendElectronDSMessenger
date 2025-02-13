@@ -12,12 +12,12 @@ asarUnpack:
   - resources/**
 win:
   executableName: Messenger
-  icon:build/icon.ico
+  icon: src/renderer/src/assets/icon.ico
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
-  createDesktopShortcut: always 
+  createDesktopShortcut: always
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:

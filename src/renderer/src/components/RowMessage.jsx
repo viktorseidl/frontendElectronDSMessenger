@@ -3,8 +3,7 @@ import { MdAttachment, MdDeleteForever, MdMarkEmailRead, MdMarkEmailUnread, MdPr
 import { Link } from 'react-router-dom'
 
 const RowMessage = ({item, erledigt,selected,selhandler,deleter,markread}) => {
-    useEffect(()=>{
-
+    useEffect(()=>{ 
     },[selected.length])
   return (
     erledigt==0?

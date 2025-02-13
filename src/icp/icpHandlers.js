@@ -1,12 +1,9 @@
-import { ipcMain,BrowserWindow,session,app,shell  } from 'electron'; 
-import { util } from 'node-forge'; 
-import pako from 'pako';
+import { ipcMain,BrowserWindow,session,app,shell  } from 'electron';  
 const zlib = require('zlib');
 const { Buffer } = require('buffer');
 const fs = require('fs');
 const os = require('os');
-const path = require('path');
-//import keytar from 'keytar';
+const path = require('path'); 
 
 export async function initializeIpcHandlers() { 
   const mainsession = session.defaultSession;
@@ -116,36 +113,5 @@ export async function initializeIpcHandlers() {
                    return true
   
          
-    }); 
-
-  /*  
-   
-  // Keytar handlers
-  ipcMain.handle('keytar-set', async (event, service, account, password) => {
-    try {
-      await keytar.setPassword(service, account, password);
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  });
-
-  ipcMain.handle('keytar-get', async (event, service, account) => {
-    try {
-      const password = await keytar.getPassword(service, account);
-      return { success: true, password };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  });
-
-  ipcMain.handle('keytar-delete', async (event, service, account) => {
-    try {
-      const result = await keytar.deletePassword(service, account);
-      return { success: result };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  });
- */
+    });  
 }

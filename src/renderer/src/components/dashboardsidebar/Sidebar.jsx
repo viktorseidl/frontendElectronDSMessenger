@@ -1,14 +1,16 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaInbox } from 'react-icons/fa6';
 import { HiChatBubbleLeftRight  } from 'react-icons/hi2';
-import { MdFilePresent, MdLogout, MdOutbox, MdOutlineDeleteSweep } from 'react-icons/md';
+import { MdFilePresent, MdLogout, MdOutlineDeleteSweep } from 'react-icons/md';
 import { BiMailSend  } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { RiMailAddFill } from 'react-icons/ri';
 import { util } from 'node-forge';
 import { useFetchAuthAll } from '../../services/useFetchAll'; 
+import DecText from '../../utils/DecText';
 
 const Sidebar = () => {  
+    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
     const [menubar, setmenubar] = useState();  
     const [messages, setmessages] = useState(0); 
     const navigate=useNavigate()
@@ -24,24 +26,20 @@ const Sidebar = () => {
         }else if(num==3){
             navigate('/dashboardtrash') 
         }else if(num==4){
-            navigate('/file-explorer') 
-            
+            navigate('/file-explorer')  
         }else if(num==5){
-            navigate('/new-message') 
-            
-        }
-
+            navigate('/new-message')  
+        } 
       }  
       const getAllMessagesNew=async()=>{
           const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user'))) 
-          const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getAllMessagesIntCount&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
+          const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getAllMessagesIntCount&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
           console.log(query)
           if(query>0){ 
             setmessages(query)
           } 
         }
-        useEffect(() => {
-            // Call the function immediately
+        useEffect(() => { 
             getAllMessagesNew();
         
             // Set up the interval to call the function every 10 seconds
@@ -66,8 +64,7 @@ const Sidebar = () => {
         }
       },[])
   return (
-    <div aria-label='sidebar'>
-     
+    <div aria-label='sidebar'> 
         <div className='absolute inset-0 -left-1 -top-[0.1rem] w-14 bg-gray-900/90 border-r border-gray-800 max-h-[100.04%] overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-center justify-start '>
         {
             menubar==5?
@@ -146,16 +143,13 @@ const Sidebar = () => {
                 <div title='Abmelden' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdLogout   />
                 </div>
-            </div>
-        
+            </div> 
         <div className='text-gray-400 hidden p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center'>
             <div title='Support' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-700 hover:bg-blue-500/30 rounded cursor-pointer'>
             <HiChatBubbleLeftRight  />
             </div>
-        </div>
-
-        </div>
-    
+        </div> 
+        </div> 
     </div>
   )
 }

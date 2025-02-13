@@ -1,28 +1,20 @@
-import React,{useEffect, useRef, useState} from 'react'
-import Loader from '../components/Loader'
+import React,{useEffect, useState} from 'react' 
 import { RiMailAddFill } from "react-icons/ri";
-import { useTheme } from '../styles/ThemeContext'
-import { light,dark } from '../styles/schema';
-import { Link, useNavigate } from 'react-router-dom'
-import { useFetchAuthAll } from '../services/useFetchAll'; 
-import imgs from '../assets/Logo.png'  
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { FaSearch  } from "react-icons/fa";
-import Sidebar from '../components/dashboardsidebar/Sidebar';
-import { MdArrowBackIos, MdArrowForwardIos, MdCancel, MdClose, MdDeleteForever, MdMessage, MdPerson, MdPersonOutline, MdPersonPinCircle, MdPriorityHigh, MdSend } from 'react-icons/md';
-import RowMessage from '../components/RowMessage';
+import { useTheme } from '../styles/ThemeContext' 
+import { Link } from 'react-router-dom'
+import { useFetchAuthAll } from '../services/useFetchAll';  
+import Sidebar from '../components/dashboardsidebar/Sidebar'; 
 import { util } from 'node-forge';
 import DataTableMailInbox from '../components/DataTableMailInbox';
+import DecText from '../utils/DecText';
 
-const Dashboard = () => {
-  const [menubar, setmenubar] = useState(2); 
+const Dashboard = () => { 
   const [data, setdata] = useState([]); 
-   
-  const {theme}=useTheme() 
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''  
  
   const getAllMessages=async()=>{
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user'))) 
-    const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getMessagesAllReceived&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
+    const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getMessagesAllReceived&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
     Array.isArray(query)?setdata(query):''
   }
   
@@ -33,12 +25,8 @@ const Dashboard = () => {
     <div className={'pt-8 px-1 w-screen dark:text-gray-200 text-gray-800 dark:bg-gray-950 bg-blue-100 flex flex-col items-start justify-start h-screen  '}>  
     <div className='w-full h-full relative flex flex-col items-start justify-start pl-14'>
      <Sidebar />
-     <div className='w-full h-full flex flex-col items-start justify-start animate-fadeInfast'>
-
-     
-      <DataTableMailInbox Data={data.length>0?data:[]} updater={getAllMessages} />
-         
-        
+     <div className='w-full h-full flex flex-col items-start justify-start animate-fadeInfast'> 
+      <DataTableMailInbox Data={data.length>0?data:[]} updater={getAllMessages} /> 
     </div>  
     </div>
     <div className='fixed bottom-20 right-16'>

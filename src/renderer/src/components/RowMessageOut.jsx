@@ -1,7 +1,7 @@
 import { util } from 'node-forge'
 import React, { useEffect }  from 'react'
 import { FaShareFromSquare } from 'react-icons/fa6'
-import { MdAttachment, MdDeleteForever, MdPriorityHigh, MdShare } from 'react-icons/md'
+import { MdAttachment, MdPriorityHigh } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 
 const RowMessageOut = ({item}) => {
@@ -15,7 +15,7 @@ const RowMessageOut = ({item}) => {
     <div className='w-full flex flex-row items-center justify-center py-2'>
     
     <div className='w-12 aspect-square dark:bg-blue-100 bg-blue-300 text-gray-800 rounded-full flex flex-col items-center justify-center' >
-                        <b className='text-sm uppercase'>{User.Name.includes('+') ? User.Name.replace(/\+/g, '') : User.Name}</b>
+    <b className='text-sm uppercase'>{User.Name.includes('+') ? User.Name.replace(/\+/g, '') : User.Name}</b>
     </div>
     </div>
     <div className='w-full col-span-11 px-8  py-2 pl-0 flex flex-col items-start justify-start '>
@@ -52,11 +52,7 @@ const RowMessageOut = ({item}) => {
             }
             <p className='pl-4 truncate'><b className='dark:text-white text-gray-700 text-[16px] mr-4'> {item.Betreff}</b>{item.Nachricht}</p>
             </div>
-            <div className='text-sm flex flex-row items-start justify-start'>
-
-            
-            
-
+            <div className='text-sm flex flex-row items-start justify-start'> 
             </div>
         </div>
     </div>

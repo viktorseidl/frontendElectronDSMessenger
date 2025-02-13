@@ -1,20 +1,19 @@
-import React, { useState, useMemo, Fragment } from "react";
-import PropTypes from "prop-types";
-import { MdArrowBackIos, MdArrowForwardIos, MdCancel, MdChromeReaderMode, MdClose, MdDelete, MdMarkAsUnread, MdMarkChatRead, MdMarkEmailRead, MdMarkEmailUnread, MdPerson } from "react-icons/md";
-import { Link } from "react-router-dom";  
-import imgs from './../assets/Logo.png'
+import React, { useState, useMemo } from "react"; 
+import { MdArrowBackIos, MdArrowForwardIos, MdCancel, MdClose, MdDelete, MdMarkEmailRead, MdMarkEmailUnread, MdPerson } from "react-icons/md"; 
 import RowMessage from "./RowMessage";
 import { FaSearch } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import { registerLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
 import { util } from "node-forge";
 import { useFetchAuthAll } from "../services/useFetchAll";
 import Dialog from "./Dialog";
+import DecText from "../utils/DecText";
 registerLocale('de', de)
 
 const DataTableMailInbox = ({ Data, updater }) => {
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
   const [filters, setFilters] = useState({
     Betrefftxt: "",
     Sendername: "Alle Versender",
@@ -102,7 +101,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
     closeDialog(e) 
     if(selectedTickets.length>0){
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=DeleteMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {arr:JSON.stringify(selectedTickets)}, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=DeleteMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {arr:JSON.stringify(selectedTickets)}, null);
         if(query==true){
           setSelectedTickets([])
           updater()
@@ -113,7 +112,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
     closeDialogMark(e) 
     if(selectedTickets.length>0){
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=1','ssdsdsd',"PUT", {arr:JSON.stringify(selectedTickets)}, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=1','ssdsdsd',"PUT", {arr:JSON.stringify(selectedTickets)}, null);
         if(query==true){
           setSelectedTickets([]) 
           setReadtype('')
@@ -125,7 +124,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
     closeDialogMark(e) 
     if(selectedTickets.length>0){
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=0','ssdsdsd',"PUT", {arr:JSON.stringify(selectedTickets)}, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=MarkReadMessageArr&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=0','ssdsdsd',"PUT", {arr:JSON.stringify(selectedTickets)}, null);
         if(query==true){
           setSelectedTickets([]) 
           setReadtype('')
@@ -137,7 +136,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
     closeDialogId(e) 
     if(currentId>0){
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=DeleteMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {mid:currentId}, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=DeleteMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"DELETE", {mid:currentId}, null);
         if(query==true){
           setCurrentId(null)
           updater()
@@ -148,7 +147,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
     closeDialogMarkID(e) 
     if(currentId>0){
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=1','ssdsdsd',"PUT", {mid:currentId}, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=MarkReadMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=1','ssdsdsd',"PUT", {mid:currentId}, null);
         if(query==true){
           setCurrentId(null)
           setReadtype('')
@@ -160,7 +159,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
     closeDialogMarkID(e) 
     if(currentId>0){
         const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-        const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=MarkReadMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=0','ssdsdsd',"PUT", {mid:currentId}, null);
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=MarkReadMessageOnID&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP)+'&b=0','ssdsdsd',"PUT", {mid:currentId}, null);
         if(query==true){
           setCurrentId(null)
           setReadtype('')
@@ -265,10 +264,8 @@ const DataTableMailInbox = ({ Data, updater }) => {
         className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 text-gray-800 dark:text-white  placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
         selected={filters.dateTo} 
         onChange={(date) => handleFilterChange("dateTo", date)} />
-          </label>
-        
-      </div>
- 
+          </label> 
+      </div> 
       <div className='p-2 w-full flex flex-row items-center justify-between '>
                   <div className='flex flex-row items-center justify-start ' >
                       <label className='flex flex-row items-center justify-start my-2'>
@@ -347,8 +344,7 @@ const DataTableMailInbox = ({ Data, updater }) => {
             </div>
           </div> 
           )} 
-      </div>
- 
+      </div> 
       <div className='p-2 w-full flex flex-row items-center justify-between '>
         <div className='flex flex-row items-center justify-start' >
               <label className='flex flex-row items-center justify-start mt-2'>

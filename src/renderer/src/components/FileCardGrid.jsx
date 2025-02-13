@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv } from 'react-icons/fa';
-import pako from 'pako';
-import { MdArrowBackIos, MdArrowForwardIos, MdAttachment, MdClose, MdFilePresent, MdPerson } from 'react-icons/md';
+import { FaSearch,FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv } from 'react-icons/fa'; 
+import { MdArrowBackIos, MdArrowForwardIos, MdClose, MdFilePresent, MdPerson } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt } from "react-icons/bs";
 import { IoImageSharp } from "react-icons/io5";
 import { AiOutlineGif } from "react-icons/ai"; 
 import { useFetchAuthAll } from '../services/useFetchAll';
+import DecText from '../utils/DecText';
 const FileCardGrid = ({ data }) => {
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
   // State to manage search term and selected filetype
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFileType, setSelectedFileType] = useState('all');
@@ -55,22 +56,7 @@ const FileCardGrid = ({ data }) => {
     'video/mp4',  
     'text/csv',  
     ];
-    const decompressBase64Image = (base64Data ) => {
-        try {
-            // Decode the base64 string into a byte array
-            const gZipBuffer = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
-
-            // Slice to remove gzip header (first 4 bytes)
-            const compressedData = gZipBuffer.slice(4);
-
-            // Decompress the data using pako
-            const decompressedData = pako.inflate(compressedData); 
-            return btoa(String.fromCharCode(...decompressedData)) 
-        } catch (error) {
-            console.error("Error decompressing image: ", error);
-            return ''; // Return empty string if there's an error
-        }
-    }; 
+     
     const returnIconType=(it)=>{ 
       switch(it){
         case "image/jpeg":
@@ -185,61 +171,18 @@ const FileCardGrid = ({ data }) => {
     }
     const saveFileandOpen=async (id,idindex)=>{
       const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-          const query=await useFetchAuthAll("http://localhost/electronbackend/index.php?path=getFileToSaveOnIdAndIndex&a="+util.encode64(id+'.'+idindex),'ssdsdsd',"GET", null, null);
+          const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getFileToSaveOnIdAndIndex&a="+util.encode64(id+'.'+idindex),'ssdsdsd',"GET", null, null);
           if(query.length>0){ 
             const a = await window.api.electronFiles.saveFile(query[0].Mail,query[0].Name)  
           }
-    }
-  // Open image dialog
-  const openImageDialog = async (basefile, filetype, fileName) => { 
-
-    //API FOR SAVING FILES LOCAL   ---- > window.api.electronFiles.saveFile(basefile,fileName)
-    
-    /*
-    {
-// If it's not a PDF, show the image in the dialog
-      const decompImg = decompressBase64Image(basefile,filetype);
-      setCurrentImage(decompImg);
-      setIsDialogOpen(true);
-    }*/
-  };
+    } 
 
   // Close image dialog when clicked outside
   const closeDialog = (e) => {
     if (e.target === e.currentTarget) {
       setIsDialogOpen(false);
     }
-  }; 
-  function downloadPdf(base64Data, filetype,fileName) {
-    // Base64-Daten in Binärdaten umwandeln
-    const byteCharacters = atob(base64Data);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-  
-    // Blob aus Binärdaten erstellen
-    const blob = new Blob([byteArray], { type: filetype });
-  
-    // Temporäre URL für den Blob erstellen
-    const blobUrl = URL.createObjectURL(blob);
-  
-    // <a>-Element dynamisch erstellen
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = fileName; // Dateiname festlegen
-    document.body.appendChild(link);
-  
-    // Automatisch einen Klick auf den Link auslösen
-    link.click();
-  
-    // Den Link wieder aus dem DOM entfernen
-    document.body.removeChild(link);
-  
-    // Die Blob-URL freigeben
-    URL.revokeObjectURL(blobUrl);
-  }
+  };  
   return (
     <div className=" flex-grow max-h-full overflow-auto flex flex-col items-start justify-start w-full py-4">
 <div className=' w-full h-20 flex flex-row items-center justify-end -mt-2'>
