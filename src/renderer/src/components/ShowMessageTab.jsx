@@ -161,18 +161,20 @@ const ShowMessageTab = () => {
   return (
     <div className=" flex-grow max-h-full overflow-auto flex flex-col items-start justify-start w-full py-4">
 <div className=' w-full h-auto flex flex-row items-center justify-end -mt-2 -mb-[2px]'>  
-          <div className='w-full px-4 flex flex-col items-start justify-start gap-x-4'>
-          <div className='  w-3/4 flex flex-row items-center justify-start gap-x-2 mb-2'>
+          <div className='w-full pl-4 flex flex-col items-start justify-start gap-x-4'>
+
+          <div className='  w-3/4 flex flex-row items-center justify-start mb-2'>
           <button onClick={() => navigate(-1)} className='flex flex-row items-center justify-center ring-1 dark:ring-gray-800 ring-gray-800/20 px-2 py-0.5 rounded-sm dark:bg-slate-900 bg-gray-200 dark:text-blue-400 text-gray-600 shadow-inner dark:hover:bg-blue-500/30 hover:bg-black/10'><MdArrowBackIos className='mr-2' />Zurück</button>
           </div>
               <div className='  w-3/4 flex flex-row items-center justify-start gap-x-2 mb-2'> 
                   <div 
-                  className=' w-auto font-[arial] dark:text-white text-black py-2 text-sm'
+                  className=' w-28 font-[arial] dark:text-white text-black py-2 text-sm'
                   ><b>{locationData.state!=null&&Array.isArray(locationData.state.Sendername)===false?'Absender:':'Empfänger:'}</b></div>
                   <div 
-                  className=' w-full font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 pl-4 text-sm'
-                  ><b>{locationData.state===null?'':locationData.state.Sendername}</b></div>
+                  className=' w-full ml-2 font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 font-normal text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 text-sm'
+                  ><a>{locationData.state===null?'':locationData.state.Sendername}</a></div>
               </div>  
+
           </div>
           <div className='w-20 p-5 h-full flex flex-col items-center justify-center'>
               <div className='w-full aspect-square dark:bg-blue-200 bg-blue-300 text-gray-800 rounded-full flex flex-col items-center justify-center' >
@@ -182,16 +184,16 @@ const ShowMessageTab = () => {
            </div>
       {/* Search and Filter */}
       
-      <div className="h-auto w-full mt-0 flex flex-row items-start justify-start mb-1.5">
-      <div className='w-2/3 pl-4 '>
-        <div className='w-full px-4 flex flex-row items-center justify-start gap-x-2'> 
-            <div className='  w-full flex flex-row items-center justify-start gap-x-2'> 
+      <div className="h-auto pl-4 w-full mt-0 flex flex-row items-start justify-start mb-1.5">
+      <div className='w-2/3 mr-2'>
+        <div className='w-full  flex flex-row items-center justify-start '> 
+            <div className='  w-full flex flex-row items-center justify-start  '> 
                 <div 
-                className=' w-auto font-[arial] dark:text-white text-black py-2 text-sm'
+                className=' w-28 font-[arial] text-left dark:text-white text-black py-2 text-sm'
                 ><b>Betreff:</b></div>
                 <div 
-                className=' w-full font-[arial] ml-1  dark:text-white rounded text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 text-sm'
-                ><b>{locationData.state===null?'':locationData.state.Betreff}</b></div>
+                className=' w-full font-[arial] ml-4  dark:text-white font-normal text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 pl-3 text-sm'
+                ><a>{locationData.state===null?'':locationData.state.Betreff}</a></div>
             </div> 
         </div>     
       </div>
@@ -204,16 +206,16 @@ const ShowMessageTab = () => {
             :''
       } 
       </div>
-      <div className="h-auto w-full mt-0 flex flex-row items-start justify-start mb-4">
-      <div className='w-2/3 pl-5 '>
-      <div className='w-full px-4 flex flex-row items-center justify-start gap-x-2'> 
-            <div className='  w-full flex flex-row items-center justify-start gap-x-2'> 
+      <div className="h-auto pl-4 w-full mt-0 flex flex-row items-start justify-start mb-4">
+      <div className='w-2/3  '>
+      <div className='w-full  flex flex-row items-center justify-start gap-x-2'> 
+            <div className='  w-full flex flex-row items-center justify-start '> 
                 <div 
-                className=' w-auto font-[arial] dark:text-white text-black py-2 text-sm'
+                className=' w-28 text-left font-[arial] dark:text-white text-black py-2 text-sm'
                 ><b>Datum:</b></div>
                 <div 
-                className=' w-auto font-[arial] ml-1  dark:text-white rounded text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 text-sm'  
-                ><b>{locationData.state===null?'':(locationData.state.Datum.split(' ')[0].split('-')[2]+'.'+locationData.state.Datum.split(' ')[0].split('-')[1]+'.'+locationData.state.Datum.split(' ')[0].split('-')[0]+' '+locationData.state.Datum.split(' ')[1].split('.')[0])}</b></div>
+                className=' w-auto font-[arial] pl-3  dark:text-white  text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 text-sm font-normal'  
+                ><a>{locationData.state===null?'':(locationData.state.Datum.split(' ')[0].split('-')[2]+'.'+locationData.state.Datum.split(' ')[0].split('-')[1]+'.'+locationData.state.Datum.split(' ')[0].split('-')[0]+' '+locationData.state.Datum.split(' ')[1].split('.')[0])}</a></div>
             </div> 
         </div> 
       </div>  

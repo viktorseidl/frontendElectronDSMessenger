@@ -66,7 +66,7 @@ const RowMessage = ({item, erledigt,selected,selhandler,deleter,markread}) => {
             className=' w-4 aspect-square mr-4 dark:bg-[#19263a] bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/30 outline-none text-sm'  
             /> 
     <Link to={'/message/'+item.ID} state={item} className='w-12 aspect-square dark:bg-blue-100 bg-blue-300 text-gray-800 rounded-full flex flex-col items-center justify-center' >
-                        <b className='text-sm uppercase'>{item.Sender.includes('+') ? item.Sender.replace(/\+/g, '') : item.Sender}</b>
+                        <b className='text-sm uppercase'>{item.Sender.includes('+') ? (item.Sender.replace(/\+/g, '')[0]+item.Sender.replace(/\+/g, '')[1]) : (item.Sender[0]+item.Sender[1])}</b>
     </Link>
     </div>
     <div className='w-full col-span-11 px-8  py-2 pl-0 flex flex-col items-start justify-start gap-y-2'>

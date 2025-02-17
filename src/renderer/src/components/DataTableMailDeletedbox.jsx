@@ -10,6 +10,8 @@ import Dialog from "./Dialog";
 import { util } from "node-forge";
 import { useFetchAuthAll } from "../services/useFetchAll";
 import DecText from "../utils/DecText";
+import { RiMailAddFill } from "react-icons/ri";
+import { Link } from "react-router-dom";
 registerLocale('de', de)
 const DataTableMailDeletedbox = ({ Data, updater }) => {
   const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:'' 
@@ -122,7 +124,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
         <select
           value={filters.Sendername}
           onChange={(e) => handleFilterChange("Sendername", e.target.value)}
-          className="w-5/6  ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
+          className="w-5/6  ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none rounded py-2 px-4 text-sm"
           >
           {Object.entries(reasonCounters).map(([Sendername, count]) => (
             <option key={Sendername} value={Sendername}>
@@ -138,7 +140,7 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
         locale={'de'}
         closeOnScroll={true}
         dateFormat={'dd.MM.yyyy'}
-        className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
+        className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none rounded py-2 px-4 text-sm"
         selected={filters.dateFrom} 
         onChange={(date) => handleFilterChange("dateFrom", date)} /> 
         </label>
@@ -149,10 +151,13 @@ const DataTableMailDeletedbox = ({ Data, updater }) => {
         locale={'de'}
         closeOnScroll={true}
         dateFormat={'dd.MM.yyyy'}
-        className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
+        className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none rounded py-2 px-4 text-sm"
         selected={filters.dateTo} 
         onChange={(date) => handleFilterChange("dateTo", date)} />
           </label> 
+          <div className="w-full h-full flex flex-col items-end justify-end col-start-6">
+          <Link to={'/new-message'} title="Neue Nachricht verfassen" className="cursor-pointer  dark:bg-blue-600 dark:hover:bg-blue-700 bg-blue-600 hover:bg-blue-700 py-1 px-4 rounded shadow-sm flex flex-row items-center justify-center dark:shadow-[rgba(0,0,0,0.4)] shadow-[rgba(0,0,0,0.4)] text-white text-sm"><RiMailAddFill className="inline mr-2 text-xl" /> Mail </Link>
+          </div>
       </div>
  
       <div className='p-2 w-full flex flex-row items-center justify-between '>

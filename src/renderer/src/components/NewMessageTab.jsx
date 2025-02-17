@@ -280,7 +280,7 @@ const closeDialog = (e) => {
                 closeOnScroll={true}
                 dateFormat={'Pp'}
                 showTimeSelect
-                className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 outline-none ring-1 dark:ring-gray-700 ring-gray-200 rounded py-2 px-4 text-sm"
+                className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none rounded py-2 px-4 text-sm"
                 selected={versandterminierung} 
                 onChange={(date) => setversandterminierung(date)} /> 
       </div>

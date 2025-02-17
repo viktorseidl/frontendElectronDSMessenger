@@ -12,10 +12,10 @@ const RowMessageOut = ({item}) => {
     },[])
   return ( 
    <Link to={'/message/'+item.ID} state={item} className='w-full dark:bg-gray-900 bg-white dark:hover:bg-orange-300/20 hover:bg-blue-500/10 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
-    <div className='w-full flex flex-row items-center justify-center py-2'>
+    <div className='w-full flex flex-row items-center justify-center py-3'>
     
     <div className='w-12 aspect-square dark:bg-blue-100 bg-blue-300 text-gray-800 rounded-full flex flex-col items-center justify-center' >
-    <b className='text-sm uppercase'>{User.Name.includes('+') ? User.Name.replace(/\+/g, '') : User.Name}</b>
+    <b className='text-sm uppercase'>{User.Name.includes('+') ? (User.Name.replace(/\+/g, '')[0]+User.Name.replace(/\+/g, '')[1]) : (User.Name[0]+User.Name[1])}</b>
     </div>
     </div>
     <div className='w-full col-span-11 px-8  py-2 pl-0 flex flex-col items-start justify-start '>

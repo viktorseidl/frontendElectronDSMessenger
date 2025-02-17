@@ -25,7 +25,41 @@ const DatabaseScreen = () => {
      if(host.trim().toString().length>3&&(localhost.trim().toString().length>5)&&(dbname.trim().toString().length>3)&&(user.trim().toString().length>=2)){
       setshowloader(1)  
       try{
-      const hostcheck=await useFetchAuthAll("http://"+localhost+":80/electronbackend/index.php?path=testHostConnection",'ssdsdsd',"GET", null,null);  
+      const hostcheck=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testHostConnection",'ssdsdsd',"GET", null,null);  
+      if(hostcheck=="OK"){
+            const check=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testDBConnection",'ssdsdsd',"POST", {
+                host:host,
+                dbname:dbname,
+                dbnamepflege:dbnamepflege,
+                user:user,
+                pass:password
+            },null);  
+            
+            if(check=='NO CONNECTION'){ 
+                  setshowloader(3) 
+                  setTimeout(()=>{
+                    setshowloader(0)
+                    seterr(true)
+                  },1000)
+            }else if(check=='FILE CREATION FAILED'){
+                  setshowloader(3) 
+                  setTimeout(()=>{
+                    setshowloader(0)
+                    seterr(true)
+                  },1000)
+            }else{ 
+                setTimeout(()=>{
+                  setshowloader(2) 
+                  setTimeout(()=>{
+                    if(setCookie()){
+                      navigate('/overview')
+                    }else{
+                      setshowloader(0)
+                    }
+                  },1000)
+                },1000)  
+            } 
+      }
       }catch(error){
         setshowloader(4) 
         setTimeout(()=>{
@@ -33,50 +67,17 @@ const DatabaseScreen = () => {
           seterr(true)
         },4000)
       } 
-        const check=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testDBConnection",'ssdsdsd',"POST", {
-            host:host,
-            dbname:dbname,
-            dbnamepflege:dbnamepflege,
-            user:user,
-            pass:password
-        },null);  
         
-        if(check=='NO CONNECTION'){ 
-              setshowloader(3) 
-              setTimeout(()=>{
-                setshowloader(0)
-                seterr(true)
-              },1000)
-        }else if(check=='FILE CREATION FAILED'){
-              setshowloader(3) 
-              setTimeout(()=>{
-                setshowloader(0)
-                seterr(true)
-              },1000)
-        }else{ 
-            setTimeout(()=>{
-              setshowloader(2) 
-              setTimeout(()=>{
-                if(setCookie()){
-                  navigate('/overview')
-                }else{
-                  setshowloader(0)
-                }
-              },1000)
-            },1000)  
-        } 
     }else{
       seterr(true)
     }
   };
   const checkCookie = async () => { 
     if(window.localStorage.getItem('dbConfig')){
-      const Configexists=await useFetchAuthAll("http://"+localhost+":80/electronbackend/index.php?path=checkConfigFileConnector",'ssdsdsd',"GET", null,null); 
-      if(Configexists){
+      const Configexists=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=checkConfigFileConnector",'ssdsdsd',"GET", null,null); 
+      if(Configexists==true){
       navigate('/overview');
-      }else{
-        window.localStorage.removeItem('dbConfig')
-      }
+      } 
     }else{ 
       return false;
     } 
@@ -86,12 +87,17 @@ const DatabaseScreen = () => {
     const cookie = {
       url: '', // The URL for the cookie
       name: 'dbConfig',
-      value: EncText(util.encode64(JSON.stringify({id:1,host:host,dbname:dbname,user:user,password:password,localhost:localhost}))), 
-      expirationDate: Math.floor(Date.now() / 1000) + (3600*24*365), // Expires in 1 hour
+      value: EncText(util.encode64(JSON.stringify({id:1,host:host,dbname:dbname,dbnamepflege:dbnamepflege,user:user,password:password,localhost:localhost}))), 
+      expirationDate: Math.floor(Date.now() / 1000) + (3600*24*365), // Expires in 1 year
     };
-    window.localStorage.setItem('dbConfig',JSON.stringify(cookie)) 
+    
+    return window.localStorage.setItem('dbConfig',JSON.stringify(cookie)) 
   }; 
   useEffect(()=>{   
+    alert(JSON.stringify(window.localStorage.getItem('dbConfig')).toString());
+    if(window.localStorage.getItem('dbConfig')){
+      navigate('/overview')
+    }
     checkCookie()  
   },[theme])
   return (

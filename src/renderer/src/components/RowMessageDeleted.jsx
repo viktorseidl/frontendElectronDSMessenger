@@ -47,7 +47,7 @@ const RowMessageDeleted = ({item, erledigt,selected,selhandler}) => {
    <div className='w-full dark:bg-gray-900 bg-white dark:hover:bg-orange-300/20 hover:bg-blue-500/10 cursor-pointer grid grid-cols-12 items-start justify-items-start'>
     <Link to={'/message/'+item.ID} state={item} className='w-full flex flex-row items-center justify-center py-2'> 
     <div className='w-12 aspect-square dark:bg-blue-100 bg-blue-300 text-gray-800 rounded-full flex flex-col items-center justify-center' >
-                        <b className='text-sm uppercase'>{item.Sender.includes('+') ? item.Sender.replace(/\+/g, '') : item.Sender}</b>
+                        <b className='text-sm uppercase'>{item.Sender.includes('+') ? (item.Sender.replace(/\+/g, '')[0]+item.Sender.replace(/\+/g, '')[1]) : (item.Sender[0]+item.Sender[1])}</b>
     </div>
     </Link>
     <div className='w-full col-span-11 px-8  py-2 pl-0 flex flex-col items-start justify-start gap-y-2'>
