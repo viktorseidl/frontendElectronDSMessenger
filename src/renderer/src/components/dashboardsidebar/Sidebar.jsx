@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { FaInbox } from 'react-icons/fa6';
 import { HiChatBubbleLeftRight  } from 'react-icons/hi2';
-import { MdFilePresent, MdLogout, MdOutlineDeleteSweep } from 'react-icons/md';
+import { MdFilePresent, MdLogout, MdNotes, MdOutlineDeleteSweep, MdPostAdd } from 'react-icons/md';
 import { BiMailSend  } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { RiMailAddFill } from 'react-icons/ri';
@@ -29,6 +29,8 @@ const Sidebar = () => {
             navigate('/file-explorer')  
         }else if(num==5){
             navigate('/new-message')  
+        } else if(num==6){
+            navigate('/pinwall')  
         } 
       }  
       const getAllMessagesNew=async()=>{
@@ -61,6 +63,8 @@ const Sidebar = () => {
             setmenubar(4)
         }else if(window.location.hash=='#/new-message'){
             setmenubar(5)
+        }else if(window.location.hash=='#/pinwall'){
+            setmenubar(6)
         }
       },[])
   return (
@@ -136,6 +140,20 @@ const Sidebar = () => {
             <div onClick={()=>frameHandler(4)} className='text-gray-500 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
                 <div title='Anhänge' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdFilePresent   />
+                </div>
+            </div>
+        }
+        {
+            menubar==6?
+            <div onClick={()=>frameHandler(6)} className='dark:bg-blue-600/60 bg-blue-600/60 text-gray-200 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
+                <div title='Anhänge' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <MdPostAdd   />
+                </div>
+            </div>
+            :
+            <div onClick={()=>frameHandler(6)} className='text-gray-500 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
+                <div title='Anhänge' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <MdPostAdd   />
                 </div>
             </div>
         }

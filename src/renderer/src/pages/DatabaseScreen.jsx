@@ -8,6 +8,12 @@ import imgs from '../assets/Logo.png'
 import EncText from '../utils/EncText';
 import bgimg from './../assets/wavy-lines.svg'
 import { util } from 'node-forge';
+import Bittewarten from '../components/databasescreencomps/Bittewarten';
+import Apiverbindungok from '../components/databasescreencomps/Apiverbindungok';
+import Datenbankok from '../components/databasescreencomps/Datenbankok';
+import ErrorDatenbank from '../components/databasescreencomps/ErrorDatenbank';
+import ErrorAPI from '../components/databasescreencomps/ErrorAPI';
+import ErrorDatenbankKonfig from '../components/databasescreencomps/ErrorDatenbankKonfig';
 const DatabaseScreen = () => {  
   const {theme}=useTheme()  
   const navigate=useNavigate(); 
@@ -27,74 +33,104 @@ const DatabaseScreen = () => {
       try{
       const hostcheck=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testHostConnection",'ssdsdsd',"GET", null,null);  
       if(hostcheck=="OK"){
-            const check=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testDBConnection",'ssdsdsd',"POST", {
-                host:host,
-                dbname:dbname,
-                dbnamepflege:dbnamepflege,
-                user:user,
-                pass:password
-            },null);  
-            
-            if(check=='NO CONNECTION'){ 
-                  setshowloader(3) 
-                  setTimeout(()=>{
-                    setshowloader(0)
-                    seterr(true)
-                  },1000)
-            }else if(check=='FILE CREATION FAILED'){
-                  setshowloader(3) 
-                  setTimeout(()=>{
-                    setshowloader(0)
-                    seterr(true)
-                  },1000)
-            }else{ 
-                setTimeout(()=>{
-                  setshowloader(2) 
-                  setTimeout(()=>{
-                    if(setCookie()){
-                      navigate('/overview')
-                    }else{
-                      setshowloader(0)
-                    }
-                  },1000)
-                },1000)  
-            } 
+        checkDatabaseCredentials();
       }
-      }catch(error){
-        setshowloader(4) 
-        setTimeout(()=>{
-          setshowloader(0)
-          seterr(true)
-        },4000)
+    }catch(error){
+      setTimeout(()=>{
+      setshowloader(5) 
+      setTimeout(()=>{
+        setshowloader(0)
+        seterr(true)
+      },4000)
+      },1000)
+    } 
+    
+  }else{
+    seterr(true)
+  }
+};
+
+  const signal = new AbortController().abort()
+  const checkDatabaseCredentials=async()=>{
+    setTimeout(()=>{
+      setshowloader(4) 
+      signal
+            setTimeout(()=>{
+              setshowloader(0)
+              seterr(true)
+            },4000)
+    },5000);  
+    const check=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testDBConnection",'ssdsdsd',"POST", {
+          host:host,
+          dbname:dbname,
+          dbnamepflege:dbnamepflege,
+          user:user,
+          pass:password
+      },null);  
+ 
+      if(check=='NO CONNECTION'){ 
+            setshowloader(4) 
+            setTimeout(()=>{
+              setshowloader(0)
+              seterr(true)
+            },1000)
+      }else if(check=='FILE CREATION FAILED'){
+            setshowloader(6) 
+            setTimeout(()=>{
+              setshowloader(0)
+              seterr(true)
+            },1000)
+      }else{ 
+          setTimeout(()=>{
+            setshowloader(2) 
+            setTimeout(()=>{
+              if(setCookie()){
+                //navigate('/overview')
+                CheckAndCreateTables()
+              }else{
+                setshowloader(0)
+                seterr(true)
+              }
+            },1000)
+          },1000)  
       } 
-        
-    }else{
-      seterr(true)
-    }
-  };
+  }
+  const CheckAndCreateTables = async ()=>{
+    const check=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testDBTables",'ssdsdsd',"POST", {
+      host:host,
+      dbname:dbname,
+      dbnamepflege:dbnamepflege,
+      user:user,
+      pass:password
+    },null); 
+  }
   const checkCookie = async () => { 
     if(window.localStorage.getItem('dbConfig')){
-      const Configexists=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=checkConfigFileConnector",'ssdsdsd',"GET", null,null); 
-      if(Configexists==true){
-      navigate('/overview');
-      } 
+        const Configexists=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=checkConfigFileConnector",'ssdsdsd',"GET", null,null); 
+        if(Configexists==true){
+        navigate('/overview');
+        } 
     }else{ 
       return false;
     } 
   }; 
-  
+  const ErrorMessage=()=>{
+    return(<div className=' w-5/6 mb-4 dark:bg-pink-600 bg-red-600 p-2 rounded dark:text-white text-white text-sm'>
+      ERROR - Bitte überprüfen Sie die Daten 
+      </div>)
+  }
   const setCookie = async () => { 
     const cookie = {
-      url: '', // The URL for the cookie
+      url: '',  
       name: 'dbConfig',
       value: EncText(util.encode64(JSON.stringify({id:1,host:host,dbname:dbname,dbnamepflege:dbnamepflege,user:user,password:password,localhost:localhost}))), 
-      expirationDate: Math.floor(Date.now() / 1000) + (3600*24*365), // Expires in 1 year
+      expirationDate: Math.floor(Date.now() / 1000) + (3600*24*365*2), // Expires in 1 year
     };
     
     return window.localStorage.setItem('dbConfig',JSON.stringify(cookie)) 
   }; 
   useEffect(()=>{   
-    alert(JSON.stringify(window.localStorage.getItem('dbConfig')).toString());
+    //alert(JSON.stringify(window.localStorage.getItem('dbConfig')).toString());
     if(window.localStorage.getItem('dbConfig')){
       navigate('/overview')
     }
@@ -108,34 +144,22 @@ const DatabaseScreen = () => {
         <div className='w-full h-full z-10  flex flex-col items-center justify-center'> 
             {
                 showloader==1?
-                <div className='animate-pulse  flex flex-row items-center justify-center border dark:border-gray-800 border-gray-400 shadow-lg dark:shadow-blue-900/80 shadow-gray-500/80 dark:bg-[#0a0e16] bg-gray-100 rounded-lg py-6 px-8'>
-                <Loader Fill={' fill-blue-600 '} Background={' text-blue-300 '}  />
-                <a className='ml-6 text-sm'>Bitte warten ...<br/>...Daten werden geprüft</a>
-                </div>
+                <Bittewarten />
                 :
-                showloader==2? //success
-                <div className=' flex flex-row items-center justify-center border dark:border-gray-800 border-gray-400 shadow-lg dark:shadow-blue-900/80 shadow-gray-500/80 dark:bg-[#0a0e16] bg-gray-100 rounded-lg py-6 px-8'>
-                <div className='w-full bg-lime-600/40 p-4 flex flex-row items-center justify-center rounded'>
-                <MdDone className='inline text-4xl' />
-                <a className='ml-6 text-sm'>Verbindung wurde hergestellt ...<br />... das System wird initialisiert</a>
-                </div>
-                </div>
+                showloader==2? //successAPI
+                <Apiverbindungok /> 
                 :
-                showloader==3? //error
-                <div className=' flex flex-row items-center justify-center border dark:border-gray-800 border-gray-400 shadow-lg dark:shadow-blue-900/80 shadow-gray-500/80 dark:bg-[#0a0e16] bg-gray-100 rounded-lg py-6 px-8'>
-                <div className='w-full bg-red-600/40 p-4 flex flex-row items-center justify-center rounded'>
-                <MdErrorOutline className='inline text-4xl' />
-                <a className='ml-6 text-sm'>ERROR - Es konnte keine...<br/> ... Verbindung hergestellt werden</a>
-                </div>
-                </div>
+                showloader==3? //successDatabase
+                <Datenbankok /> 
                 :
-                showloader==4? //error
-                <div className=' flex flex-row items-center justify-center border dark:border-gray-800 border-gray-400 shadow-lg dark:shadow-blue-900/80 shadow-gray-500/80 dark:bg-[#0a0e16] bg-gray-100 rounded-lg py-6 px-8'>
-                <div className='w-full bg-red-600/40 p-4 flex flex-row items-center justify-center rounded'>
-                <MdErrorOutline className='inline text-4xl' />
-                <a className='ml-6 text-sm'>ERROR - Die API-Schnittstelle...<br/> ... ist nicht erreichbar</a>
-                </div>
-                </div>
+                showloader==4? //errorDatenbankDaten
+                <ErrorDatenbank /> 
+                :
+                showloader==5? //errorAPI
+                <ErrorAPI /> 
+                :
+                showloader==6? //errorAPI
+                <ErrorDatenbankKonfig /> 
                 :
                 <div className='w-full flex flex-col items-center justify-center h-full '>
                 <div className={' w-2/6 border animate-slide-inleft dark:border-gray-800 border-gray-400 shadow-lg dark:shadow-blue-900/80 shadow-gray-500/80 dark:bg-[#0a0e16] bg-gray-200 rounded pt-10 flex flex-col items-center justify-center  -mt-20'}>  
@@ -143,9 +167,7 @@ const DatabaseScreen = () => {
                 <div className='w-full flex flex-col items-center justify-center'>
                 { 
                   err?
-                  <div className=' w-5/6 mb-4 dark:bg-pink-600 bg-red-600 p-2 rounded dark:text-white text-white text-sm'>
-                  ERROR - Bitte überprüfen Sie die Daten 
-                  </div>
+                  <ErrorMessage />
                   :
                   ''
                 }
@@ -218,7 +240,7 @@ const DatabaseScreen = () => {
                         />
                     </label>
                     <div className='w-5/6 flex mb-8 flex-row items-end justify-end'>
-                    <button  onClick={()=>handleCheckConnection()} className='py-2 px-4 text-sm dark:text-white text-black font-bold mt-14 rounded dark:bg-[#1f273f] bg-gray-300 dark:hover:bg-gray-700 hover:bg-gray-400/60 shadow-inner shadow-[rgba(255,255,255,0.1)] ring-1 dark:ring-gray-800 ring-gray-400'>Speichern</button>
+                    <button  onClick={()=>handleCheckConnection()} className='py-1 px-4 text-sm dark:text-white text-black mt-14 rounded-sm dark:bg-[#1f273f] bg-gray-300 dark:hover:bg-gray-700 outline-none hover:bg-gray-400/60 shadow-inner dark:shadow-[rgba(0,0,0,0.1)] shadow-[rgba(255,255,255,0.1)] ring-1 dark:ring-gray-600 ring-gray-400'>Speichern</button>
                     </div>
                     </div> 
                 </div> 
