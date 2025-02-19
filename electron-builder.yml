@@ -1,4 +1,4 @@
-appId: com.electron.app
+appId: Messenger.app
 productName: Messenger
 directories:
   buildResources: build

@@ -14,6 +14,10 @@ import Datenbankok from '../components/databasescreencomps/Datenbankok';
 import ErrorDatenbank from '../components/databasescreencomps/ErrorDatenbank';
 import ErrorAPI from '../components/databasescreencomps/ErrorAPI';
 import ErrorDatenbankKonfig from '../components/databasescreencomps/ErrorDatenbankKonfig';
+import BittewartenDatenbank from '../components/databasescreencomps/BittewartenDatenbank';
+import DatenbankConfigureSuccess from '../components/databasescreencomps/DatenbankConfigureSuccess';
+import BittewartenVerbindung from '../components/databasescreencomps/BittewartenVerbindung';
+import DatenbankConfigureError from '../components/databasescreencomps/DatenbankConfigureError';
 const DatabaseScreen = () => {  
   const {theme}=useTheme()  
   const navigate=useNavigate(); 
@@ -25,15 +29,23 @@ const DatabaseScreen = () => {
   const [user, setuser] = useState('');
   const [password, setpassword] = useState('');
   const [showloader, setshowloader] = useState(0); 
+  const [ist, setist] = useState(['EMailTable']); 
+  const soll= ['PinnwandTable','EMailTable','EMailColumn','EMail_AnhangTable']; 
 
   const handleCheckConnection = async () => { 
      seterr(false) 
      if(host.trim().toString().length>3&&(localhost.trim().toString().length>5)&&(dbname.trim().toString().length>3)&&(user.trim().toString().length>=2)){
-      setshowloader(1)  
+      setshowloader(9)  
       try{
       const hostcheck=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testHostConnection",'ssdsdsd',"GET", null,null);  
       if(hostcheck=="OK"){
-        checkDatabaseCredentials();
+        setTimeout(()=>{ 
+        setshowloader(3)
+        setTimeout(()=>{ 
+          setshowloader(1)
+          checkDatabaseCredentials();
+        },4000) 
+        },4000) 
       }
     }catch(error){
       setTimeout(()=>{
@@ -42,24 +54,16 @@ const DatabaseScreen = () => {
         setshowloader(0)
         seterr(true)
       },4000)
-      },1000)
+      },3000)
     } 
     
   }else{
     seterr(true)
   }
 };
-
-  const signal = new AbortController().abort()
+ 
   const checkDatabaseCredentials=async()=>{
-    setTimeout(()=>{
-      setshowloader(4) 
-      signal
-            setTimeout(()=>{
-              setshowloader(0)
-              seterr(true)
-            },4000)
-    },5000);  
+     
     const check=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testDBConnection",'ssdsdsd',"POST", {
           host:host,
           dbname:dbname,
@@ -73,29 +77,29 @@ const DatabaseScreen = () => {
             setTimeout(()=>{
               setshowloader(0)
               seterr(true)
-            },1000)
+            },3000)
       }else if(check=='FILE CREATION FAILED'){
             setshowloader(6) 
             setTimeout(()=>{
               setshowloader(0)
               seterr(true)
-            },1000)
+            },3000)
       }else{ 
           setTimeout(()=>{
             setshowloader(2) 
             setTimeout(()=>{
-              if(setCookie()){
-                //navigate('/overview')
+              if(setCookie()){ 
                 CheckAndCreateTables()
               }else{
                 setshowloader(0)
                 seterr(true)
               }
-            },1000)
-          },1000)  
+            },3000)
+          },3000)  
       } 
   }
   const CheckAndCreateTables = async ()=>{
+    setshowloader(7)
     const check=await useFetchAuthAll("http://"+localhost+"/electronbackend/index.php?path=testDBTables",'ssdsdsd',"POST", {
       host:host,
       dbname:dbname,
@@ -103,6 +107,24 @@ const DatabaseScreen = () => {
       user:user,
       pass:password
     },null); 
+    if(check.res==true){ 
+      setTimeout(()=>{
+        setshowloader(8)
+        setTimeout(()=>{
+          navigate('/overview')
+        },13000)
+      },4000)
+    console.log('functioniert')
+    }else{
+      setist(check.fehlt) 
+      setshowloader(10)
+      setTimeout(()=>{
+        window.localStorage.removeItem('dbConfig')
+         setTimeout(()=>{
+          setshowloader(0)
+         },13000)
+      },4000)
+    }
   }
   const checkCookie = async () => { 
     if(window.localStorage.getItem('dbConfig')){
@@ -160,6 +182,18 @@ const DatabaseScreen = () => {
                 :
                 showloader==6? //errorAPI
                 <ErrorDatenbankKonfig /> 
+                :
+                showloader==7? //Warte Datenbank Einrichtung
+                <BittewartenDatenbank /> 
+                :
+                showloader==8? //Warte Datenbank Einrichtung
+                <DatenbankConfigureSuccess /> 
+                :
+                showloader==9? //Warte Datenbank Einrichtung
+                <BittewartenVerbindung /> 
+                :
+                showloader==10? //Warte Datenbank Einrichtung
+                <DatenbankConfigureError fehler={ist} soll={soll} /> 
                 :
                 <div className='w-full flex flex-col items-center justify-center h-full '>
                 <div className={' w-2/6 border animate-slide-inleft dark:border-gray-800 border-gray-400 shadow-lg dark:shadow-blue-900/80 shadow-gray-500/80 dark:bg-[#0a0e16] bg-gray-200 rounded pt-10 flex flex-col items-center justify-center  -mt-20'}>  

@@ -1,11 +1,12 @@
 {
-  "name": "electron-app",
+  "name": "Messenger",
+  "productName": "Messenger",
   "version": "1.0.0",
   "description": "An Electron application with React for the Medicare Message System",
   "main": "./out/main/index.js",
   "author": "Fernando Viktor Seidl",
   "homepage": "https://www.data-schafhausen.com",
-  "build": {
+  "build": { 
     "productName": "Messenger",
     "icon": "./src/renderer/src/assets/icon",
     "win": {

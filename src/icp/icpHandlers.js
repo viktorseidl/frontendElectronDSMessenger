@@ -1,4 +1,5 @@
-import { ipcMain,BrowserWindow,session,app,shell  } from 'electron';  
+import { ipcMain,BrowserWindow,session,app,shell,Notification   } from 'electron';  
+import Bild from './../renderer/src/assets/icon.ico'
 const zlib = require('zlib');
 const { Buffer } = require('buffer');
 const fs = require('fs');
@@ -34,6 +35,16 @@ export async function initializeIpcHandlers() {
       console.log(`Main Process Log: ${message}`);
       return message;
     })
+    ipcMain.on("trigger-notification", (event,data) => { 
+      const notification = new Notification({
+        title: "Messenger",
+        icon: `${path.join(app.getAppPath()+'/src/renderer/src/assets/icon.ico')}`,
+        body: "Sie haben "+data.data+" neue Nachrichten",
+        silent: false,
+      });
+    
+      notification.show();
+    });
     //COOKIE HANDLER
     ipcMain.handle('check-cookie', async (event, { cookieName }) => {
       const isDev = !app.isPackaged;
@@ -67,6 +78,7 @@ export async function initializeIpcHandlers() {
         return false;
       }
     });
+       
     ipcMain.handle('remove-cookie', async (event, { cookieName }) => {
       const isDev = !app.isPackaged;
       const url = isDev

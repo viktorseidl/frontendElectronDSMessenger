@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { RiMailAddFill } from 'react-icons/ri';
 import { util } from 'node-forge';
 import { useFetchAuthAll } from '../../services/useFetchAll'; 
-import DecText from '../../utils/DecText';
+import DecText from '../../utils/DecText'; 
 
 const Sidebar = () => {  
     const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
@@ -32,14 +32,22 @@ const Sidebar = () => {
         } else if(num==6){
             navigate('/pinwall')  
         } 
-      }  
-      const getAllMessagesNew=async()=>{
-          const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user'))) 
-          const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getAllMessagesIntCount&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
-          console.log(query)
-          if(query>0){ 
+    }  
+    const getAllMessagesNew=async()=>{
+        const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user'))) 
+        const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getAllMessagesIntCount&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
+        console.log(query)
+        if(query>0){ 
+            if(!window.localStorage.getItem('notifierInt')){
+                window.localStorage.setItem('notifierInt', Number(parseInt(new Date().getTime())+(20*60*1000)))
+            }else{
+                if(parseInt(new Date().getTime())>parseInt(window.localStorage.getItem('notifierInt'))){
+                    window.api.notifier.sendnotify(query) 
+                    window.localStorage.setItem('notifierInt', Number(parseInt(new Date().getTime())+(20*60*1000)))
+                }
+            }
             setmessages(query)
-          } 
+        } 
         }
         useEffect(() => { 
             getAllMessagesNew();
@@ -68,7 +76,7 @@ const Sidebar = () => {
         }
       },[])
   return (
-    <div aria-label='sidebar'> 
+    <div aria-label='sidebar'>  
         <div className='absolute inset-0 -left-1 -top-[0.1rem] w-14 bg-gray-900/90 border-r border-gray-800 max-h-[100.04%] overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-center justify-start '>
         {
             menubar==5?

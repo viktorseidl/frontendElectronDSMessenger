@@ -21,7 +21,7 @@ app.whenReady().then(async() => {
     
   try {
         // Set app user model id for windows
-        electronApp.setAppUserModelId('com.electron')
+        electronApp.setAppUserModelId('Messenger')    //com.electron  'Name der bei notifications angezeigt wird'
         // Watch window shortcuts (e.g., F12 for devtools)
         // and ignore CommandOrControl + R in production. 
         app.on('browser-window-created', (_, window) => {

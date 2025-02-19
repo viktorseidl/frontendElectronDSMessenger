@@ -27,6 +27,9 @@ const api = {
   electronFiles: {
     saveFile: async (pdfBase64,filename) => ipcRenderer.invoke('save-file', {pdfBase64,filename}), 
   },
+  notifier:{ 
+    sendnotify: (data)=>ipcRenderer.send('trigger-notification',{data}),
+  },
 }
  
 if (process.contextIsolated) {
