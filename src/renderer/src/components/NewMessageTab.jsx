@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv } from 'react-icons/fa'; 
-import { MdAttachFile, MdClose, MdFilePresent, MdGroups2, MdGroups3, MdNote, MdPerson, MdPriorityHigh } from 'react-icons/md';
+import { MdAttachFile, MdClose, MdFilePresent, MdGroups2, MdGroups3, MdLogout, MdNote, MdPerson, MdPriorityHigh } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt, BsFillSendFill } from "react-icons/bs";
@@ -16,7 +16,7 @@ import Dialog from './Dialog';
 import DialogLoader from './DialogLoader';
 import DecText from '../utils/DecText';
 registerLocale('de-DE', de) 
-const NewMessageTab = () => {
+const NewMessageTab = () => { 
   const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
   const Usender=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const locationData=useLocation(); 
@@ -238,10 +238,30 @@ const closeDialog = (e) => {
                   <MdClose onClick={()=>setaddressant([])} className={'absolute cursor-pointer inset right-3 text-2xl top-[0.4rem] text-gray-500 hover:text-gray-400'} style={{display:formattedAddresses.length>0?'block':'none'}} />
               </label>
               <div className='w-auto h-full flex flex-row items-center justify-start '>
-              <button onClick={()=>setIsDialogOpen(true)} title='Gruppe auswählen als Empfänger' className='py-2 rounded outline-none ring-1 dark:ring-gray-700 ring-gray-700/30 px-2 flex flex-col items-center justify-center dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-white text-gray-800'><MdGroups3 className='inline' /></button>
+              <button onClick={()=>setIsDialogOpen(true)} title='Empfänger auswählen' className='py-2 rounded outline-none ring-1 dark:ring-gray-700 ring-gray-700/30 px-2 flex flex-col items-center justify-center dark:bg-gray-800 dark:hover:bg-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-white text-gray-800'><MdGroups3 className='inline' /></button>
               </div>
           </div>
-          <div className='w-20 p-5 h-full flex flex-col items-center justify-center'>
+          <div className='w-20 relative group p-5 h-full flex flex-col items-center justify-center'>
+            <div  style={{animation:'fadeIn 0.1s ease-in forwards',}} className='absolute w-40 inset right-3 group-hover:block dark:hover:bg-gray-800 hover:bg-gray-200 shadow-lg ring-1 dark:ring-gray-700 ring-gray-300 hidden text-2xl top-10 rounded dark:bg-gray-900 bg-white  '>
+              <div onClick={()=>{window.sessionStorage.clear();navigate('/overview')}} className="w-full cursor-pointer px-2 flex flex-row items-center justify-center text-sm dark:text-gray-200 text-gray-800 py-2">
+                Abmelden <MdLogout className="inline ml-4"   />
+              </div>
+              </div>
+              <style>
+                {`
+                  @keyframes fadeIn {
+                    from {
+                      opacity: 0;
+                    }
+                    to {
+                      opacity: 1;
+                    }
+                  }
+                  .fade-in-animation {
+                    animation: fadeIn 1s ease-in-out;
+                  }
+                `}
+              </style>
               <div className='w-full aspect-square dark:bg-blue-200 bg-blue-300 text-gray-800 rounded-full flex flex-col items-center justify-center' >
               <MdPerson className='text-2xl' />
               </div>

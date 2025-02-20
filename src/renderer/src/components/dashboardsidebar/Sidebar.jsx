@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { FaInbox } from 'react-icons/fa6';
 import { HiChatBubbleLeftRight  } from 'react-icons/hi2';
 import { MdFilePresent, MdLogout, MdNotes, MdOutlineDeleteSweep, MdPostAdd } from 'react-icons/md';
-import { BiMailSend  } from 'react-icons/bi';
+import { BiCalendar, BiMailSend  } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { RiMailAddFill } from 'react-icons/ri';
 import { util } from 'node-forge';
@@ -31,6 +31,8 @@ const Sidebar = () => {
             navigate('/new-message')  
         } else if(num==6){
             navigate('/pinwall')  
+        } else if(num==7){
+            navigate('/calendar')  
         } 
     }  
     const getAllMessagesNew=async()=>{
@@ -38,15 +40,17 @@ const Sidebar = () => {
         const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getAllMessagesIntCount&a="+util.encode64(User.Name)+"&t="+util.encode64(User.usertypeVP),'ssdsdsd',"GET", null, null);
         console.log(query)
         if(query>0){ 
+            setmessages(query)
             if(!window.localStorage.getItem('notifierInt')){
                 window.localStorage.setItem('notifierInt', Number(parseInt(new Date().getTime())+(20*60*1000)))
+                window.api.notifier.sendnotify(query) 
             }else{
                 if(parseInt(new Date().getTime())>parseInt(window.localStorage.getItem('notifierInt'))){
                     window.api.notifier.sendnotify(query) 
                     window.localStorage.setItem('notifierInt', Number(parseInt(new Date().getTime())+(20*60*1000)))
                 }
             }
-            setmessages(query)
+           
         } 
         }
         useEffect(() => { 
@@ -73,6 +77,8 @@ const Sidebar = () => {
             setmenubar(5)
         }else if(window.location.hash=='#/pinwall'){
             setmenubar(6)
+        }else if(window.location.hash=='#/calendar'){
+            setmenubar(7)
         }
       },[])
   return (
@@ -140,13 +146,13 @@ const Sidebar = () => {
         {
             menubar==4?
             <div onClick={()=>frameHandler(4)} className='dark:bg-blue-600/60 bg-blue-600/60 text-gray-200 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
-                <div title='Anhänge' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <div title='Datei Explorer' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdFilePresent   />
                 </div>
             </div>
             :
             <div onClick={()=>frameHandler(4)} className='text-gray-500 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
-                <div title='Anhänge' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <div title='Datei Explorer' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdFilePresent   />
                 </div>
             </div>
@@ -154,14 +160,28 @@ const Sidebar = () => {
         {
             menubar==6?
             <div onClick={()=>frameHandler(6)} className='dark:bg-blue-600/60 bg-blue-600/60 text-gray-200 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
-                <div title='Anhänge' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <div title='Meine Notizen' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdPostAdd   />
                 </div>
             </div>
             :
             <div onClick={()=>frameHandler(6)} className='text-gray-500 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
-                <div title='Anhänge' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <div title='Meine Notizen' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
                 <MdPostAdd   />
+                </div>
+            </div>
+        }
+        {
+            menubar==7?
+            <div onClick={()=>frameHandler(7)} className='dark:bg-blue-600/60 bg-blue-600/60 text-gray-200 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
+                <div title='Meine Termine' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <BiCalendar   />
+                </div>
+            </div>
+            :
+            <div onClick={()=>frameHandler(7)} className='text-gray-500 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]'>
+                <div title='Meine Termine' className='w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer'>
+                <BiCalendar   />
                 </div>
             </div>
         }

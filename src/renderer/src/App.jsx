@@ -13,6 +13,7 @@ import NewMessage from './pages/NewMessage';
 import ShowMessage from './pages/ShowMessage';
 import ExternalLogScreen from './pages/ExternalLogScreen';
 import Pinwall from './pages/Pinwall';
+import Calendarwall from './pages/Calendarwall';
 function App() {   
   const handleMaximize = () => {
     window.api.windowControls.maximize();
@@ -37,6 +38,7 @@ function App() {
         <Route path='/dashboardtrash' element={<Deleted />} />
         <Route path='/file-explorer' element={<FileExplorer />} />
         <Route path='/pinwall' element={<Pinwall />} /> 
+        <Route path='/calendar' element={<Calendarwall />} /> 
         <Route path='/new-message' element={<NewMessage />} /> 
         <Route path='/message/:id' element={<ShowMessage />} /> 
       </Routes>

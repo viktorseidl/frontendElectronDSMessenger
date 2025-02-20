@@ -1,9 +1,13 @@
- import React,{useState} from "react";
+ import React,{useEffect, useState} from "react";
  import { useDrag, useDrop } from "react-dnd";
  import { motion } from "framer-motion";
-import { MdBusAlert, MdColorize, MdDelete, MdFormatPaint, MdPostAdd, MdPriorityHigh, MdSave, MdSaveAlt } from "react-icons/md";
+import { MdBusAlert, MdColorize, MdDelete, MdFormatPaint, MdHistory, MdPostAdd, MdPriorityHigh, MdSave, MdSaveAlt } from "react-icons/md";
 import { FaTrash } from "react-icons/fa6";
 import { FaPaintBrush, FaSave } from "react-icons/fa";
+import { util } from "node-forge";
+import DecText from "../utils/DecText";
+import { useFetchAuthAll } from "../services/useFetchAll";
+import DialogLetedPosteds from "./DialogLetedPosteds";
 
  const ItemTypes = {
     NOTE: "note",
@@ -69,7 +73,7 @@ import { FaPaintBrush, FaSave } from "react-icons/fa";
                 prio>0?
                 <button  onClick={()=>updateNotePrio(id,prio)} className="w-full mb-2 text-sm text-white  py-1 bg-red-500 hover:bg-red-400 rounded">Wichtig</button>:''
               }
-               <pre className="font-[arial] text-[14px] my-2" onDoubleClick={() => setIsEditing(true)}>{text}</pre>
+               <pre className="font-[arial] text-[14px] my-2" onDoubleClick={() => setIsEditing(true)}>{text.trim()==''?'Jetzt beschriften ...':text}</pre>
               <button className="mt-2 text-white  p-2 bg-red-500 hover:bg-red-400 rounded"
               onClick={() => deleteNote(id)} ><FaTrash /></button> 
               {
@@ -101,19 +105,18 @@ import { FaPaintBrush, FaSave } from "react-icons/fa";
     );
   };
 const PinWall = () => {
-  const [notes, setNotes] = useState([
-    { id: 1, text: "First Note", x: 100, y: 100,prio:0,hexcolor:'#ffc972FF'},
-    { id: 2, text: "Second Note", x: 200, y: 200,prio:0,hexcolor:'#87ff72FF'},
-  ]);
-
+  const [notes, setNotes] = useState([]);
+  const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+  const [isDialogOpen, setIsDialogOpen] = useState(false); 
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
   const [, drop] = useDrop(
     () => ({
       accept: ItemTypes.NOTE,
       drop: (item, monitor) => {
         const delta = monitor.getDifferenceFromInitialOffset();
-        const newX = Math.round(item.x + delta.x);
-        const newY = Math.round(item.y + delta.y);
-        moveNote(item.id, newX, newY);
+        const newX = Math.round(parseInt(item.x) + delta.x);
+        const newY = Math.round(parseInt(item.y) + delta.y);
+        moveNote(parseInt(item.id), newX, newY);
       },
     }),
     [notes]
@@ -125,14 +128,16 @@ const PinWall = () => {
     setNotes((prevNotes) =>
       prevNotes.map((note) => (note.id === id ? { ...note, x, y } : note))
     ); 
-    // Save updated position to the database
-     
+    // Save updated position to the database 
+    const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=updateNotePositionOnID&a="+util.encode64(User.Name),'ssdsdsd',"PUT", JSON.stringify({mid:id,xk:x,yk:y}), null); 
+    getAllMyNotesActive()
   };
 
   const addNote = async () => {
+    let i=new Date().getTime()
     const newNote = {
-      id: Date.now(),
-      text: `Neue Notiz ${notes.length + 1}`,
+      id: i,
+      text: ``,
       x: 50,
       y: 50,
       prio:0,
@@ -141,53 +146,76 @@ const PinWall = () => {
 
     setNotes([...notes, newNote]);
 
-    // Save new note to the database
-     
+    // Save new note to the database  addNewNote
+    const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=addNewNote&a="+util.encode64(User.Name),'ssdsdsd',"POST", JSON.stringify({pid:i}), null);  
+    getAllMyNotesActive()
   };
 
   const deleteNote = async (id) => {
-    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
-
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id)); 
     // Delete note from the database
-     
+    const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=updateNoteDeleteOnID&a="+util.encode64(User.Name),'ssdsdsd',"DELETE", JSON.stringify({mid:id}), null);  
+    getAllMyNotesActive()
   };
-  const updateNoteText = (id, newText) => {
+  const updateNoteText = async (id, newText) => {
     // Update text locally
     setNotes((prevNotes) =>
       prevNotes.map((note) =>
         note.id === id ? { ...note, text: newText } : note
       )
-    );
-
-    // Save updated text to the database
-     
+    ); 
+    // Save updated text to the database 
+    const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=updateNoteTextOnID&a="+util.encode64(User.Name),'ssdsdsd',"PUT", JSON.stringify({mid:id,txt:newText}), null);  
+    getAllMyNotesActive()
   };
-  const updateNotePrio = (id, prio) => {
+  const updateNotePrio = async (id, prio) => {
     // Update text locally
     setNotes((prevNotes) =>
       prevNotes.map((note) =>
         note.id === id ? { ...note, prio: prio>0?0:1 } : note
       )
-    );
-
+    ); 
     // Save updated text to the database
-     
+    const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=updateNotePriorityOnID&a="+util.encode64(User.Name),'ssdsdsd',"PUT", JSON.stringify({mid:id,prio:prio>0?0:1}), null); 
+    getAllMyNotesActive() 
   };
-  const updateNoteColor = (id, color) => {
+  const updateNoteColor = async (id, color) => {
     // Update text locally
     setNotes((prevNotes) =>
       prevNotes.map((note) =>
         note.id === id ? { ...note, hexcolor: color } : note
       )
-    );
-
+    ); 
     // Save updated text to the database
-     
-  };
-
+    const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=updateNoteColorOnID&a="+util.encode64(User.Name),'ssdsdsd',"PUT", JSON.stringify({mid:id,color:color}), null); 
+    getAllMyNotesActive() 
+  }; 
+  const getAllMyNotesActive = async ()=>{
+    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
+    const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user'))) 
+    const query=await useFetchAuthAll("http://"+apache+"/electronbackend/index.php?path=getNotesAllActive&a="+util.encode64(User.Name),'ssdsdsd',"GET", null, null);
+    console.log(query)
+    if(query.length>0){
+      setNotes(query)
+    }
+  } 
+const closeDialog = (e) => {
+  if (e.target === e.currentTarget) {
+    setIsDialogOpen(false); 
+  }
+};
+  useEffect(()=>{
+    getAllMyNotesActive()
+  },[]) 
   return (
     <div className="relative w-full h-full  shadow-inner z-10">
-        
+      <DialogLetedPosteds
+      show={isDialogOpen}
+      close={closeDialog}
+      title={'Meine gelöschten Notizen'}
+      updater={getAllMyNotesActive}
+      cancelBtn={true}
+       />
       <div ref={drop} className="w-full h-full">
         {notes.map((note) => (
           <Note
@@ -207,12 +235,14 @@ const PinWall = () => {
         ))}
       </div>
       <button
-        onClick={addNote}
+        onClick={()=>setIsDialogOpen(true)}
+        title="Gelöschte Elemente"
         className="absolute bottom-4 right-20 bg-red-500 p-4 rounded text-white"
       >
-        <MdDelete />
+        <MdHistory />
       </button>
       <button
+      title="Neue Notiz erstellen"
         onClick={addNote}
         className="absolute bottom-4 right-4 bg-blue-500 p-4 rounded text-white"
       >

@@ -37,7 +37,7 @@ export async function initializeIpcHandlers() {
     })
     ipcMain.on("trigger-notification", (event,data) => { 
       const notification = new Notification({
-        title: "Messenger",
+        title: "Messenger Postfach",
         icon: `${path.join(app.getAppPath()+'/src/renderer/src/assets/icon.ico')}`,
         body: "Sie haben "+data.data+" neue Nachrichten",
         silent: false,

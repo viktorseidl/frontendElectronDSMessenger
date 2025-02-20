@@ -7,8 +7,8 @@ import bgimg from './../assets/wavy-lines.svg'
 import { util } from 'node-forge';
 import DecText from '../utils/DecText';
 import { useFetchAuthAll } from '../services/useFetchAll';
-import { MdPostAdd } from 'react-icons/md';
-const Pinwall = () => {   
+import { BiCalendar } from 'react-icons/bi';
+const Calendarwall = () => {   
   
   return (
 
@@ -17,7 +17,7 @@ const Pinwall = () => {
      <Sidebar />
      <div className='w-full h-full flex flex-col items-start justify-start animate-fadeInfast dark:bg-gray-950 bg-blue-100 tabsgrounddark overflow-hidden'> 
      <div className='fixed w-screen h-screen z-0 flex flex-col items-center justify-center '>
-        <span  className='relative w-full h-full flex flex-col items-center justify-center' ><a className=' flex flex-row items-center justify-center exo font-bold text-8xl opacity-15 -mt-14'><MdPostAdd className='mr-4' /> Pinnwand</a>
+        <span  className='relative w-full h-full flex flex-col items-center justify-center' ><a className=' flex flex-row items-center justify-center exo font-bold text-8xl opacity-15 -mt-14'><BiCalendar className='mr-4' /> Organizer</a>
         <img src={bgimg} className='absolute w-full h-full inset object-cover' />
         </span>
     </div>
@@ -29,4 +29,4 @@ const Pinwall = () => {
     </div>
   )
 } 
-export default Pinwall
+export default Calendarwall
