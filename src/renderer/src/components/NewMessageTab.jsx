@@ -226,7 +226,7 @@ const closeDialog = (e) => {
               
               <label className='  w-3/4 flex flex-col items-center justify-center relative'> 
                   <div 
-                  className=' w-full font-[arial] max-h-16 overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200  text-blue-200/60 text-gray-500 rounded dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90  flex-wrap  flex flex-row items-start justify-start outline-none gap-1 py-2 pr-8 pl-14 text-sm' 
+                  className=' w-full font-[arial] max-h-16 overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200  dark:text-gray-400/80 text-gray-500  bg-[#edeae9]  dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded dark:bg-transparent ring-1 dark:ring-gray-700 ring-gray-400  flex-wrap  flex flex-row items-start justify-start outline-none gap-1 py-2 pr-8 pl-14 text-sm' 
                   >{formattedAddresses.length>0?
                     formattedAddresses.map((item,index)=>(
                     <div key={item+index+'addresser'} className='dark:bg-lime-700 dark:hover:bg-lime-600 ring-1 dark:ring-gray-800 ring-gray-400 bg-blue-200 rounded px-2 py-1 w-auto dark:text-white text-black shadow-lg shadow-[rgba(0,0,0,0.12)] flex flex-row items-center justify-start '><a>{item}</a><MdClose onClick={()=>removeItem(item)} className='ml-2 cursor-pointer' /></div>
@@ -273,7 +273,7 @@ const closeDialog = (e) => {
       <div className='w-2/3 px-4 '>
               <label className='  w-full flex flex-col items-center justify-center relative'> 
                   <input 
-                  className=' w-full font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none py-2 px-3 pl-14 text-sm'
+                  className=' w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400    py-2 px-3 pl-14 text-sm'
                   placeholder="Betreff hinzufügen"
                   value={betreff}
                   onChange={(e) => setbetreff(e.target.value)}
@@ -300,7 +300,7 @@ const closeDialog = (e) => {
                 closeOnScroll={true}
                 dateFormat={'Pp'}
                 showTimeSelect
-                className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 dark:text-white text-gray-800 placeholder:text-gray-500 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none rounded py-2 px-4 text-sm"
+                className=" w-5/6 ml-2 dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400 py-2 px-4 text-sm"
                 selected={versandterminierung} 
                 onChange={(date) => setversandterminierung(date)} /> 
       </div>
@@ -326,8 +326,8 @@ const closeDialog = (e) => {
       }
 
       {/* Card Grid */}
-      <div className='w-full dark:bg-gray-900 bg-white h-full  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 '>
-       <textarea value={nachricht} onChange={(e) => setNachricht(e.target.value)} className='w-full h-full p-4 bg-transparent outline-none resize-none text-xl overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200' placeholder='Schreiben Sie eine Nachricht...'>
+      <div className='w-full dark:bg-gray-900 bg-white h-full  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start ring-1 dark:ring-gray-700 ring-gray-400 shadow-inner shadow-[rgba(0,0,0,0.3)]  '>
+       <textarea value={nachricht} onChange={(e) => setNachricht(e.target.value)} className='w-full h-full p-4 dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white  placeholder:text-gray-500  text-gray-800 dark:bg-transparent outline-none shadow-gray-700/25    resize-none text-xl overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200' placeholder='Schreiben Sie eine Nachricht...'>
 
        </textarea>
       </div>

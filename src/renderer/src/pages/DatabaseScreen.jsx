@@ -159,7 +159,7 @@ const DatabaseScreen = () => {
     checkCookie()  
   },[theme])
   return (
-    <div className={'pt-8 px-1 w-screen dark:text-gray-200 text-gray-800 dark:bg-gray-950 bg-blue-100 tabsgrounddark flex flex-col items-start justify-start h-screen '}>  
+    <div className={'pt-8 px-1 w-screen dark:text-gray-200 text-gray-800 dark:bg-gray-950 bg-stone-100 tabsgrounddark flex flex-col items-start justify-start h-screen '}>  
     <div className='fixed w-screen h-screen '>
           <img src={bgimg} className='w-full h-full object-cover' />
         </div>

@@ -6,7 +6,7 @@
   "main": "./out/main/index.js",
   "author": "Fernando Viktor Seidl",
   "homepage": "https://www.data-schafhausen.com",
-  "build": { 
+  "build": {
     "productName": "Messenger",
     "icon": "./src/renderer/src/assets/icon",
     "win": {
@@ -33,6 +33,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
+    "dayjs": "^1.11.13",
     "electron-updater": "^6.1.7",
     "framer-motion": "^12.4.3",
     "keytar": "^7.9.0",

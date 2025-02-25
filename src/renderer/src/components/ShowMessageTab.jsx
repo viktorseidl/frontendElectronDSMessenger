@@ -173,6 +173,14 @@ const ShowMessageTab = () => {
                   <div 
                   className=' w-full ml-2 font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 font-normal text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 text-sm'
                   ><a>{locationData.state===null?'':locationData.state.Sendername}</a></div>
+                  {
+                    locationData.state===null?'':
+                    locationData.state.Wichtig==1?
+                        <div className='w-10 h-full aspect-square cursor-pointer  dark:bg-red-800 bg-red-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded  flex flex-col items-center justify-center ring-1 dark:ring-red-700 ring-red-600'>
+                          <MdPriorityHigh  title='Als wichtig makiert' className='inline text-xl' />
+                        </div>
+                        :''
+                  }
               </div>  
 
           </div>
@@ -203,43 +211,28 @@ const ShowMessageTab = () => {
           </div>
            </div>
       {/* Search and Filter */}
-      
+      <div className="w-full pt-2 mt-0 flex flex-col items-start justify-start mb-4">
       <div className="h-auto pl-4 w-full mt-0 flex flex-row items-start justify-start mb-1.5">
       <div className='w-2/3 mr-2'>
         <div className='w-full  flex flex-row items-center justify-start '> 
             <div className='  w-full flex flex-row items-center justify-start  '> 
                 <div 
-                className=' w-28 font-[arial] text-left dark:text-white text-black py-2 text-sm'
-                ><b>Betreff:</b></div>
+                className=' w-28 font-[arial] text-left dark:text-white text-black py-2 text-sm flex flex-col items-start justify-start gap-y-4'
+                >
+                  <b>Betreff:</b>
+                  <b>Datum:</b>
+                </div>
                 <div 
-                className=' w-full font-[arial] ml-4  dark:text-white font-normal text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 pl-3 text-sm'
-                ><a>{locationData.state===null?'':locationData.state.Betreff}</a></div>
+                className=' w-full font-[arial] ml-0  dark:text-white font-normal text-gray-800  py-2 pl-3 text-sm  flex flex-col items-start justify-start gap-y-4'
+                >
+                  <a>{locationData.state===null?'':locationData.state.Betreff}</a>
+                  <a>{locationData.state===null?'':(locationData.state.Datum.split(' ')[0].split('-')[2]+'.'+locationData.state.Datum.split(' ')[0].split('-')[1]+'.'+locationData.state.Datum.split(' ')[0].split('-')[0]+' '+locationData.state.Datum.split(' ')[1].split('.')[0])}</a>
+                </div>
             </div> 
         </div>     
-      </div>
-      {
-        locationData.state===null?'':
-        locationData.state.Wichtig==1?
-            <div className='h-full aspect-square cursor-pointer  dark:bg-red-800 bg-red-500 text-white shadow-inner dark:shadow-[rgba(255,255,255,0.1)] shadow-[rgba(0,0,0,0.1)] rounded  flex flex-col items-center justify-center ring-1 dark:ring-red-700 ring-red-600'>
-              <MdPriorityHigh  title='Als wichtig makiert' className='inline text-xl' />
-            </div>
-            :''
-      } 
-      </div>
-      <div className="h-auto pl-4 w-full mt-0 flex flex-row items-start justify-start mb-4">
-      <div className='w-2/3  '>
-      <div className='w-full  flex flex-row items-center justify-start gap-x-2'> 
-            <div className='  w-full flex flex-row items-center justify-start '> 
-                <div 
-                className=' w-28 text-left font-[arial] dark:text-white text-black py-2 text-sm'
-                ><b>Datum:</b></div>
-                <div 
-                className=' w-auto font-[arial] pl-3  dark:text-white  text-gray-800 dark:bg-gray-800 bg-white ring-1 dark:ring-gray-700 ring-gray-400/60   outline-none py-2 px-3 text-sm font-normal'  
-                ><a>{locationData.state===null?'':(locationData.state.Datum.split(' ')[0].split('-')[2]+'.'+locationData.state.Datum.split(' ')[0].split('-')[1]+'.'+locationData.state.Datum.split(' ')[0].split('-')[0]+' '+locationData.state.Datum.split(' ')[1].split('.')[0])}</a></div>
-            </div> 
-        </div> 
-      </div>  
-      </div>
+      </div> 
+      </div> 
+      </div> 
       {
         attaches.length>0?
           <div className="h-auto w-full mt-0 flex flex-row items-start justify-start  gap-x-2 mb-6">
@@ -254,7 +247,7 @@ const ShowMessageTab = () => {
           </div>  
           <div className='w-11/12  '>
             <div className='w-full px-1 flex flex-row items-center justify-start gap-x-2'>
-            <div className='text-white mb-0 min-h-auto max-h-20 w-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-wrap items-center justify-start  gap-2 ring-1 dark:ring-gray-700/90 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 p-2 bg-white dark:bg-gray-800'>  
+            <div className='text-white mb-0 min-h-auto max-h-20 w-full overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-wrap items-center justify-start  gap-2 shadow-inner shadow-[rgba(0,0,0,0.1)] p-2 '>  
             {
               attaches.length>0&&attaches.map((item,index)=>(
                 <div onClick={()=>saveFileandOpen(item.ID,item.Pos)} key={item.Name+item.Pos+item.ID} title={item.Name} className='w-60 cursor-pointer flex flex-row items-center justify-start gap-x-4 dark:bg-blue-900/90 bg-gray-200 dark:hover:bg-blue-800 hover:bg-gray-300 ring-1 dark:ring-blue-800 ring-gray-500/40 rounded p-2 dark:text-white text-black'>
@@ -274,7 +267,7 @@ const ShowMessageTab = () => {
       
 
       {/* Card Grid */}
-      <div className='w-full dark:bg-gray-900 bg-white h-full  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.3)] ring-gray-300 '>
+      <div className='w-full dark:bg-gray-900 bg-white h-full  overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 flex flex-col items-start justify-start ring-1 dark:ring-gray-800 shadow-inner shadow-[rgba(0,0,0,0.1)] ring-gray-300 '>
        <textarea disabled value={nachricht} onChange={(e) => setNachricht(e.target.value)} className='w-full h-full p-4 outline-none bg-transparent resize-none text-xl overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200' placeholder='Schreiben Sie eine Nachricht...'> 
        </textarea>
       </div>

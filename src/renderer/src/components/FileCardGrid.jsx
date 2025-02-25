@@ -191,7 +191,7 @@ const FileCardGrid = ({ data }) => {
           <div className='w-full px-4 '>
               <label className='  w-full flex flex-col items-center justify-center relative'> 
                   <input 
-                  className=' w-full font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none py-2 px-3 pl-14 text-sm'
+                  className=' w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400 py-2 px-3 pl-14 text-sm'
                   placeholder="Suche in Dateinamen..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -231,7 +231,7 @@ const FileCardGrid = ({ data }) => {
          
         <label className='md:w-auto sm:w-full w-full flex flex-col items-center justify-center relative'>
         <select
-          className="md:w-auto sm:w-full w-full font-[arial]  dark:placeholder:text-blue-200/60 dark:text-white placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 bg-white shadow-inner  dark:shadow-[rgba(0,120,200,0.03)] shadow-gray-700/25 ring-1 dark:ring-gray-700 ring-gray-400/90   outline-none py-2 px-3  text-sm"
+          className="md:w-auto sm:w-full w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400 py-2 px-3  text-sm"
           value={selectedFileType}
           onChange={(e) => setSelectedFileType(e.target.value)}
         >
