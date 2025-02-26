@@ -42,6 +42,10 @@ function App() {
         <Route path='/pinwall' element={<Pinwall />} /> 
         <Route path='/calendar' element={<CalendarDayToday />} />  
         <Route path='/calendar/day/:jahr/:monat/:tag' element={<CalendarDay />} /> 
+        <Route path='/calendar/week/:jahr/:monat/:tag' element={<CalendarDay />} /> 
+        <Route path='/calendar/month/:jahr/:monat/:tag' element={<CalendarDay />} /> 
+        <Route path='/calendar/year/:jahr/:monat/:tag' element={<CalendarDay />} /> 
+        <Route path='/calendar/agenda/:jahr/:monat/:tag' element={<CalendarDay />} /> 
         <Route path='/new-message' element={<NewMessage />} /> 
         <Route path='/message/:id' element={<ShowMessage />} /> 
       </Routes>

@@ -1,61 +1,129 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { motion } from "framer-motion";
+import { IoMdMove } from "react-icons/io";
+import { MdDelete, MdEdit } from "react-icons/md"; 
+import DialogEventDayEntry from "../../DialogEventDayEntry";
+import dayjs from "dayjs";
+import { calculateHeight, calculateTime } from "./functions/functionHandler"; 
+
 const ItemType = "EVENT";
 
-const DayLayoutGrid = ({ fullheight }) => {
-  const [events, setEvents] = useState([{
-    "id": 1740388167775,
-    "time": 5,
-    "realtimestart": 0,
-    "duration": 3,
-    "realtimeend": 0,
-    "hexcolor": '#99ffFEFF',
-    "title": "New Event"
-  },{
-    "id": 1740388167780,
-    "time": 0,
-    "realtimestart": 0,
-    "duration": 3,
-    "realtimeend": 0,
-    "hexcolor": '#c1cff7FF',
-    "title": "New Event"
-  }]);
+const DayLayoutGrid = ({ fullheight,date }) => {
+  const [dialogev,setdialogev]=useState(false)
+  const [dtobj,setdtobj]=useState(null)
+  const [events, setEvents] = useState([
+    {
+      id: 1740388137775,
+      time: 8,
+      realtimestart: calculateTime(8,9).startTime,
+      duration: 9,
+      realtimeend: calculateTime(8,9).endTime,
+      hexcolor: "#99ffFEFF",
+      title: "Geburtstag Annemarie Hürten",
+      isEditable: false,
+      eventTyp: 0,
+    },
+    {
+      id: 1740388167780,
+      time: 0,
+      realtimestart: calculateTime(0,3).startTime,
+      duration: 3,
+      realtimeend: calculateTime(0,3).endTime,
+      hexcolor: "#c1cff7FF",
+      title: "Team-Meeting",
+      isEditable: true,
+      eventTyp: 0,
+    },
+  ]);
 
   const handleDrop = (timeSlot, item) => {
     setEvents((prev) =>
-      prev.map((ev) =>
-        ev.id === item.id ? { ...ev, time: timeSlot } : ev
-      )
+      prev.map((ev) => (ev.id === item.id ? { ...ev, time: timeSlot,realtimestart:calculateTime(timeSlot,ev.duration).startTime,realtimeend:calculateTime(timeSlot,ev.duration).endTime } : ev))
     );
   };
 
-  const addEvent = (timeSlot, e) => { 
-    console.log(events)
+  const addEvent = (timeSlot, e) => {
+    console.log(timeSlot,e)
     if (e.target.classList.contains("resize-handle")) return;
-    setEvents([...events, { id: Date.now(), realtimestart:0, time: timeSlot, duration: 1, realtimeend:0, hexcolor:'#ff72eaFF', title: "New Event" }]);
+    setdtobj(dayjs(date+' '+(timeSlot>9?timeSlot:'0'+timeSlot)+':00','DD.MM:YYYY HH:mm').toDate())
+    setdialogev(true)
+    /*
+    setEvents([
+      ...events,
+      {
+        id: Date.now(),
+        realtimestart: calculateTime(timeSlot,1).startTime,
+        time: timeSlot,
+        duration: 1,
+        realtimeend: calculateTime(timeSlot,1).endTime,
+        hexcolor: "#ff72eaFF",
+        title: "New Event",
+        isEditable: true,
+        eventTyp: 0, //my private events are always 0 Holidays are 1 Birthdays of worker is 2 ,....
+      },
+    ]);*/
   };
+  const addNote=(Arr)=>{
+    const timeSlot=2;
+    setEvents([
+      ...events,
+      {
+        id: Date.now(),
+        realtimestart: calculateTime(timeSlot,1).startTime,
+        time: timeSlot,
+        duration: 1,
+        realtimeend: calculateTime(timeSlot,1).endTime,
+        hexcolor: Arr[5].toString(),
+        title: Arr[0].toString(),
+        isEditable: true,
+        eventTyp: 0, //my private events are always 0 Holidays are 1 Birthdays of worker is 2 ,....
+      },
+    ]);
+  }
 
   const updateEventDuration = (id, newDuration) => {
     setEvents((prev) =>
-      prev.map((ev) => (ev.id === id ? { ...ev, duration: newDuration } : ev))
+      prev.map((ev) => (ev.id === id ? { ...ev, duration: newDuration,realtimestart:calculateTime(ev.time,newDuration).startTime,realtimeend:calculateTime(ev.time,newDuration).endTime } : ev))
     );
   };
-
+  const deleteMyEvent = (id) => {
+    setEvents((prev) =>
+      prev.filter((ev) => (ev.id !== id ))
+    );
+  };
+  const closeDialog=()=>{
+    setdialogev(!dialogev)
+  }
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="grid grid-cols-1 divide-y dark:divide-gray-800 divide-gray-300">
         {[...Array(24)].map((_, index) => (
-            <TimeSlot key={index} time={index} events={events} onDrop={handleDrop} addEvent={addEvent} updateEventDuration={updateEventDuration} height={fullheight} />
+          <TimeSlot
+            key={index}
+            time={index}
+            events={events}
+            onDrop={handleDrop}
+            addEvent={addEvent}
+            updateEventDuration={updateEventDuration}
+            deleteEvent={deleteMyEvent}
+            height={fullheight}
+          />
         ))}
-       
       </div>
+      <DialogEventDayEntry 
+      show={dialogev}
+      close={closeDialog}
+      title={'Neuer Termin'}
+      message={dtobj}
+      callbackBtn2={addNote} 
+      />
     </DndProvider>
   );
 };
 
-const TimeSlot = ({ time, events, onDrop, addEvent, updateEventDuration, height }) => {
+const TimeSlot = ({ time, events, onDrop, addEvent, updateEventDuration,deleteEvent }) => {
   const [{ isOver }, drop] = useDrop({
     accept: ItemType,
     drop: (item) => onDrop(time, item),
@@ -64,32 +132,47 @@ const TimeSlot = ({ time, events, onDrop, addEvent, updateEventDuration, height 
     }),
   });
 
-  const slotEvents = events.filter((event) => event.time === time);
-
+  const slotEvents = events.filter((event) => event.time === time); 
   return (
-    <div ref={drop} className={`h-[40px] p-2 ${isOver ? "bg-blue-200" : "dark:bg-gray-950 bg-stone-100"}`} onClick={(e) => addEvent(time, e)}>
-      <div className="flex space-x-2">
+    <div
+      ref={drop}
+      className={`h-[40px] p-0 ${
+        isOver ? "dark:bg-gray-600/40 bg-blue-200" : "dark:bg-gray-950 bg-stone-100"
+      }`}
+      onDoubleClick={(e) => addEvent(time, e)}
+    >
+      <div className="flex space-x-2 max-w-full overflow-hidden">
         {slotEvents.map((event) => (
-          <Event key={event.id} event={event} updateEventDuration={updateEventDuration} />
+          <Event key={event.id} event={event} updateEventDuration={updateEventDuration} deleteEvent={deleteEvent} />
         ))}
       </div>
     </div>
   );
 };
 
-const Event = ({ event, updateEventDuration }) => {
-  const [{ isDragging }, drag] = useDrag({
+const Event = ({ event, updateEventDuration,deleteEvent }) => {
+  const [isResizing, setIsResizing] = useState(false);
+  const [isDraggingAllowed, setIsDraggingAllowed] = useState(false);
+  let longPressTimer = null;
+
+  const [{ isDragging }, drag, preview] = useDrag({
     type: ItemType,
     item: event,
+    canDrag: () => isDraggingAllowed, // Only allow dragging if `isDraggingAllowed` is true
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   });
 
-  const [isResizing, setIsResizing] = useState(false);
+  const handleLongPressStart = () => {
+    longPressTimer = setTimeout(() => {
+      setIsDraggingAllowed(true);
+    }, 100); // 500ms long press threshold
+  };
 
-  const handleDoubleClick = () => {
-    setIsResizing(true);
+  const handleLongPressEnd = () => {
+    clearTimeout(longPressTimer);
+    setTimeout(() => setIsDraggingAllowed(false), 200); // Prevent immediate re-dragging
   };
 
   const handleResize = (e) => {
@@ -101,16 +184,49 @@ const Event = ({ event, updateEventDuration }) => {
 
   return (
     <motion.div
-      ref={drag}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className={`p-2  text-black rounded relative ${isDragging ? "opacity-50" : ""}`}
-      style={{ height: `${event.duration * 40}px`, background:`${event.hexcolor}` }}
-      onDoubleClick={handleDoubleClick}
+      ref={preview} // Ensures the event stays visible while dragging 
+      className={`p-1 text-black rounded relative ${isDragging ? "opacity-50" : ""}`}
+      style={{ minHeight:'28px', height: `${calculateHeight(event.duration,40)}px`,background: `${event.hexcolor}` }}
     >
-      {event.title} ({formatTime(event.time)} - {formatTime(event.time + event.duration)})
+      <div className="w-full flex flex-row items-center justify-end">
+      <div className={`${event.isEditable?' -mt-[5px]  ':' mt-0 '} w-48 max-w-52 text-xs truncate`}>({event.realtimestart} - {event.realtimeend}) | <b>{event.title}</b></div>
+      {
+        event.isEditable?
+        <>
+      <button
+        ref={drag}
+        className=" w-auto mr-1 bg-red-600 hover:bg-red-500 text-white p-1 rounded text-xs"
+        onClick={()=>deleteEvent(event.id)}
+      >
+        <MdDelete />
+      </button>
+      <button
+        ref={drag}
+        className=" w-auto mr-1 bg-blue-600 hover:bg-blue-500 text-white p-1 rounded text-xs"
+        onMouseDown={handleLongPressStart} // Start long press detection
+        onMouseUp={handleLongPressEnd} // Reset after release
+        onMouseLeave={handleLongPressEnd} // Reset if moved away
+      >
+        <MdEdit />
+      </button>
+      <button
+        ref={drag}
+        className=" w-auto bg-gray-700 hover:bg-gray-600 text-white p-1 rounded text-xs"
+        onMouseDown={handleLongPressStart} // Start long press detection
+        onMouseUp={handleLongPressEnd} // Reset after release
+        onMouseLeave={handleLongPressEnd} // Reset if moved away
+      >
+        <IoMdMove />
+      </button>
+        </>:''
+      }
+      </div> 
+      
+
+      {/* Drag Handle Button */}
+      
+
+      {/* Resizing Handle */}
       {isResizing && (
         <div
           className="absolute bottom-0 left-0 right-0 h-2 bg-gray-700 cursor-s-resize resize-handle"
@@ -126,7 +242,5 @@ const formatTime = (time) => {
   const minutes = (time % 4) * 15;
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 };
-
-
 
 export default DayLayoutGrid;

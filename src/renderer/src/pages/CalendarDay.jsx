@@ -4,10 +4,13 @@ import TagesAnsicht from '../components/calendarcomps/dayview/TagesAnsicht';
 import { MdArrowLeft, MdArrowRight, MdCalendarToday, MdFilter, MdFilter1, MdFilter3, MdFilterList, MdViewDay } from 'react-icons/md';
 import CalendarMini from '../components/calendarcomps/CalenderMini'; 
 import { useParams } from 'react-router-dom';
+import { getGermanHolidays } from '../components/calendarcomps/dayview/functions/functionHandler';
 const CalendarDay = () => {  
   const {jahr,monat,tag}=useParams();
   const layer='day'; 
   const [btnmy, setbtnmy] = useState(false) 
+  // Example usage:
+console.log(getGermanHolidays(2024));
   return ( 
     <div className={'pt-8 px-1 w-screen dark:text-gray-200 text-gray-800 dark:bg-gray-950 bg-stone-100 flex flex-col items-start justify-start h-screen  '}>  
     <div className='w-full h-full relative flex flex-col items-start justify-start pl-14'>

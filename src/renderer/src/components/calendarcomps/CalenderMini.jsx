@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { MdArrowLeft, MdArrowRight } from "react-icons/md";
 import dayjs from "dayjs";
 import "dayjs/locale/de"; // German month names
-import { Link, useParams } from "react-router-dom";
-import { getTodayDate } from "./dayview/functions/functionHandler";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { getShiftedDate, getShiftedDateMonth, getTodayDate } from "./dayview/functions/functionHandler";
 
 const CalendarMini = ({ date,layout }) => {
-    
+  const navigate=useNavigate()
   const [initialDate,setInitialDate] = useState(dayjs(date, "DD.MM.YYYY").locale("de"))
   const [currentDate, setCurrentDate] = useState(initialDate);
 
@@ -15,14 +15,12 @@ const CalendarMini = ({ date,layout }) => {
   const monthName = currentDate.format("MMMM YYYY");
   const firstDayOfMonth = currentDate.startOf("month");
   const startDay = firstDayOfMonth.day();
-  const startOffset = (startDay + 6) % 7;
+  const startOffset = (startDay + 6) % 7; 
   const prevMonthDays = firstDayOfMonth.subtract(startOffset, "day");
   const totalCells = 7 * 6;
   const daysArray = Array.from({ length: totalCells }, (_, i) => prevMonthDays.add(i, "day"));
 
-  const changeMonth = (direction) => {
-    setCurrentDate(currentDate.add(direction, "month"));
-  }; 
+   
   useEffect(()=>{
     setCurrentDate(dayjs(date, "DD.MM.YYYY").locale("de"))
   },[date])
@@ -34,13 +32,13 @@ const CalendarMini = ({ date,layout }) => {
         <div className="pl-2">
           <b>{monthName}</b>
         </div>
-        <div>
-          <button onClick={() => changeMonth(-1)} className="p-1 bg-transparent hover:bg-blue-300/40 rounded-full text-2xl">
+        <div className="flex flex-row">
+          <Link to={'/calendar/'+layout+'/'+parseInt(getShiftedDateMonth(true,currentDate).split('.')[2])+'/'+parseInt(getShiftedDateMonth(true,currentDate).split('.')[1])+'/'+parseInt(getShiftedDateMonth(true,currentDate).split('.')[0])} className="p-1 bg-transparent hover:bg-blue-300/40 rounded-full text-2xl">
             <MdArrowLeft />
-          </button>
-          <button onClick={() => changeMonth(1)} className="p-1 bg-transparent hover:bg-blue-300/40 rounded-full text-2xl">
+          </Link>
+          <Link to={'/calendar/'+layout+'/'+parseInt(getShiftedDateMonth(false,currentDate).split('.')[2])+'/'+parseInt(getShiftedDateMonth(false,currentDate).split('.')[1])+'/'+parseInt(getShiftedDateMonth(false,currentDate).split('.')[0])}  className="p-1 bg-transparent hover:bg-blue-300/40 rounded-full text-2xl">
             <MdArrowRight />
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -58,15 +56,14 @@ const CalendarMini = ({ date,layout }) => {
         {daysArray.map((day, index) => {
           const isCurrentMonth = day.month() === currentDate.month();
           const isToday = day.isSame(today, "day");
-          const isselect = day.isSame(initialDate, "day");
+          const isselect = day.isSame(currentDate, "day");
 
           return (
             <Link to={'/calendar/'+layout+'/'+year+'/'+(1+Number(currentDate.month()))+'/'+day.date()} key={index} className="w-full flex items-center justify-center">
               <span
                 className={`w-5/6 rounded-full aspect-square flex items-center justify-center cursor-pointer 
                   ${isCurrentMonth ? "hover:bg-blue-400/20" : "text-gray-400"} 
-                  ${isToday&&isCurrentMonth ? "bg-blue-500 text-white font-bold" : ''}
-                  ${isselect ? "bg-blue-500 text-white font-bold" : ''} 
+                  ${isToday&&isCurrentMonth&&(!isselect) ? "bg-blue-500 text-white font-bold" :isselect ? "dark:bg-gray-600 bg-gray-300 dark:text-white text-black font-bold" : ''} 
                   `}
               >
                 {day.date()}
