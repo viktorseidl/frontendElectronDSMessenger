@@ -6,12 +6,11 @@ import { Si7Zip, SiJpeg } from "react-icons/si";
 import { BsFiletypeJson, BsFiletypeMp3, BsFiletypeMp4, BsFiletypePng, BsFiletypeXml,BsFiletypeTxt } from "react-icons/bs";
 import { IoImageSharp } from "react-icons/io5";
 import { AiOutlineGif } from "react-icons/ai"; 
-import { useFetchAuthAll } from '../services/useFetchAll';
-import DecText from '../utils/DecText';
+import { useFetchAuthAll } from '../services/useFetchAll'; 
 import { useNavigate } from 'react-router-dom';
 const FileCardGrid = ({ data }) => {
   const navigate=useNavigate()
-  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost'
   // State to manage search term and selected filetype
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFileType, setSelectedFileType] = useState('all');
@@ -21,7 +20,7 @@ const FileCardGrid = ({ data }) => {
   // Function to filter the data based on search term and selected filetype
   const filterData = () => {
     return data.filter(item => {
-      const matchesSearchTerm = item.filename.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearchTerm = item.filename!=null&&item.filename.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFileType = (selectedFileType === 'all' || item.filetype === selectedFileType);
       return matchesSearchTerm && matchesFileType;
     });

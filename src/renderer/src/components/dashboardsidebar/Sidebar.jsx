@@ -6,11 +6,10 @@ import { BiCalendar, BiMailSend  } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { RiMailAddFill } from 'react-icons/ri';
 import { util } from 'node-forge';
-import { useFetchAuthAll } from '../../services/useFetchAll'; 
-import DecText from '../../utils/DecText'; 
+import { useFetchAuthAll } from '../../services/useFetchAll';  
 
 const Sidebar = () => {  
-    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
+    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost'
     const [menubar, setmenubar] = useState();  
     const [messages, setmessages] = useState(0); 
     const navigate=useNavigate()

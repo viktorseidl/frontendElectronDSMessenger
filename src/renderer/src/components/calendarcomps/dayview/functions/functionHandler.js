@@ -31,7 +31,7 @@ export const getTodayDate = () => {
 };
 
 export function getGermanHolidays(year) {
-  // Helper function to calculate Easter Sunday (Ostersonntag) using the "Computus" algorithm
+  // Helper function to calculate Easter Sunday (Ostersonntag) using the "Computus" algorithm 
   function getEasterSunday(y) {
     const a = y % 19;
     const b = Math.floor(y / 100);
@@ -62,37 +62,41 @@ export function getGermanHolidays(year) {
 
   // Fixed holidays
   const fixedHolidays = [
-    { date: new Date(year, 0, 1), name: "Neujahr (New Year's Day)" },
-    { date: new Date(year, 4, 1), name: "Tag der Arbeit (Labour Day)" },
-    { date: new Date(year, 9, 3), name: "Tag der Deutschen Einheit (Unity Day)" },
-    { date: new Date(year, 11, 25), name: "Erster Weihnachtstag (Christmas Day)" },
-    { date: new Date(year, 11, 26), name: "Zweiter Weihnachtstag (Boxing Day)" },
+    { date: new Date(year, 0, 1), name: "Neujahr" },
+    { date: new Date(year, 4, 1), name: "Tag der Arbeit" },
+    { date: new Date(year, 9, 3), name: "Tag der Deutschen Einheit" },
+    { date: new Date(year, 11, 25), name: "Erster Weihnachtstag" },
+    { date: new Date(year, 11, 26), name: "Zweiter Weihnachtstag" },
   ];
 
   // Easter-based holidays
   const movableHolidays = [
-    getRelativeHoliday(-2, "Karfreitag (Good Friday)"),
-    getRelativeHoliday(0, "Ostersonntag (Easter Sunday)"),
-    getRelativeHoliday(1, "Ostermontag (Easter Monday)"),
-    getRelativeHoliday(39, "Christi Himmelfahrt (Ascension Day)"),
-    getRelativeHoliday(49, "Pfingstsonntag (Pentecost Sunday)"),
-    getRelativeHoliday(50, "Pfingstmontag (Pentecost Monday)"),  
+    getRelativeHoliday(-2, "Karfreitag"),
+    getRelativeHoliday(0, "Ostersonntag"),
+    getRelativeHoliday(1, "Ostermontag"),
+    getRelativeHoliday(39, "Christi Himmelfahrt"),
+    getRelativeHoliday(49, "Pfingstsonntag"),
+    getRelativeHoliday(50, "Pfingstmontag"),  
   ];
 
   // Combine all holidays
-  const allHolidays = [...fixedHolidays, ...movableHolidays];
-
+  const allHolidays = [...fixedHolidays, ...movableHolidays]; 
   // Convert to event objects
   const events = allHolidays.map((holiday, index) => ({
     id: `holiday-${index}`,
     time: 0, // Full-day event
     realtimestart: "00:00",
-    duration: 24,
+    duration: 24*4,
     realtimeend: "23:59",
-    hexcolor: "#FFD700", // Gold color for holidays
+    hexcolor: "#c3f0fa", // Gold color for holidays
     title: holiday.name,
-    date: holiday.date.toISOString().split("T")[0], // Format YYYY-MM-DD
-    iseditable: false,
+    datum: holiday.date.toISOString().split("T")[0], // Format YYYY-MM-DD
+    isNoteAttached: null,
+    isEditable: false,
+    isAlarm: false,
+    isAlarmStamp: null,
+    eventTyp: 1,
+    isPublic: 1,
   }));
 
   return events;
@@ -138,4 +142,28 @@ export function calculateHeight(duration, cellHeight) {
   // Calculate and return the final height
   console.log(totalMinutes * heightPerMinute)
   return totalMinutes * heightPerMinute;
+}
+export function getIntervalCount(startDate, endDate) {
+  const diffInMinutes = (endDate - startDate) / (1000 * 60); // Convert milliseconds to minutes
+  return Math.floor(diffInMinutes / 15); // Divide by 15 and round down to the nearest integer
+}
+
+export function formatDateTimeAlarmToString(date) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
+export function searchAllEvents(events, searchTerm) {
+  // Convert search term to lowercase for case-insensitive search
+  const lowerSearchTerm = searchTerm.toLowerCase();
+
+  return events.filter(event =>
+      event.realtimestart.toLowerCase().includes(lowerSearchTerm) ||
+      event.title.toLowerCase().includes(lowerSearchTerm) ||
+      (event.isNoteAttached && event.isNoteAttached.toLowerCase().includes(lowerSearchTerm))
+  );
 }

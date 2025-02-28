@@ -13,11 +13,10 @@ import { registerLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
 import DialogGroupUserSelect from './DialogGroupUserSelect';
 import Dialog from './Dialog';
-import DialogLoader from './DialogLoader';
-import DecText from '../utils/DecText';
+import DialogLoader from './DialogLoader'; 
 registerLocale('de-DE', de) 
 const NewMessageTab = () => { 
-  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost'
   const Usender=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const locationData=useLocation(); 
   const [files, setFiles] = useState([]);

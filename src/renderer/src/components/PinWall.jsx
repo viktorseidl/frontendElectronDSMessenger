@@ -1,7 +1,7 @@
  import React,{useEffect, useState} from "react";
  import { useDrag, useDrop } from "react-dnd";
  import { motion } from "framer-motion";
-import { MdBusAlert, MdColorize, MdDelete, MdFormatPaint, MdHistory, MdPostAdd, MdPriorityHigh, MdSave, MdSaveAlt } from "react-icons/md";
+import { MdHistory, MdPostAdd, MdPriorityHigh } from "react-icons/md";
 import { FaTrash } from "react-icons/fa6";
 import { FaPaintBrush, FaSave } from "react-icons/fa";
 import { util } from "node-forge";

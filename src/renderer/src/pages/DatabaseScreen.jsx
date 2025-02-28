@@ -4,8 +4,7 @@ import { useFetchAuthAll } from '../services/useFetchAll';
 import Loader from '../components/Loader';
 import { useTheme } from '../styles/ThemeContext'; 
 import { MdDone, MdErrorOutline } from 'react-icons/md';
-import imgs from '../assets/Logo.png'   
-import EncText from '../utils/EncText';
+import imgs from '../assets/Logo.png'    
 import bgimg from './../assets/wavy-lines.svg'
 import { util } from 'node-forge';
 import Bittewarten from '../components/databasescreencomps/Bittewarten';
@@ -145,7 +144,7 @@ const DatabaseScreen = () => {
     const cookie = {
       url: '',  
       name: 'dbConfig',
-      value: EncText(util.encode64(JSON.stringify({id:1,host:host,dbname:dbname,dbnamepflege:dbnamepflege,user:user,password:password,localhost:localhost}))), 
+      value: util.encode64(JSON.stringify({id:1,host:host.toString(),dbname:dbname.toString(),dbnamepflege:dbnamepflege.toString(),user:user.toString(),password:password.toString(),localhost:localhost.toString()})), 
       expirationDate: Math.floor(Date.now() / 1000) + (3600*24*365*2), // Expires in 1 year
     };
     

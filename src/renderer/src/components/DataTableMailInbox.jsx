@@ -8,15 +8,14 @@ import { registerLocale } from  "react-datepicker";
 import { de } from 'date-fns/locale/de';
 import { util } from "node-forge";
 import { useFetchAuthAll } from "../services/useFetchAll";
-import Dialog from "./Dialog";
-import DecText from "../utils/DecText";
+import Dialog from "./Dialog"; 
 import { RiMailAddFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 registerLocale('de', de)
 
 const DataTableMailInbox = ({ Data, updater }) => {
   const navigate=useNavigate()
-  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost'
   const [filters, setFilters] = useState({
     Betrefftxt: "",
     Sendername: "Alle Versender",

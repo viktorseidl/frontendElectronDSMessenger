@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useFetchAuthAll } from '../services/useFetchAll'; 
 import imgs from '../assets/Logo.png'  
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { md5, util } from 'node-forge';
-import DecText from '../utils/DecText';
+import { md5, util } from 'node-forge'; 
 import bgimg from './../assets/wavy-lines.svg'
 const LogScreen = () => {
   const [type, settype] = useState('verwaltung');
@@ -16,7 +15,7 @@ const LogScreen = () => {
     const [user, setuser] = useState('');
     const [password, setpassword] = useState(''); 
     const navigate = useNavigate() 
-  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:'' 
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost' 
   const loginUser=async()=>{
     if(type&&(user.trim().length>0)&&(password.trim().length>0)){
       seterr(false) 

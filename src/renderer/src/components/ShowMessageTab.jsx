@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaFileAudio } from 'react-icons/fa';
-import pako from 'pako';
+import { FaHtml5, FaCss3Alt ,FaJs, FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileExcel, FaFileCsv, FaFileAudio } from 'react-icons/fa'; 
 import { MdArrowBackIos, MdDelete, MdDownload, MdFilePresent, MdLogout, MdMarkEmailRead, MdMarkEmailUnread, MdMoveToInbox, MdMovie, MdPerson, MdPriorityHigh, MdReply } from 'react-icons/md';
 import { util } from 'node-forge'; 
 import { Si7Zip, SiJpeg } from "react-icons/si";
@@ -9,10 +8,9 @@ import { IoImageSharp } from "react-icons/io5";
 import { AiOutlineGif } from "react-icons/ai";  
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Dialog from './Dialog';
-import { useFetchAuthAll } from '../services/useFetchAll';
-import DecText from '../utils/DecText';
+import { useFetchAuthAll } from '../services/useFetchAll'; 
 const ShowMessageTab = () => {
-  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost'
   const locationData=useLocation(); 
   const navigate = useNavigate(); // For managing user back to source onClick={() => navigate(-1)}>Go Back 
   const [attaches, setattaches] = useState([]);

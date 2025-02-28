@@ -10,7 +10,7 @@ import ColumnIntervalRow from './ColumnIntervalRow';
 const TagesAnsicht = ({date}) => { 
 const divRef = useRef(null);
 const [minHeight, setMinHeight] = useState(0);
- 
+ const rows=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]
  
 const CurrentTimeLine = ({pixel}) => {
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -35,10 +35,12 @@ const CurrentTimeLine = ({pixel}) => {
       </div>
     );
   };
+   
 useEffect(()=>{
         if (divRef.current&&minHeight==0) { 
             setMinHeight(divRef.current.clientHeight);  
-        } 
+        }  
+        console.log(rows.length)
     },[])
   return (
     <div   ref={divRef} className='w-full h-full  flex flex-col items-start justify-start '>
@@ -77,7 +79,7 @@ useEffect(()=>{
         <div  className='w-full relative  dark:bg-gray-900 bg-blue-50 flex flex-row items-start justify-start '>
         <div className='w-40 flex flex-col dark:bg-gray-800 bg-white items-start justify-evenly h-full dark:border-r border-r dark:border-gray-700 border-gray-300 divide-y dark:divide-gray-700 divide-gray-300'> 
         {
-            [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].map((item,index)=>(
+            rows.map((item,index)=>(
                 <ColumnIntervalRow key={index+item+'1stcolumn'} T={item}  />
             ))
         }

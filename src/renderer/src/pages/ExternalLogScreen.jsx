@@ -4,12 +4,11 @@ import { useTheme } from '../styles/ThemeContext'
 import { useNavigate,useSearchParams } from 'react-router-dom'
 import { useFetchAuthAll } from '../services/useFetchAll'; 
 import imgs from '../assets/Logo.png'   
-import { util } from 'node-forge';
-import DecText from '../utils/DecText';
+import { util } from 'node-forge'; 
 
 const ExternalLogScreen = () => {
     const [searchParams] = useSearchParams(); 
-    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''  
+    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost'
     const navigate = useNavigate() 
   const loginUser=async()=>{
     //MUST BE RECEIVED AS URLENCODED

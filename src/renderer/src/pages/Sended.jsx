@@ -5,12 +5,11 @@ import { useFetchAuthAll } from '../services/useFetchAll';
 import Sidebar from '../components/dashboardsidebar/Sidebar'; 
 import { util } from 'node-forge'; 
 import DataTableMailOutbox from '../components/DataTableMailOutbox';
-import { RiMailAddFill } from 'react-icons/ri';
-import DecText from '../utils/DecText';
+import { RiMailAddFill } from 'react-icons/ri'; 
 
 const Sended = () => { 
   const [data, setdata] = useState([]);  
-  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost'
   const getAllMessages=async()=>{
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
     console.log(User)

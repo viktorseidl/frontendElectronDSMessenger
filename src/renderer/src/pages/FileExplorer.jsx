@@ -3,11 +3,10 @@ import { useTheme } from '../styles/ThemeContext'
 import { useFetchAuthAll } from '../services/useFetchAll';  
 import Sidebar from '../components/dashboardsidebar/Sidebar'; 
 import { util } from 'node-forge'; 
-import FileCardGrid from '../components/FileCardGrid'; 
-import DecText from '../utils/DecText';
+import FileCardGrid from '../components/FileCardGrid';  
 
 const FileExplorer = () => {
-  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost'
   const [data, setdata] = useState([]);   
   const getAllMessages=async()=>{
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))

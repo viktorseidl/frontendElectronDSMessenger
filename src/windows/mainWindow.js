@@ -37,11 +37,12 @@ export async function createMainWindow() {
   // Load the appropriate content (remote URL in dev or local file in production)
   if (isDev) {
     mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
+    mainWindow.webContents.openDevTools();
   } else {
     const args = process.argv.slice(1);
     let route = "/";
     if (args.length > 0) {
-      // shell commando --->   electron path/to/main.js "user=johndoe" "token=abcd1234"
+      // shell commando --->   electron path/to/main.js "user=johndoe" "token="abcd1234 md5"  
       // Convert arguments into a query string format
       const queryString = 'user='+args[0]+'&token='+args[1];
       route = `/extlogin?${queryString}`; // Open login page with query params
@@ -50,6 +51,9 @@ export async function createMainWindow() {
       });
     }else{
     mainWindow.loadFile(path.join(__dirname, '../../out/renderer/index.html'));
+    
+    mainWindow.webContents.openDevTools();   //Uncomment if not wanted in production
+     
     }
   }
 

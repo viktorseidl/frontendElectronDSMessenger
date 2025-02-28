@@ -1,16 +1,14 @@
 import React,{useEffect, useState} from 'react' 
-import { RiMailAddFill } from "react-icons/ri";
-import { useTheme } from '../styles/ThemeContext' 
+import { RiMailAddFill } from "react-icons/ri"; 
 import { Link } from 'react-router-dom'
 import { useFetchAuthAll } from '../services/useFetchAll';  
 import Sidebar from '../components/dashboardsidebar/Sidebar'; 
 import { util } from 'node-forge';
-import DataTableMailInbox from '../components/DataTableMailInbox';
-import DecText from '../utils/DecText';
+import DataTableMailInbox from '../components/DataTableMailInbox'; 
 
 const Dashboard = () => { 
   const [data, setdata] = useState([]); 
-  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''  
+  const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost' 
  
   const getAllMessages=async()=>{
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user'))) 

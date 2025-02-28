@@ -3,10 +3,9 @@ import imgs from './../assets/Logo.png'
 import { MdPerson } from 'react-icons/md'
 import { useFetchAuthAll } from '../services/useFetchAll'
 import { util } from 'node-forge'
-import { useLocation } from 'react-router-dom'
-import DecText from '../utils/DecText'
+import { useLocation } from 'react-router-dom' 
 const DialogGroupUserSelect = ({show, close, title, message, cancelBtn=false, actionBtn1=false, actionBtn2=false, Btn2BgHover=null, Btn1BgHover=null, callbackBtn1=null, callbackBtn2=null,Btn2Txt=null, SelectedUsers, addUser, deleteUser}) => {
-    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(DecText(localStorage.getItem('dbConfig'))).value)).localhost:''
+    const apache=localStorage.getItem('dbConfig')?JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost:'localhost'
     const User=JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
     const _allSelector=useRef('')
     const localdata=useLocation().state 
