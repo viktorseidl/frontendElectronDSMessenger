@@ -39,6 +39,7 @@ const LogScreen = () => {
       )
       if (check[0]?.length > 0) {
         window.sessionStorage.setItem('user', util.encode64(JSON.stringify(check[0][0])))
+        window.sessionStorage.setItem('userRole', util.encode64(JSON.stringify(check[1])))
         setUserRoles(check[1])
         _lockbtn.current.disabled = false
         setlogloader(false)

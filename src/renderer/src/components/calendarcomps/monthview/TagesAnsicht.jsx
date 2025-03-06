@@ -1,49 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react'
-import DayGrid from './DayGrid'
 import { MdArrowLeft, MdArrowRight, MdClose } from 'react-icons/md'
 import { FaSearch } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
-import { formatGermanDate, getShiftedDate, getTodayDate } from './functions/functionHandler'
-import ColumnIntervalRow from './ColumnIntervalRow'
+import {
+  formatGermanDateMonthView,
+  getShiftedDateMonthView,
+  getTodayDate
+} from './functions/functionHandler'
+import MonthGrid from './MonthGrid'
 
 const TagesAnsicht = ({ date, publicView, layer }) => {
   const divRef = useRef(null)
   const viewRef = useRef(null)
   const navigate = useNavigate()
   const [minHeight, setMinHeight] = useState(0)
-  const rows = [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
-  ]
-
-  const CurrentTimeLine = ({ pixel }) => {
-    const [currentTime, setCurrentTime] = useState(new Date())
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrentTime(new Date())
-      }, 1000)
-      return () => clearInterval(interval)
-    }, [publicView])
-
-    const currentTimePixels = currentTime.getHours() * 60 + currentTime.getMinutes()
-    return (
-      <div
-        className="w-[88%] absolute inset left-32 right-0 h-[1px] dark:bg-red-500 bg-gray-800 z-0"
-        style={{ top: `${parseInt(currentTimePixels) * ((24 * 40) / 1440)}px` }}
-      >
-        <div className="w-full relative">
-          <div className="absolute left-0 -top-[4px] p-1 rounded-full dark:bg-red-500 bg-gray-800"></div>
-          <div className="absolute right-0 dark:bg-red-700 bg-gray-800 h-5 text-white text-xs -top-[20px] pb-1 pt-[2px] px-2">
-            {currentTime.getHours() > 9 ? currentTime.getHours() : '0' + currentTime.getHours()}:
-            {currentTime.getMinutes() > 9
-              ? currentTime.getMinutes()
-              : '0' + currentTime.getMinutes()}{' '}
-            Aktuelle Uhrzeit
-          </div>
-        </div>
-      </div>
-    )
-  }
   const changeView = () => {
     const layer = viewRef.current.value
     navigate(
@@ -63,7 +33,7 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
     }
   }, [])
   return (
-    <div ref={divRef} className="w-full h-full  flex flex-col items-start justify-start ">
+    <div className="w-full h-full  flex flex-col items-start justify-start ">
       <div className="w-full h-20 py-4 px-4 flex flex-row items-center justify-start gap-x-2">
         <div className="w-[40%] h-20 flex flex-row items-center justify-start ">
           <Link
@@ -82,12 +52,12 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
           </Link>
           <Link
             to={
-              '/calendar/day/' +
-              parseInt(getShiftedDate(true, date).split('.')[2]) +
+              '/calendar/month/' +
+              parseInt(getShiftedDateMonthView(true, date).split('.')[2]) +
               '/' +
-              parseInt(getShiftedDate(true, date).split('.')[1]) +
+              parseInt(getShiftedDateMonthView(true, date).split('.')[1]) +
               '/' +
-              parseInt(getShiftedDate(true, date).split('.')[0])
+              parseInt(getShiftedDateMonthView(true, date).split('.')[0])
             }
             className="w-8 h-8  flex flex-col items-center justify-center outline-none bg-transparent dark:hover:bg-gray-800 hover:bg-blue-300/40 rounded-full ml-4 text-3xl"
           >
@@ -95,18 +65,20 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
           </Link>
           <Link
             to={
-              '/calendar/day/' +
-              parseInt(getShiftedDate(false, date).split('.')[2]) +
+              '/calendar/month/' +
+              parseInt(getShiftedDateMonthView(false, date).split('.')[2]) +
               '/' +
-              parseInt(getShiftedDate(false, date).split('.')[1]) +
+              parseInt(getShiftedDateMonthView(false, date).split('.')[1]) +
               '/' +
-              parseInt(getShiftedDate(false, date).split('.')[0])
+              parseInt(getShiftedDateMonthView(false, date).split('.')[0])
             }
             className=" w-8 h-8  flex flex-col items-center justify-center outline-none bg-transparent dark:hover:bg-gray-800 hover:bg-blue-300/40 rounded-full ml-1 text-3xl"
           >
             <MdArrowRight />
           </Link>
-          <span className=" py-2 dark:text-gray-300 ml-2 text-lg">{formatGermanDate(date)}</span>
+          <span className=" py-2 dark:text-gray-300 ml-2 text-lg">
+            {formatGermanDateMonthView(date)}
+          </span>
         </div>
         <div className="w-[60%] h-20 flex flex-col items-center justify-center ">
           <div className="w-full h-full  flex flex-row items-center justify-between gap-x-2">
@@ -145,17 +117,11 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
         </div>
       </div>
       <div className="w-full h-[91.8%] shadow-inner dark:shadow-gray-200">
-        <div className="w-full flex flex-col items-start justify-start max-h-full overflow-y-scroll dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
-          <div className="w-full relative  dark:bg-gray-900 bg-blue-50 flex flex-row items-start justify-start ">
-            <div className="w-40 flex flex-col dark:bg-gray-800 bg-white items-start justify-evenly h-full dark:border-r border-r dark:border-gray-700 border-gray-300 divide-y dark:divide-gray-700 divide-gray-300">
-              {rows.map((item, index) => (
-                <ColumnIntervalRow key={index + item + '1stcolumn'} T={item} />
-              ))}
+        <div className="w-full flex flex-col items-start justify-start h-full  overflow-hidden">
+          <div className="w-full h-full dark:bg-gray-900 bg-blue-50 flex flex-row items-start justify-start ">
+            <div className="w-full h-full dark:bg-gray-950 bg-stone-100 dark:text-gray-400 text-gray-900 border-t border-l dark:border-gray-700 border-gray-300">
+              <MonthGrid fullheight={minHeight} date={date} publicView={publicView} />
             </div>
-            <div className="w-full h-full bg-transparent">
-              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
-            </div>
-            <CurrentTimeLine pixel={2.5} />
           </div>
         </div>
       </div>

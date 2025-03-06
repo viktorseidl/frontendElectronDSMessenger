@@ -33,6 +33,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "electron-updater": "^6.1.7",
     "framer-motion": "^12.4.3",

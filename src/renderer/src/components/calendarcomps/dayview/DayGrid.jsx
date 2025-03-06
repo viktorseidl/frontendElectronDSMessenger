@@ -5,6 +5,7 @@ import DialogEventDayEntry from '../../DialogEventDayEntry'
 import dayjs from 'dayjs'
 import {
   calculateTime,
+  convertToDateTimeObj,
   formatDateTimeAlarmToString,
   getGermanHolidays,
   getIntervalCount
@@ -13,47 +14,15 @@ import TimeSlot from './TimeSlot'
 
 const ItemType = 'EVENT'
 
-const DayLayoutGrid = ({ fullheight, date, publicView }) => {
+const DayGrid = ({ fullheight, date, publicView }) => {
   const [dialogev, setdialogev] = useState(false)
   const [dialogtyp, setdialogtyp] = useState(null)
   const [dtobj, setdtobj] = useState(null)
   const [editobj, seteditobj] = useState(null)
-  const [events, setEvents] = useState([
-    {
-      id: 1740388137775,
-      time: 8,
-      realtimestart: calculateTime(8, 9).startTime,
-      duration: 9,
-      realtimeend: calculateTime(8, 9).endTime,
-      hexcolor: '#99ffFEFF',
-      title: 'Geburtstag Annemarie Hürten',
-      datum: date,
-      isNoteAttached: null,
-      isEditable: false,
-      isAlarm: false,
-      isAlarmStamp: null,
-      eventTyp: 0,
-      isPublic: 1
-    },
-    {
-      id: 1740388167780,
-      time: 1,
-      realtimestart: calculateTime(1, 8).startTime,
-      duration: 8,
-      realtimeend: calculateTime(1, 8).endTime,
-      hexcolor: '#c1cff7FF',
-      title: 'Team-Meeting',
-      datum: date,
-      isNoteAttached: 'hallo wie geht es dir',
-      isEditable: true,
-      isAlarm: true,
-      isAlarmStamp: '28.02.2025 13:25',
-      eventTyp: 0,
-      isPublic: 0
-    }
-  ])
-
+  const [events, setEvents] = useState([])
+  console.log(events)
   const handleDrop = (timeSlot, item) => {
+    console.log(timeSlot)
     setEvents((prev) =>
       prev.map((ev) =>
         ev.id === item.id
@@ -99,11 +68,14 @@ const DayLayoutGrid = ({ fullheight, date, publicView }) => {
   const addNote = (Arr) => {
     setdialogev(false) //Close Dialog
     const timeSlot = Arr[1].getHours()
-    const duration = getIntervalCount(Arr[1], Arr[2])
+    const duration = getIntervalCount(Arr[1], Arr[2], timeSlot)
     const isprivate = Arr[7] ? 1 : 0
     const startTag = Arr[1].getDate()
+    const endeTag = Arr[2].getDate()
     const startMonat = Arr[1].getMonth() + 1
+    const endeMonat = Arr[2].getMonth() + 1
     const startJahr = Arr[1].getFullYear()
+    const endeJahr = Arr[2].getFullYear()
     const isNote = Arr[3] != null ? Arr[3] : null
     const isAlarm = Arr[5]
     const alarmStamp = isAlarm ? formatDateTimeAlarmToString(Arr[4]) : null
@@ -116,9 +88,21 @@ const DayLayoutGrid = ({ fullheight, date, publicView }) => {
     ) {
       const newObj = {
         id: Date.now(),
+        realtimestartDate:
+          (startTag > 9 ? startTag : '0' + startTag) +
+          '.' +
+          (startMonat > 9 ? startMonat : '0' + startMonat) +
+          '.' +
+          startJahr,
         realtimestart: calculateTime(timeSlot, duration).startTime,
         time: timeSlot,
         duration: duration,
+        realtimeendDate:
+          (endeTag > 9 ? endeTag : '0' + endeTag) +
+          '.' +
+          (endeMonat > 9 ? endeMonat : '0' + endeMonat) +
+          '.' +
+          endeJahr,
         realtimeend: calculateTime(timeSlot, duration).endTime,
         hexcolor: Arr[6].toString(),
         title: Arr[0].toString(),
@@ -186,8 +170,20 @@ const DayLayoutGrid = ({ fullheight, date, publicView }) => {
       {
         id: 1740388137775,
         time: 8,
+        realtimestartDate: dayjs(
+          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
+            ' ' +
+            calculateTime(8, 9).startTime,
+          'DD.MM:YYYY HH:mm'
+        ).toDate(),
         realtimestart: calculateTime(8, 9).startTime,
         duration: 9,
+        realtimeendDate: dayjs(
+          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
+            ' ' +
+            calculateTime(8, 9).endTime,
+          'DD.MM:YYYY HH:mm'
+        ).toDate(),
         realtimeend: calculateTime(8, 9).endTime,
         hexcolor: '#99ffFEFF',
         title: 'Geburtstag Annemarie Hürten',
@@ -202,8 +198,20 @@ const DayLayoutGrid = ({ fullheight, date, publicView }) => {
       {
         id: 1740388167780,
         time: 0,
+        realtimestartDate: dayjs(
+          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
+            ' ' +
+            calculateTime(0, 3).startTime,
+          'DD.MM:YYYY HH:mm'
+        ).toDate(),
         realtimestart: calculateTime(0, 3).startTime,
         duration: 3,
+        realtimeendDate: dayjs(
+          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
+            ' ' +
+            calculateTime(0, 3).endTime,
+          'DD.MM:YYYY HH:mm'
+        ).toDate(),
         realtimeend: calculateTime(0, 3).endTime,
         hexcolor: '#c1cff7FF',
         title: 'Team-Meeting',
@@ -257,4 +265,4 @@ const DayLayoutGrid = ({ fullheight, date, publicView }) => {
   )
 }
 
-export default DayLayoutGrid
+export default DayGrid

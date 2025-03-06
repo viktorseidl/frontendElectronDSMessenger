@@ -5,6 +5,18 @@ import { FaSearch } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { formatGermanDate, getShiftedDate, getTodayDate } from './functions/functionHandler'
 import ColumnIntervalRow from './ColumnIntervalRow'
+import {
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  format,
+  addWeeks,
+  subWeeks,
+  isToday,
+  parseISO,
+  isDate
+} from 'date-fns'
+import dayjs from 'dayjs'
 
 const TagesAnsicht = ({ date, publicView, layer }) => {
   const divRef = useRef(null)
@@ -14,7 +26,17 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
   const rows = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
   ]
+  const getWeekDays = (date) => {
+    console.log(date)
+    let b = null ? new Date() : dayjs(date, 'DD.MM:YYYY').toDate()
+    const startOfCurrentWeek = startOfWeek(b, { weekStartsOn: 1 }) // Week starts on Monday
+    const endOfCurrentWeek = endOfWeek(b, { weekStartsOn: 1 })
 
+    return eachDayOfInterval({
+      start: startOfCurrentWeek,
+      end: endOfCurrentWeek
+    })
+  }
   const CurrentTimeLine = ({ pixel }) => {
     const [currentTime, setCurrentTime] = useState(new Date())
 
@@ -152,7 +174,16 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
                 <ColumnIntervalRow key={index + item + '1stcolumn'} T={item} />
               ))}
             </div>
-            <div className="w-full h-full bg-transparent">
+            <div className="w-full grid grid-cols-7 items-start justify-start h-full bg-transparent divide-x dark:divide-gray-700 divide-gray-300">
+              {getWeekDays(date).map((item, index) => (
+                <div className="w-full">{format(item, 'd')}</div>
+              ))}
+              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
+              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
+              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
+              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
+              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
+              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
               <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
             </div>
             <CurrentTimeLine pixel={2.5} />

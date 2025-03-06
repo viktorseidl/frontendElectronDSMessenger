@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/dashboardsidebar/Sidebar'
-import TagesAnsicht from '../components/calendarcomps/dayview/TagesAnsicht'
-import { MdFilterList, MdViewDay } from 'react-icons/md'
+import { MdCalendarViewMonth, MdFilterList, MdViewDay, MdViewModule } from 'react-icons/md'
 import CalendarMini from '../components/calendarcomps/CalenderMini'
-import { getTodayDate } from '../components/calendarcomps/dayview/functions/functionHandler'
-const CalendarDayToday = () => {
-  const today = getTodayDate()
-  const layer = 'day'
+import { useParams } from 'react-router-dom'
+import { getGermanHolidays } from '../components/calendarcomps/dayview/functions/functionHandler'
+import TagesAnsicht from '../components/calendarcomps/monthview/TagesAnsicht'
+const CalendarMonth = () => {
+  const { jahr, monat, tag } = useParams()
+  const layer = 'month'
   const [btnmy, setbtnmy] = useState(false)
   return (
     <div
@@ -21,7 +22,7 @@ const CalendarDayToday = () => {
             <div className="w-80 h-full flex flex-col items-start justify-start pt-4 overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 ">
               <div className="w-full flex flex-row items-center justify-center text-xl">
                 <span className="w-full flex flex-row items-center justify-center">
-                  <MdViewDay className="inline mr-2" /> Tagesansicht
+                  <MdCalendarViewMonth className="inline mr-2" /> Monatsansicht
                 </span>
               </div>
               <div className="w-full flex flex-col items-center justify-center p-4 mt-4">
@@ -32,11 +33,16 @@ const CalendarDayToday = () => {
                   + Eintrag
                 </button>
               </div>
-              <CalendarMini date={today} layout={layer} />
+              <CalendarMini
+                date={
+                  (tag > 9 ? tag : '0' + tag) + '.' + (monat > 9 ? monat : '0' + monat) + '.' + jahr
+                }
+                layout={layer}
+              />
               <div className="w-full px-4 mt-6 flex flex-col items-start justify-start gap-y-6 ">
                 <select
                   title="Nach Bereich filtern"
-                  className=" w-full px-4 py-2  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none text-sm "
+                  className=" w-auto px-4 py-2  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none text-sm "
                 >
                   <option>Alle Bereiche</option>
                   <option>Wohnbereich1</option>
@@ -101,7 +107,13 @@ const CalendarDayToday = () => {
               </div>
             </div>
             <div className="w-full h-full">
-              <TagesAnsicht date={today} publicView={btnmy} layer={layer} />
+              <TagesAnsicht
+                date={
+                  (tag > 9 ? tag : '0' + tag) + '.' + (monat > 9 ? monat : '0' + monat) + '.' + jahr
+                }
+                publicView={btnmy}
+                layer={layer}
+              />
             </div>
           </div>
         </div>
@@ -109,4 +121,4 @@ const CalendarDayToday = () => {
     </div>
   )
 }
-export default CalendarDayToday
+export default CalendarMonth

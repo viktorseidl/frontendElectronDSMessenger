@@ -17,6 +17,10 @@ import Calendarwall from './pages/Calendarwall'
 import CalendarDay from './pages/CalendarDay'
 import CalendarDayToday from './pages/CalendarDayToday'
 import { RoleProvider } from './styles/RoleContext'
+import CalendarMonth from './pages/CalendarMonth'
+import CalendarYear from './pages/CalendarYear'
+import CalendarWeek from './pages/CalendarWeek'
+import CalendarAgenda from './pages/CalendarAgenda'
 function App() {
   const handleMaximize = () => {
     window.api.windowControls.maximize()
@@ -49,10 +53,10 @@ function App() {
               <Route path="/pinwall" element={<Pinwall />} />
               <Route path="/calendar" element={<CalendarDayToday />} />
               <Route path="/calendar/day/:jahr/:monat/:tag" element={<CalendarDay />} />
-              <Route path="/calendar/week/:jahr/:monat/:tag" element={<CalendarDay />} />
-              <Route path="/calendar/month/:jahr/:monat/:tag" element={<CalendarDay />} />
-              <Route path="/calendar/year/:jahr/:monat/:tag" element={<CalendarDay />} />
-              <Route path="/calendar/agenda/:jahr/:monat/:tag" element={<CalendarDay />} />
+              <Route path="/calendar/week/:jahr/:monat/:tag" element={<CalendarWeek />} />
+              <Route path="/calendar/month/:jahr/:monat/:tag" element={<CalendarMonth />} />
+              <Route path="/calendar/year/:jahr/:monat/:tag" element={<CalendarYear />} />
+              <Route path="/calendar/agenda/:jahr/:monat/:tag" element={<CalendarAgenda />} />
               <Route path="/new-message" element={<NewMessage />} />
               <Route path="/message/:id" element={<ShowMessage />} />
             </Routes>

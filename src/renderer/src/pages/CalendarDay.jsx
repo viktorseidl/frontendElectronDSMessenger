@@ -123,6 +123,7 @@ const CalendarDay = () => {
                   (tag > 9 ? tag : '0' + tag) + '.' + (monat > 9 ? monat : '0' + monat) + '.' + jahr
                 }
                 publicView={btnmy}
+                layer={layer}
               />
             </div>
           </div>
