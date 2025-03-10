@@ -22,7 +22,7 @@ Due to its cross-platform compatibility, the application is automatically availa
 | LIGHT MODE                                       | INBOX LIGHT MODE                                  |
 | <img style="width:80%;" src="./src/Screen5.png"> | <img style="width:80%;" src="./src/Screen6.png">  |
 | CALENDAR DAILY                                   | CALENDAR WEEKLY                                   |
-| <img style="width:80%;" src="./src/Screen7.png"> | <img style="width:80%;" src="./src/Screen7.png">  |
+| <img style="width:80%;" src="./src/Screen7.png"> | <img style="width:80%;" src="./src/Screen8.png">  |
 | CALENDAR MONTHLY                                 | CALENDAR YEARLY                                   |
 | <img style="width:80%;" src="./src/Screen9.png"> | <img style="width:80%;" src="./src/Screen10.png"> |
 
