@@ -2,7 +2,6 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 dayjs.extend(customParseFormat)
-
 export const getShiftedDate = (goBack, dateString) => {
   const parsedDate = dayjs(dateString, 'DD.MM.YYYY')
 
@@ -14,17 +13,18 @@ export const getShiftedDate = (goBack, dateString) => {
 
   return newDate.format('DD.MM.YYYY')
 }
-export const getShiftedDateWeek = (goBack, dateString) => {
+export const getShiftedDateMonthView = (goBack, dateString) => {
   const parsedDate = dayjs(dateString, 'DD.MM.YYYY')
 
   if (!parsedDate.isValid()) {
     throw new Error('Invalid date format. Expected format: DD.MM.YYYY')
   }
 
-  const newDate = goBack ? parsedDate.subtract(1, 'week') : parsedDate.add(1, 'week')
+  const newDate = goBack ? parsedDate.subtract(1, 'month') : parsedDate.add(1, 'month')
 
   return newDate.format('DD.MM.YYYY')
 }
+
 export const getShiftedDateMonth = (goBack, dateString) => {
   const parsedDate = dayjs(dateString, 'DD.MM.YYYY')
 
@@ -73,21 +73,21 @@ export function getGermanHolidays(year) {
 
   // Fixed holidays
   const fixedHolidays = [
-    { date: new Date(year, 0, 1), name: 'Neujahr' },
-    { date: new Date(year, 4, 1), name: 'Tag der Arbeit' },
-    { date: new Date(year, 9, 3), name: 'Tag der Deutschen Einheit' },
-    { date: new Date(year, 11, 25), name: 'Erster Weihnachtstag' },
-    { date: new Date(year, 11, 26), name: 'Zweiter Weihnachtstag' }
+    { date: new Date(year, 0, 1 + 1), name: 'Neujahr' },
+    { date: new Date(year, 4, 1 + 1), name: 'Tag der Arbeit' },
+    { date: new Date(year, 9, 3 + 1), name: 'Tag der Deutschen Einheit' },
+    { date: new Date(year, 11, 25 + 1), name: 'Erster Weihnachtstag' },
+    { date: new Date(year, 11, 26 + 1), name: 'Zweiter Weihnachtstag' }
   ]
 
   // Easter-based holidays
   const movableHolidays = [
-    getRelativeHoliday(-2, 'Karfreitag'),
-    getRelativeHoliday(0, 'Ostersonntag'),
-    getRelativeHoliday(1, 'Ostermontag'),
-    getRelativeHoliday(39, 'Christi Himmelfahrt'),
-    getRelativeHoliday(49, 'Pfingstsonntag'),
-    getRelativeHoliday(50, 'Pfingstmontag')
+    getRelativeHoliday(-2 + 1, 'Karfreitag'),
+    getRelativeHoliday(0 + 1, 'Ostersonntag'),
+    getRelativeHoliday(1 + 1, 'Ostermontag'),
+    getRelativeHoliday(39 + 1, 'Christi Himmelfahrt'),
+    getRelativeHoliday(49 + 1, 'Pfingstsonntag'),
+    getRelativeHoliday(50 + 1, 'Pfingstmontag')
   ]
 
   // Combine all holidays
@@ -96,28 +96,8 @@ export function getGermanHolidays(year) {
   const events = allHolidays.map((holiday, index) => ({
     id: `holiday-${index}`,
     time: 0, // Full-day event
-    realtimestartDate:
-      (holiday.date.toISOString().split('T')[0].split('-')[2] > 9
-        ? holiday.date.toISOString().split('T')[0].split('-')[2]
-        : '0' + holiday.date.toISOString().split('T')[0].split('-')[2]) +
-      '.' +
-      (holiday.date.toISOString().split('T')[0].split('-')[1] > 9
-        ? holiday.date.toISOString().split('T')[0].split('-')[1]
-        : '0' + holiday.date.toISOString().split('T')[0].split('-')[1]) +
-      '.' +
-      holiday.date.toISOString().split('T')[0].split('-')[0],
     realtimestart: '00:00',
     duration: 24 * 4,
-    realtimeendDate:
-      (holiday.date.toISOString().split('T')[0].split('-')[2] > 9
-        ? holiday.date.toISOString().split('T')[0].split('-')[2]
-        : '0' + holiday.date.toISOString().split('T')[0].split('-')[2]) +
-      '.' +
-      (holiday.date.toISOString().split('T')[0].split('-')[1] > 9
-        ? holiday.date.toISOString().split('T')[0].split('-')[1]
-        : '0' + holiday.date.toISOString().split('T')[0].split('-')[1]) +
-      '.' +
-      holiday.date.toISOString().split('T')[0].split('-')[0],
     realtimeend: '23:59',
     hexcolor: '#c3f0fa', // Gold color for holidays
     title: holiday.name,
@@ -132,7 +112,7 @@ export function getGermanHolidays(year) {
 
   return events
 }
-export function formatGermanDate(dateString) {
+export function formatGermanDateMonthView(dateString) {
   // Split the input date string into day, month, and year
   const [day, month, year] = dateString.split('.')
 
@@ -140,7 +120,7 @@ export function formatGermanDate(dateString) {
   const date = new Date(year, month - 1, day)
 
   // Define options for toLocaleDateString
-  const options = { day: 'numeric', month: 'long', year: 'numeric' }
+  const options = { month: 'long', year: 'numeric' }
 
   // Convert the date to the desired format using the German locale
   return date.toLocaleDateString('de-DE', options)
@@ -184,16 +164,9 @@ export function calculateHeight(duration, cellHeight) {
   console.log(totalMinutes * heightPerMinute)
   return totalMinutes * heightPerMinute
 }
-export function getIntervalCount(startDate, endDate, timeslot) {
-  console.log(startDate, endDate)
+export function getIntervalCount(startDate, endDate) {
   const diffInMinutes = (endDate - startDate) / (1000 * 60) // Convert milliseconds to minutes
-  const passed = Number(timeslot) * 60
-  const remaintoday = 1440 - Number(passed)
-  const result =
-    diffInMinutes > remaintoday
-      ? Math.floor(Number(remaintoday) / 15)
-      : Math.floor(diffInMinutes / 15)
-  return result // Divide by 15 and round down to the nearest integer
+  return Math.floor(diffInMinutes / 15) // Divide by 15 and round down to the nearest integer
 }
 
 export function formatDateTimeAlarmToString(date) {

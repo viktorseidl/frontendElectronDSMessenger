@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
-import DayGrid from './DayGrid'
 import { MdArrowLeft, MdArrowRight, MdClose } from 'react-icons/md'
 import { FaSearch } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
-import { formatGermanDate, getShiftedDate, getTodayDate } from './functions/functionHandler'
+import { formatGermanDate, getShiftedDateWeek, getTodayDate } from './functions/functionHandler'
 import ColumnIntervalRow from './ColumnIntervalRow'
 import {
   startOfWeek,
   endOfWeek,
   eachDayOfInterval,
+  getWeek,
   format,
   addWeeks,
   subWeeks,
@@ -17,25 +17,59 @@ import {
   isDate
 } from 'date-fns'
 import dayjs from 'dayjs'
+import WeekGrid from './WeekGrid'
+import DndProviderWrapper from './DndProviderWrapper'
 
 const TagesAnsicht = ({ date, publicView, layer }) => {
   const divRef = useRef(null)
   const viewRef = useRef(null)
   const navigate = useNavigate()
   const [minHeight, setMinHeight] = useState(0)
+  const [events, setEvents] = useState([
+    {
+      id: '1',
+      title: 'Meeting',
+      start: new Date('2025-03-07T10:00:00'),
+      end: new Date('2025-03-07T12:00:00')
+    },
+    {
+      id: '2',
+      title: 'Lunch',
+      start: new Date('2025-03-07T12:00:00'),
+      end: new Date('2025-03-08T13:00:00')
+    },
+    {
+      id: '3',
+      title: 'Lunch',
+      start: new Date('2025-03-07T12:00:00'),
+      end: new Date('2025-03-07T13:00:00')
+    },
+    {
+      id: '4',
+      title: 'Lunch',
+      start: new Date('2025-03-07T12:00:00'),
+      end: new Date('2025-03-07T13:00:00')
+    }
+  ])
   const rows = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
   ]
   const getWeekDays = (date) => {
     console.log(date)
-    let b = null ? new Date() : dayjs(date, 'DD.MM:YYYY').toDate()
+    let b = date == null ? new Date() : dayjs(date, 'DD.MM:YYYY').toDate()
     const startOfCurrentWeek = startOfWeek(b, { weekStartsOn: 1 }) // Week starts on Monday
     const endOfCurrentWeek = endOfWeek(b, { weekStartsOn: 1 })
-
     return eachDayOfInterval({
       start: startOfCurrentWeek,
       end: endOfCurrentWeek
     })
+  }
+  const moveEvent = (eventId, newStart, newEnd) => {
+    setEvents((prev) =>
+      prev.map((event) =>
+        event.id === eventId ? { ...event, start: newStart, end: newEnd } : event
+      )
+    )
   }
   const CurrentTimeLine = ({ pixel }) => {
     const [currentTime, setCurrentTime] = useState(new Date())
@@ -51,7 +85,7 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
     return (
       <div
         className="w-[88%] absolute inset left-32 right-0 h-[1px] dark:bg-red-500 bg-gray-800 z-0"
-        style={{ top: `${parseInt(currentTimePixels) * ((24 * 40) / 1440)}px` }}
+        style={{ top: `${parseInt(currentTimePixels) * ((24 * 180) / 1440) + 40}px` }}
       >
         <div className="w-full relative">
           <div className="absolute left-0 -top-[4px] p-1 rounded-full dark:bg-red-500 bg-gray-800"></div>
@@ -104,12 +138,12 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
           </Link>
           <Link
             to={
-              '/calendar/day/' +
-              parseInt(getShiftedDate(true, date).split('.')[2]) +
+              '/calendar/week/' +
+              parseInt(getShiftedDateWeek(true, date).split('.')[2]) +
               '/' +
-              parseInt(getShiftedDate(true, date).split('.')[1]) +
+              parseInt(getShiftedDateWeek(true, date).split('.')[1]) +
               '/' +
-              parseInt(getShiftedDate(true, date).split('.')[0])
+              parseInt(getShiftedDateWeek(true, date).split('.')[0])
             }
             className="w-8 h-8  flex flex-col items-center justify-center outline-none bg-transparent dark:hover:bg-gray-800 hover:bg-blue-300/40 rounded-full ml-4 text-3xl"
           >
@@ -117,18 +151,44 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
           </Link>
           <Link
             to={
-              '/calendar/day/' +
-              parseInt(getShiftedDate(false, date).split('.')[2]) +
+              '/calendar/week/' +
+              parseInt(getShiftedDateWeek(false, date).split('.')[2]) +
               '/' +
-              parseInt(getShiftedDate(false, date).split('.')[1]) +
+              parseInt(getShiftedDateWeek(false, date).split('.')[1]) +
               '/' +
-              parseInt(getShiftedDate(false, date).split('.')[0])
+              parseInt(getShiftedDateWeek(false, date).split('.')[0])
             }
             className=" w-8 h-8  flex flex-col items-center justify-center outline-none bg-transparent dark:hover:bg-gray-800 hover:bg-blue-300/40 rounded-full ml-1 text-3xl"
           >
             <MdArrowRight />
           </Link>
-          <span className=" py-2 dark:text-gray-300 ml-2 text-lg">{formatGermanDate(date)}</span>
+          <span className=" py-2 dark:text-gray-300 ml-2 text-lg">
+            {getWeekDays(date)[0]?.toLocaleDateString('de-DE', {
+              day: '2-digit',
+              month: 'short'
+            })}
+            {' - '}
+            {getWeekDays(date)[getWeekDays(date).length - 1]?.toLocaleDateString('de-DE', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            })}{' '}
+            <a className="text-sm">
+              (Woche
+              {' ' +
+                getWeek(
+                  dayjs(
+                    getWeekDays(date)[0].toLocaleDateString('de-DE', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    }),
+                    'DD.MM:YYYY'
+                  )
+                )}
+              )
+            </a>
+          </span>
         </div>
         <div className="w-[60%] h-20 flex flex-col items-center justify-center ">
           <div className="w-full h-full  flex flex-row items-center justify-between gap-x-2">
@@ -169,23 +229,15 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
       <div className="w-full h-[91.8%] shadow-inner dark:shadow-gray-200">
         <div className="w-full flex flex-col items-start justify-start max-h-full overflow-y-scroll dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
           <div className="w-full relative  dark:bg-gray-900 bg-blue-50 flex flex-row items-start justify-start ">
-            <div className="w-40 flex flex-col dark:bg-gray-800 bg-white items-start justify-evenly h-full dark:border-r border-r dark:border-gray-700 border-gray-300 divide-y dark:divide-gray-700 divide-gray-300">
+            <div className="w-40 flex flex-col dark:bg-gray-800 bg-white items-start justify-evenly h-full  divide-y dark:divide-gray-700 divide-gray-300">
+              <div className="w-full h-[40px] text-sm dark:bg-gray-950 bg-stone-100">&nbsp;</div>
               {rows.map((item, index) => (
                 <ColumnIntervalRow key={index + item + '1stcolumn'} T={item} />
               ))}
             </div>
-            <div className="w-full grid grid-cols-7 items-start justify-start h-full bg-transparent divide-x dark:divide-gray-700 divide-gray-300">
-              {getWeekDays(date).map((item, index) => (
-                <div className="w-full">{format(item, 'd')}</div>
-              ))}
-              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
-              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
-              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
-              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
-              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
-              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
-              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
-            </div>
+            <DndProviderWrapper>
+              <WeekGrid events={events} moveEvent={moveEvent} date={getWeekDays(date)[0]} />
+            </DndProviderWrapper>
             <CurrentTimeLine pixel={2.5} />
           </div>
         </div>

@@ -3,8 +3,7 @@ import Sidebar from '../components/dashboardsidebar/Sidebar'
 import { MdFilterList, MdViewDay, MdViewKanban, MdViewModule } from 'react-icons/md'
 import CalendarMini from '../components/calendarcomps/CalenderMini'
 import { useParams } from 'react-router-dom'
-import { getGermanHolidays } from '../components/calendarcomps/dayview/functions/functionHandler'
-import TagesAnsicht from '../components/calendarcomps/monthview/TagesAnsicht'
+import TagesAnsicht from '../components/calendarcomps/yearview/TagesAnsicht'
 const CalendarYear = () => {
   const { jahr, monat, tag } = useParams()
   const layer = 'year'

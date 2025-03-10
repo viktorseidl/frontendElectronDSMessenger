@@ -145,11 +145,11 @@ const MonthGrid = ({ date }) => {
       className="w-full h-full flex flex-col items-start justify-start "
     >
       <div className="w-full h-10">
-        <div className="grid grid-cols-7  h-full w-full  dark:bg-gray-800 bg-white divide-x dark:divide-gray-600 divide-gray-300">
+        <div className="grid grid-cols-7  h-full w-full  dark:bg-gray-900 bg-white divide-x dark:divide-gray-600 divide-gray-300 ">
           {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((day) => (
             <div
               key={day}
-              className={`flex flex-col items-center justify-center w-full h-full font-bold ${day === 'Sa' || day === 'So' ? ' dark:bg-gray-700 bg-blue-100 ' : ''}`}
+              className={`flex flex-col items-center justify-center  w-full h-full font-bold ${day === 'Sa' || day === 'So' ? ' dark:bg-gray-800 bg-blue-100/50 ' : ''}`}
             >
               {day}
             </div>
