@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { spring } from 'framer-motion'
 
 dayjs.extend(customParseFormat)
 export const getShiftedDate = (goBack, dateString) => {
@@ -111,6 +112,116 @@ export function getGermanHolidays(year) {
   }))
 
   return events
+}
+export function formatGermanDate(dateString) {
+  // Split the input date string into day, month, and year
+  const [year, month, day] = dateString.split('-')
+
+  // Create a Date object (note: months are 0-indexed in JavaScript)
+  const date = new Date(year, month - 1, day)
+
+  // Define options for toLocaleDateString
+  const options = { day: 'numeric', month: 'long', year: 'numeric' }
+
+  // Convert the date to the desired format using the German locale
+  return date.toLocaleDateString('de-DE', options)
+}
+function calculateHolidaysForImage(year) {
+  // Calculate Easter Sunday using the Meeus/Jones/Butcher algorithm
+  const a = year % 19
+  const b = Math.floor(year / 100)
+  const c = year % 100
+  const d = Math.floor(b / 4)
+  const e = b % 4
+  const f = Math.floor((b + 8) / 25)
+  const g = Math.floor((b - f + 1) / 3)
+  const h = (19 * a + b - d - g + 15) % 30
+  const i = Math.floor(c / 4)
+  const k = c % 4
+  const l = (32 + 2 * e + 2 * i - h - k) % 7
+  const m = Math.floor((a + 11 * h + 22 * l) / 451)
+  const month = Math.floor((h + l - 7 * m + 114) / 31)
+  const day = ((h + l - 7 * m + 114) % 31) + 1
+
+  // Create a Date object for Easter Sunday
+  const easterSunday = new Date(year, month - 1, day)
+
+  // Calculate Easter Monday (1 day after Easter Sunday)
+  const easterMonday = new Date(easterSunday)
+  easterMonday.setDate(easterSunday.getDate() + 1)
+
+  // Calculate Christi Himmelfahrt (39 days after Easter Sunday)
+  const christiHimmelfahrt = new Date(easterSunday)
+  christiHimmelfahrt.setDate(easterSunday.getDate() + 39)
+  /**
+ * getRelativeHoliday(49 + 1, 'Pfingstsonntag'),
+    getRelativeHoliday(50 + 1, 'Pfingstmontag')
+ */
+  const pfingstenSonntag = new Date(easterSunday)
+  pfingstenSonntag.setDate(easterSunday.getDate() + 49)
+
+  const pfingstenMontag = new Date(easterSunday)
+  pfingstenMontag.setDate(easterSunday.getDate() + 50)
+
+  // Format dates as YYYY-MM-DD
+  const formatDate = (date) => {
+    const yyyy = date.getFullYear()
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+  }
+
+  // Return the dates in an array
+  return [
+    formatDate(easterSunday),
+    formatDate(easterMonday),
+    formatDate(christiHimmelfahrt),
+    formatDate(pfingstenSonntag),
+    formatDate(pfingstenMontag)
+  ]
+}
+export function checkSeason(dateString) {
+  // Split the input date string into day, month, and year
+  const [year, month, day] = dateString.split('-')
+  let result
+  const holidaysDates = calculateHolidaysForImage(year)
+
+  if ((month == 1 && day == 1) || (month == 12 && day == 31)) {
+    result = 'newyear'
+  } else if (month == 1 && day == 6) {
+    result = 'threesaints'
+  } else if (month == holidaysDates[0].split('-')[1] && day == holidaysDates[0].split('-')[2]) {
+    result = 'eastern'
+  } else if (month == holidaysDates[1].split('-')[1] && day == holidaysDates[1].split('-')[2]) {
+    result = 'eastern'
+  } else if (month == holidaysDates[2].split('-')[1] && day == holidaysDates[2].split('-')[2]) {
+    result = 'christihimmel'
+  } else if (month == holidaysDates[3].split('-')[1] && day == holidaysDates[3].split('-')[2]) {
+    result = 'pfingsten'
+  } else if (month == holidaysDates[4].split('-')[1] && day == holidaysDates[4].split('-')[2]) {
+    result = 'pfingsten'
+  } else if (month == 5 && day == 1) {
+    result = 'tagarbeit'
+  } else if (month == 10 && day == 31) {
+    result = 'halloween'
+  } else if (month == 10 && day == 3) {
+    result = 'tageinheit'
+  } else if (month == 12 && day == 24) {
+    result = 'christmas'
+  } else if (month == 12 && day == 25) {
+    result = 'christmas'
+  } else if (month == 12 && day == 26) {
+    result = 'christmas'
+  } else if (month > 1 && month < 6) {
+    result = 'spring'
+  } else if (month > 5 && month < 10) {
+    result = 'summer'
+  } else if (month > 9 && month < 12) {
+    result = 'autmn'
+  } else {
+    result = 'winter'
+  }
+  return result
 }
 export function formatGermanDateMonthView(dateString) {
   // Split the input date string into day, month, and year

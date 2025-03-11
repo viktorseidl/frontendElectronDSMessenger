@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import DayLayer from './DayLayer'
 import { getGermanHolidays } from './functions/functionHandler'
 
-const CalendarMonth = ({ date, calmonth, feiertagemonth, monthevents }) => {
+const CalendarMonth = ({ date, calmonth, feiertagemonth, monthevents, passData }) => {
   const firstDayOfMonth = dayjs(date, 'DD.MM.YYYY').locale('de').startOf('month')
   const startDay = firstDayOfMonth.day()
   const startOffset = (startDay + 6) % 7
@@ -14,7 +14,6 @@ const CalendarMonth = ({ date, calmonth, feiertagemonth, monthevents }) => {
   const feiertage = getGermanHolidays(date.split('.')[2])
   console.log(feiertage)
   const daysArray = Array.from({ length: totalCells }, (_, i) => prevMonthDays.add(i, 'day'))
-  useEffect(() => {}, [])
   return (
     <div className="w-full mt-2">
       {/* Weekdays Header */}
@@ -45,6 +44,7 @@ const CalendarMonth = ({ date, calmonth, feiertagemonth, monthevents }) => {
             day={day}
             date={date}
             daymonth={calmonth}
+            passData={passData}
             key={day + index + 'hsah'}
             monatlicheFeiertage={feiertage.filter((i) => parseInt(i.datum.split('-')[1]))}
             monthevents={monthevents}

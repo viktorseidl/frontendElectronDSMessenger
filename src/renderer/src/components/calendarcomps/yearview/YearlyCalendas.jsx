@@ -1,11 +1,38 @@
 import React, { useEffect, useState } from 'react'
 import CalendarMonth from './CalenderMonth'
 import { useParams } from 'react-router-dom'
-
+import Dialog from './Dialog'
+import DialogEventDayEntry from './DialogEventDayEntry'
+function isObject(value) {
+  return value !== null && typeof value === 'object'
+}
 const YearlyCalendar = () => {
   const { jahr, monat, tag } = useParams()
+  const [dialogev, setdialogev] = useState(false)
+  const [editobj, seteditobj] = useState(null)
+  const [dialogtyp, setdialogtyp] = useState(null)
+  const [dtobj, setdtobj] = useState(null)
   const months = Array.from({ length: 12 }, (_, i) => i + 1) // [1, 2, ..., 12]
+  const [dialogdata, setDialogdata] = useState(null)
   const [events, setEvents] = useState([
+    {
+      id: 1740388167799,
+      time: 10,
+      realtimestartDate: new Date('2025', 10, 1 + 1),
+      realtimestart: '10:00',
+      duration: 3,
+      realtimeendDate: new Date('2025', 10, 1 + 1),
+      realtimeend: '10:45',
+      hexcolor: '#33FF03FF',
+      title: 'Halloween',
+      datum: '2025-10-31',
+      isNoteAttached: 'hallo wie geht es dir',
+      isEditable: false,
+      isAlarm: false,
+      isAlarmStamp: '28.02.2025 09:25',
+      eventTyp: 0,
+      isPublic: 0
+    },
     {
       id: 1740388167780,
       time: 10,
@@ -43,7 +70,7 @@ const YearlyCalendar = () => {
       isPublic: 0
     }
   ])
-  const AllMonth = ({ mon }) => {
+  const AllMonth = ({ mon, passData, setTermin }) => {
     return (
       <div key={mon} className="p-2">
         <h3 className="text-lg font-bold text-center mb-2">
@@ -56,19 +83,48 @@ const YearlyCalendar = () => {
           calmonth={mon}
           feiertagemonth={new Date(jahr, mon - 1).getMonth()}
           monthevents={events}
+          passData={passData}
+          setTermin={setTermin}
         />
       </div>
     )
   }
-
-  useEffect(() => {}, [])
+  const closeDialog = () => {
+    setdialogtyp(null)
+    setdialogev(!dialogev)
+  }
+  const setTermin = (date) => {
+    setdtobj(date.toDate())
+    setdialogtyp(null)
+    setdialogev(true)
+  }
   return (
-    <div className="w-full relative ">
+    <div className="w-full relative dark:bg-gray-900 bg-white ">
       <div className="w-full z-10 grid relative grid-cols-4 gap-2 p-4 ">
         {months.map((mon, index) => (
-          <AllMonth mon={mon} key={mon + index + 'monatTitle'} />
+          <AllMonth
+            mon={mon}
+            key={mon + index + 'monatTitle'}
+            passData={setDialogdata}
+            setTermin={setTermin}
+          />
         ))}
       </div>
+      <Dialog
+        show={isObject(dialogdata) ? true : false}
+        close={setDialogdata}
+        title={isObject(dialogdata) ? dialogdata.title : ''}
+        message={isObject(dialogdata) ? dialogdata : null}
+      />
+      <DialogEventDayEntry
+        show={dialogev}
+        close={closeDialog}
+        typed={dialogtyp}
+        editobj={editobj}
+        title={dialogtyp == null ? 'Neuer Termin' : 'Termin bearbeiten'}
+        message={dtobj}
+        callbackBtn2={dialogtyp == null ? ' addNote' : 'saveChanges'}
+      />
       <div className="absolute select-none z-0 inset left-0 top-0 w-full h-full flex flex-col items-center justify-center dark:text-[12rem] text-[12rem] overflow-hidden dark:opacity-15 opacity-10 exo font-bold">
         {jahr}
       </div>
