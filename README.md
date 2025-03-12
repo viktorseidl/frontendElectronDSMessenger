@@ -41,7 +41,7 @@ $ npm run build:linux
 
 ### NSIS Installer-Script
 
-- :white_check_mark you will need NSIS to compile this script
+:white_check_mark: you will need NSIS to compile this script
 
 ```nsis
 !define XAMPP_INSTALLER "xampp-windows-x64-8.2.4-0-VS16-installer.exe"
