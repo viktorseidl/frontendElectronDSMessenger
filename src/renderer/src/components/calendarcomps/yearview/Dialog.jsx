@@ -15,13 +15,7 @@ import Christmas from './../../../assets/christmas.png'
 import Pfingsten from './../../../assets/pfingsten.png'
 import TagEinheit from './../../../assets/tagdereinheit.png'
 import TagArbeit from './../../../assets/tagarbeit.png'
-const Dialog = ({ show, close, title, message }) => {
-  console.log(message)
-  useEffect(() => {
-    document.addEventListener('click', (e) => {
-      console.log(e.target)
-    })
-  }, [])
+const Dialog = ({ show, close, title, message, setTermin }) => {
   return (
     <Fragment>
       {show && (
@@ -88,7 +82,7 @@ const Dialog = ({ show, close, title, message }) => {
               </div>
 
               <div
-                style={{ background: `${message != null ? message.hexcolor : '#FFF'}` }}
+                style={{ background: `${message != null ? message.hexcolor : '#CCC'}` }}
                 className={`w-full py-[4px]  dark:text-white mb-0 text-black text-sm font-[Arial]`}
               ></div>
               <div
@@ -96,7 +90,10 @@ const Dialog = ({ show, close, title, message }) => {
               >
                 {message != null && message.eventTyp != 1 ? (
                   <>
-                    <span className="w-6 h-6 dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer mr-2 mt-2 flex flex-col items-center justify-center ring-1 rounded dark:ring-gray-700 ring-gray-500">
+                    <span
+                      onClick={() => setTermin(null, message)}
+                      className="w-6 h-6 dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer mr-2 mt-2 flex flex-col items-center justify-center ring-1 rounded dark:ring-gray-700 ring-gray-500"
+                    >
                       <MdEdit />
                     </span>
                     <span className="w-6 h-6 dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer mr-2 mt-2 flex flex-col items-center justify-center ring-1 rounded dark:ring-gray-700 ring-gray-500">

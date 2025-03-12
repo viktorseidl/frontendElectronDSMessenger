@@ -5,12 +5,6 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
 import { de } from 'date-fns/locale/de'
 import {
-  formatDateTimeAlarmToString,
-  convertToDateTimeObj,
-  getIntervalCount,
-  calculateTime
-} from './../../calendarcomps/dayview/functions/functionHandler'
-import {
   MdAddAlert,
   MdAlarm,
   MdClose,
@@ -27,7 +21,7 @@ import Switch from './../../Switch'
 import { isDate } from 'date-fns'
 import dayjs from 'dayjs'
 registerLocale('de-DE', de)
-const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, callbackBtn2 }) => {
+const DialogEventDayEntry = ({ show, close, titel, obj }) => {
   const [betreff, setbetreff] = useState('')
   const [start, setstart] = useState(null)
   const [end, setend] = useState(null)
@@ -46,65 +40,10 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
       close()
     }
   }
-  const updater = () => {
-    if (typed == null) {
-      setbetreff('')
-      setispublic(false)
-      setnotice(null)
-      setcolor('#72c4ff')
-      setremindon(false)
-      setstart(message)
-      setend(message)
-      setremind(message)
-    } else {
-      setbetreff(editobj?.title)
-      setispublic(editobj?.isPublic == 0 ? false : true)
-      setnotice(editobj?.isNoteAttached)
-      setcolor(editobj?.hexcolor.toString())
-      setremindon(editobj?.isAlarm)
-      setstart(convertToDateTimeObj(editobj.datum + ' ' + editobj.realtimestart))
-      setend(convertToDateTimeObj(editobj.datum + ' ' + editobj.realtimeend))
-      setremind(editobj.isAlarm ? convertToDateTimeObj(editobj.isAlarmStamp) : message)
-    }
-  }
-  const callaction = () => {
-    if (typed == null) {
-      callbackBtn2([betreff, start, end, notice, remind, remindon, color, ispublic])
-    } else {
-      let ARR = editobj
-      const timeSlot = start.getHours()
-      const duration = getIntervalCount(start, end)
-      const isprivate = ispublic ? 1 : 0
-      const startTag = start.getDate()
-      const startMonat = start.getMonth() + 1
-      const startJahr = start.getFullYear()
-      const isNote = notice != null ? notice : null
-      const isAlarm = remindon
-      const alarmStamp = isAlarm ? formatDateTimeAlarmToString(remind) : null
-      ARR.time = timeSlot
-      ARR.realtimestart = calculateTime(timeSlot, duration).startTime
-      ARR.duration = duration
-      ARR.realtimeend = calculateTime(timeSlot, duration).endTime
-      ARR.hexcolor = color.toString()
-      ARR.title = betreff.toString()
-      ARR.datum =
-        (startTag > 9 ? startTag : '0' + startTag) +
-        '.' +
-        (startMonat > 9 ? startMonat : '0' + startMonat) +
-        '.' +
-        startJahr
-      ARR.isNoteAttached = isNote
-      ARR.isEditable = true
-      ARR.isAlarm = isAlarm
-      ARR.isAlarmStamp = alarmStamp
-      ARR.isPublic = isprivate
-      callbackBtn2(ARR)
-    }
-  }
-  console.log(editobj)
+
   useEffect(() => {
-    updater()
-  }, [message, typed])
+    setbetreff(titel)
+  }, [obj, titel])
   return (
     <Fragment>
       {show && (
@@ -124,10 +63,10 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
             >
               <span className="font-[Arial] dark:text-white text-white text-sm flex flex-row items-center justify-center gap-x-2">
                 <img src={imgs} className="w-10 h-2  " />
-                {title}
+                {betreff}
               </span>
             </div>
-            <div className="w-full flex flex-row items-center justify-start dark:bg-gray-900 bg-white px-6 py-2 pt-4 dark:text-white text-black text-sm font-[Arial]">
+            {/*<div className="w-full flex flex-row items-center justify-start dark:bg-gray-900 bg-white px-6 py-2 pt-4 dark:text-white text-black text-sm font-[Arial]">
               <label className="  w-full flex flex-col items-center justify-center relative">
                 <input
                   title="Betreff"
@@ -301,7 +240,7 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
               ) : (
                 ''
               )}
-            </div>
+            </div>*/}
           </div>
         </div>
       )}

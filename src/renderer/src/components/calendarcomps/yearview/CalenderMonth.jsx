@@ -12,7 +12,6 @@ const CalendarMonth = ({ date, calmonth, feiertagemonth, monthevents, passData }
   const prevMonthDays = firstDayOfMonth.subtract(startOffset, 'day')
   const totalCells = 7 * 6
   const feiertage = getGermanHolidays(date.split('.')[2])
-  console.log(feiertage)
   const daysArray = Array.from({ length: totalCells }, (_, i) => prevMonthDays.add(i, 'day'))
   return (
     <div className="w-full mt-2">

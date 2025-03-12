@@ -5,7 +5,6 @@ import 'dayjs/locale/de' // German month names
 import ArrowSvg from './ArrowSvg'
 import DailyEventsTab from './DailyEventsTab'
 const DayLayer = ({ day, date, daymonth, monatlicheFeiertage, monthevents, passData }) => {
-  console.log(monthevents)
   const today = dayjs()
   const [feiertagevents, setfeiertagevents] = useState([])
   const [dayevents, setdayevents] = useState([])

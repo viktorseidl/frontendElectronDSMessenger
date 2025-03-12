@@ -93,10 +93,22 @@ const YearlyCalendar = () => {
     setdialogtyp(null)
     setdialogev(!dialogev)
   }
-  const setTermin = (date) => {
-    setdtobj(date.toDate())
+  const setTermin = (date, item) => {
+    setDialogdata(null)
+    if (item == null) {
+      createNewEntry(date)
+    } else {
+      updateEntry(item)
+    }
     setdialogtyp(null)
     setdialogev(true)
+  }
+  const createNewEntry = async (date) => {
+    console.log(date)
+  }
+  const updateEntry = async (item) => {
+    console.log(item)
+    setdtobj(item)
   }
   return (
     <div className="w-full relative dark:bg-gray-900 bg-white ">
@@ -115,15 +127,13 @@ const YearlyCalendar = () => {
         close={setDialogdata}
         title={isObject(dialogdata) ? dialogdata.title : ''}
         message={isObject(dialogdata) ? dialogdata : null}
+        setTermin={setTermin}
       />
       <DialogEventDayEntry
-        show={dialogev}
-        close={closeDialog}
-        typed={dialogtyp}
-        editobj={editobj}
-        title={dialogtyp == null ? 'Neuer Termin' : 'Termin bearbeiten'}
-        message={dtobj}
-        callbackBtn2={dialogtyp == null ? ' addNote' : 'saveChanges'}
+        show={isObject(dtobj) ? true : false}
+        close={setdtobj}
+        titel={isObject(dtobj) ? 'Termin bearbeiten' : 'Neuer Termin'}
+        obj={isObject(dtobj) ? dtobj : null}
       />
       <div className="absolute select-none z-0 inset left-0 top-0 w-full h-full flex flex-col items-center justify-center dark:text-[12rem] text-[12rem] overflow-hidden dark:opacity-15 opacity-10 exo font-bold">
         {jahr}
