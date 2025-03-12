@@ -22,28 +22,12 @@ import { isDate } from 'date-fns'
 import dayjs from 'dayjs'
 registerLocale('de-DE', de)
 const DialogEventDayEntry = ({ show, close, titel, obj }) => {
-  const [betreff, setbetreff] = useState('')
-  const [start, setstart] = useState(null)
-  const [end, setend] = useState(null)
-  const [remindon, setremindon] = useState(false)
-  const [remind, setremind] = useState(null)
-  const [ispublic, setispublic] = useState(false)
-  const [notice, setnotice] = useState(null)
-  const [color, setcolor] = useState('#72c4ff')
   const closer = (e) => {
     if (!e.target.closest("[aria-label='Ditab']")) {
-      setbetreff('')
-      setispublic(false)
-      setnotice(null)
-      setcolor('#72c4ff')
-      setremindon(false)
-      close()
+      close(null)
     }
   }
 
-  useEffect(() => {
-    setbetreff(titel)
-  }, [obj, titel])
   return (
     <Fragment>
       {show && (
@@ -63,18 +47,18 @@ const DialogEventDayEntry = ({ show, close, titel, obj }) => {
             >
               <span className="font-[Arial] dark:text-white text-white text-sm flex flex-row items-center justify-center gap-x-2">
                 <img src={imgs} className="w-10 h-2  " />
-                {betreff}
+                {titel}
               </span>
             </div>
-            {/*<div className="w-full flex flex-row items-center justify-start dark:bg-gray-900 bg-white px-6 py-2 pt-4 dark:text-white text-black text-sm font-[Arial]">
+            <div className="w-full flex flex-row items-center justify-start dark:bg-gray-900 bg-white px-6 py-2 pt-4 dark:text-white text-black text-sm font-[Arial]">
               <label className="  w-full flex flex-col items-center justify-center relative">
                 <input
                   title="Betreff"
                   name="title"
                   className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
                   placeholder="Betreff"
-                  value={betreff}
-                  onChange={(e) => setbetreff(e.target.value)}
+                  value={titel}
+                  onChange={(e) => 'setbetreff(e.target.value)'}
                 />
                 <MdEvent className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
                 <MdClose
@@ -85,7 +69,7 @@ const DialogEventDayEntry = ({ show, close, titel, obj }) => {
                 />
               </label>
             </div>
-            <div className="w-full grid grid-cols-4 items-start justify-items-start dark:bg-gray-900 bg-white px-6 py-2 dark:text-white text-black text-sm font-[Arial]">
+            {/*<div className="w-full grid grid-cols-4 items-start justify-items-start dark:bg-gray-900 bg-white px-6 py-2 dark:text-white text-black text-sm font-[Arial]">
               <div className="w-full col-span-1 h-full flex flex-row items-center justify-start">
                 <a className="mr-2 text-sm">START</a> <MdTimelapse className="text-xl mr-2" />
               </div>
@@ -189,17 +173,19 @@ const DialogEventDayEntry = ({ show, close, titel, obj }) => {
                     title="Sichtbarkeit"
                     name="title"
                     className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
-                    value={ispublic}
-                    onChange={(e) => setispublic(e.target.value == 'true' ? true : false)}
+                    value={'ispublic'}
+                    onChange={(e) => 'setispublic(e.target.value == 'true' ? true : false)'}
                   >
                     <option value={false}>Privat</option>
                     <option value={true}>Öffentlich</option>
                   </select>
-                  {ispublic ? (
-                    <MdPublic className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
-                  ) : (
-                    <MdPublicOff className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
-                  )}
+                  {
+                    ispublic ? (
+                      <MdPublic className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
+                    ) : (
+                      <MdPublicOff className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
+                    )
+                  }
                   <MdClose
                     onClick={() => 'handleFilterChange("Betrefftxt", "")'}
                     className={
@@ -217,8 +203,8 @@ const DialogEventDayEntry = ({ show, close, titel, obj }) => {
                   className=" w-full h-10 font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
                   type="color"
                   placeholder="Betreff"
-                  value={color}
-                  onChange={(e) => setcolor(e.target.value)}
+                  value={'color'}
+                  onChange={(e) => 'setcolor(e.target.value)'}
                 />
                 <MdColorize className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
                 <MdClose
@@ -228,19 +214,21 @@ const DialogEventDayEntry = ({ show, close, titel, obj }) => {
                   }
                 />
               </label>
-            </div>
-            <div className="w-full flex flex-row items-center justify-end dark:bg-gray-900 bg-white px-6 py-2  dark:text-white text-black text-sm font-[Arial]">
-              {betreff.trim().length > 1 && isDate(start) && isDate(end) ? (
-                <button
-                  onClick={(e) => callaction()}
-                  className={`px-4 py-2 mb-2 rounded-sm dark:bg-gray-800 bg-gray-300/60 dark:hover:bg-gray-700 hover:bg-gray-100 outline-none ring-1 dark:ring-gray-700 ring-gray-400/80 dark:text-gray-300 text-gray-800`}
-                >
-                  Bestätigen
-                </button>
-              ) : (
-                ''
-              )}
             </div>*/}
+            <div className="w-full flex flex-row items-center justify-end dark:bg-gray-900 bg-white px-6 py-2  dark:text-white text-black text-sm font-[Arial]">
+              {
+                /*betreff.trim().length > 1 && isDate(start) && isDate(end)*/ false ? (
+                  <button
+                    onClick={(e) => 'callaction()'}
+                    className={`px-4 py-2 mb-2 rounded-sm dark:bg-gray-800 bg-gray-300/60 dark:hover:bg-gray-700 hover:bg-gray-100 outline-none ring-1 dark:ring-gray-700 ring-gray-400/80 dark:text-gray-300 text-gray-800`}
+                  >
+                    Bestätigen
+                  </button>
+                ) : (
+                  ''
+                )
+              }
+            </div>
           </div>
         </div>
       )}

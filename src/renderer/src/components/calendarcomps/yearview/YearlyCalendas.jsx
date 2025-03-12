@@ -130,10 +130,10 @@ const YearlyCalendar = () => {
         setTermin={setTermin}
       />
       <DialogEventDayEntry
-        show={isObject(dtobj) ? true : false}
+        show={isObject(dtobj) && dtobj != null ? true : false}
         close={setdtobj}
-        titel={isObject(dtobj) ? 'Termin bearbeiten' : 'Neuer Termin'}
-        obj={isObject(dtobj) ? dtobj : null}
+        titel={isObject(dtobj) && dtobj != null ? 'Termin bearbeiten' : 'Neuer Termin'}
+        obj={isObject(dtobj) && dtobj != null ? dtobj : null}
       />
       <div className="absolute select-none z-0 inset left-0 top-0 w-full h-full flex flex-col items-center justify-center dark:text-[12rem] text-[12rem] overflow-hidden dark:opacity-15 opacity-10 exo font-bold">
         {jahr}
