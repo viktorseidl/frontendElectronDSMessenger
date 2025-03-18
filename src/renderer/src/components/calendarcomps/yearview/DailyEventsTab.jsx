@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useRoles } from '../../../styles/RoleContext'
 
 const DailyEventsTab = ({
   daymonth,
@@ -9,8 +10,10 @@ const DailyEventsTab = ({
   isToday,
   isCurrentYear,
   feiertagevents,
-  dayevents
+  dayevents,
+  setTermin
 }) => {
+  const { hasPermission } = useRoles()
   return (
     <div
       className={` absolute dark:bg-gray-900 bg-white  shadow-lg dark:shadow-[rgba(0,148,250,0.2)] shadow-[rgba(0,0,0,0.1)] ring-1 dark:ring-gray-800 ring-gray-300 p-2  rounded w-60 ${daymonth == 1 || daymonth == 5 || daymonth == 9 || daymonth == 2 || daymonth == 6 || daymonth == 10 ? ' ml-64 mt-6 ' : ' mr-64 mt-6 '}  `}
@@ -30,6 +33,25 @@ const DailyEventsTab = ({
           </span>
           <span className="font-bold text-[18px]">{day.date()}</span>
         </div>
+        {hasPermission('view:calendar') && hasPermission('create:calendar') ? (
+          <div className="w-full  h-15px flex flex-row items-center justify-center px-2">
+            <button
+              onClick={() =>
+                setTermin(
+                  new Date(day.year(), daymonth - 1, day.date()).toLocaleDateString('de-DE', {
+                    dateStyle: 'medium'
+                  }),
+                  null
+                )
+              }
+              className="w-full ring-1 dark:ring-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-white dark:text-gray-400 py-1 ring-blue-200 bg-blue-100/90 hover:bg-blue-50 hover:text-black text-gray-600 rounded"
+            >
+              + Eintrag
+            </button>
+          </div>
+        ) : (
+          ''
+        )}
         <div className="w-full flex flex-col items-center justify-start gap-y-2 pb-3 pt-1 h-[170px] overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
           {isToday && isCurrentMonth && isCurrentYear ? (
             <div className="w-full  h-15px flex flex-row items-center justify-start relative">

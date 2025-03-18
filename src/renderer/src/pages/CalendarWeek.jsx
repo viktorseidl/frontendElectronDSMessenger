@@ -11,6 +11,7 @@ import CalendarMini from '../components/calendarcomps/CalenderMini'
 import { useParams } from 'react-router-dom'
 import { getGermanHolidays } from '../components/calendarcomps/dayview/functions/functionHandler'
 import TagesAnsicht from '../components/calendarcomps/weekview/TagesAnsicht'
+import { util } from 'node-forge'
 const CalendarWeek = () => {
   const { jahr, monat, tag } = useParams()
   const layer = 'week'
@@ -51,10 +52,15 @@ const CalendarWeek = () => {
                   className=" w-auto px-4 py-2  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none text-sm "
                 >
                   <option>Alle Bereiche</option>
-                  <option>Wohnbereich1</option>
-                  <option>Wohnbereich2</option>
-                  <option>Wohnbereich3</option>
-                  <option>Wohnbereich4</option>
+                  {JSON.parse(util.decode64(window.sessionStorage.getItem('userWohnbereiche')))
+                    .length > 0 &&
+                    JSON.parse(
+                      util.decode64(window.sessionStorage.getItem('userWohnbereiche'))
+                    ).map((item, index) => (
+                      <option>
+                        {item.Station} {item.Hausname}
+                      </option>
+                    ))}
                 </select>
                 <div className="w-full flex flex-row items-center justify-start ">
                   <button

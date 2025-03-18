@@ -4,7 +4,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import 'dayjs/locale/de' // German month names
 import ArrowSvg from './ArrowSvg'
 import DailyEventsTab from './DailyEventsTab'
-const DayLayer = ({ day, date, daymonth, monatlicheFeiertage, monthevents, passData }) => {
+const DayLayer = ({
+  day,
+  date,
+  daymonth,
+  monatlicheFeiertage,
+  monthevents,
+  passData,
+  setTermin
+}) => {
   const today = dayjs()
   const [feiertagevents, setfeiertagevents] = useState([])
   const [dayevents, setdayevents] = useState([])
@@ -64,6 +72,7 @@ const DayLayer = ({ day, date, daymonth, monatlicheFeiertage, monthevents, passD
           isCurrentYear={isCurrentYear}
           feiertagevents={feiertagevents}
           dayevents={dayevents}
+          setTermin={setTermin}
         />
       ) : (
         ''

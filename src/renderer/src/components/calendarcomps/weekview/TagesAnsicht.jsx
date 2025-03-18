@@ -29,26 +29,26 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
     {
       id: '1',
       title: 'Meeting',
-      start: new Date('2025-03-07T10:00:00'),
-      end: new Date('2025-03-07T12:00:00')
+      start: new Date('2025-03-17T09:00:00'),
+      end: new Date('2025-03-17T10:00:00')
     },
     {
       id: '2',
-      title: 'Lunch',
-      start: new Date('2025-03-07T12:00:00'),
-      end: new Date('2025-03-08T13:00:00')
+      title: 'Krank',
+      start: new Date('2025-03-19T11:00:00'),
+      end: new Date('2025-03-19T12:00:00')
     },
     {
       id: '3',
-      title: 'Lunch',
-      start: new Date('2025-03-07T12:00:00'),
-      end: new Date('2025-03-07T13:00:00')
+      title: 'Telefon Meeting',
+      start: new Date('2025-03-17T12:00:00'),
+      end: new Date('2025-03-17T13:00:00')
     },
     {
       id: '4',
-      title: 'Lunch',
-      start: new Date('2025-03-07T12:00:00'),
-      end: new Date('2025-03-07T13:00:00')
+      title: 'Mitarbeiter Gespräch',
+      start: new Date('2025-03-17T09:00:00'),
+      end: new Date('2025-03-17T10:00:00')
     }
   ])
   const rows = [

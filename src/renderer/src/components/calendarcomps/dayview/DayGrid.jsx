@@ -168,6 +168,34 @@ const DayGrid = ({ fullheight, date, publicView }) => {
     Feiertage = [
       ...Feiertage,
       {
+        id: 1740388137335,
+        time: 12,
+        realtimestartDate: dayjs(
+          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
+            ' ' +
+            calculateTime(8, 9).startTime,
+          'DD.MM:YYYY HH:mm'
+        ).toDate(),
+        realtimestart: calculateTime(8, 9).startTime,
+        duration: 9,
+        realtimeendDate: dayjs(
+          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
+            ' ' +
+            calculateTime(8, 9).endTime,
+          'DD.MM:YYYY HH:mm'
+        ).toDate(),
+        realtimeend: calculateTime(8, 9).endTime,
+        hexcolor: '#9Fff33FF',
+        title: 'Schulung',
+        datum: parsedDate,
+        isNoteAttached: null,
+        isEditable: false,
+        isAlarm: false,
+        isAlarmStamp: null,
+        eventTyp: 0,
+        isPublic: 1
+      },
+      {
         id: 1740388137775,
         time: 8,
         realtimestartDate: dayjs(
@@ -194,34 +222,6 @@ const DayGrid = ({ fullheight, date, publicView }) => {
         isAlarmStamp: null,
         eventTyp: 0,
         isPublic: 1
-      },
-      {
-        id: 1740388167780,
-        time: 0,
-        realtimestartDate: dayjs(
-          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
-            ' ' +
-            calculateTime(0, 3).startTime,
-          'DD.MM:YYYY HH:mm'
-        ).toDate(),
-        realtimestart: calculateTime(0, 3).startTime,
-        duration: 3,
-        realtimeendDate: dayjs(
-          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
-            ' ' +
-            calculateTime(0, 3).endTime,
-          'DD.MM:YYYY HH:mm'
-        ).toDate(),
-        realtimeend: calculateTime(0, 3).endTime,
-        hexcolor: '#c1cff7FF',
-        title: 'Team-Meeting',
-        datum: parsedDate,
-        isNoteAttached: 'hallo wie geht es dir',
-        isEditable: true,
-        isAlarm: true,
-        isAlarmStamp: '28.02.2025 13:25',
-        eventTyp: 0,
-        isPublic: 0
       }
     ]
     setEvents(Feiertage.filter((e) => e.datum == parsedDate))

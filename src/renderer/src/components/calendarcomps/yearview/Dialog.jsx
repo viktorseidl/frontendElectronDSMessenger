@@ -15,7 +15,9 @@ import Christmas from './../../../assets/christmas.png'
 import Pfingsten from './../../../assets/pfingsten.png'
 import TagEinheit from './../../../assets/tagdereinheit.png'
 import TagArbeit from './../../../assets/tagarbeit.png'
+import { useRoles } from '../../../styles/RoleContext'
 const Dialog = ({ show, close, title, message, setTermin }) => {
+  const { hasPermission } = useRoles()
   return (
     <Fragment>
       {show && (
@@ -90,15 +92,23 @@ const Dialog = ({ show, close, title, message, setTermin }) => {
               >
                 {message != null && message.eventTyp != 1 ? (
                   <>
-                    <span
-                      onClick={() => setTermin(null, message)}
-                      className="w-6 h-6 dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer mr-2 mt-2 flex flex-col items-center justify-center ring-1 rounded dark:ring-gray-700 ring-gray-500"
-                    >
-                      <MdEdit />
-                    </span>
-                    <span className="w-6 h-6 dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer mr-2 mt-2 flex flex-col items-center justify-center ring-1 rounded dark:ring-gray-700 ring-gray-500">
-                      <MdDelete />
-                    </span>
+                    {hasPermission('view:calendar') && hasPermission('update:calendar') ? (
+                      <span
+                        onClick={() => setTermin(null, message)}
+                        className="w-6 h-6 dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer mr-2 mt-2 flex flex-col items-center justify-center ring-1 rounded dark:ring-gray-700 ring-gray-500"
+                      >
+                        <MdEdit />
+                      </span>
+                    ) : (
+                      ''
+                    )}
+                    {hasPermission('view:calendar') && hasPermission('delete:calendar') ? (
+                      <span className="w-6 h-6 dark:bg-gray-800 bg-gray-100 dark:hover:bg-gray-700 hover:bg-gray-200 cursor-pointer mr-2 mt-2 flex flex-col items-center justify-center ring-1 rounded dark:ring-gray-700 ring-gray-500">
+                        <MdDelete />
+                      </span>
+                    ) : (
+                      ''
+                    )}
                   </>
                 ) : (
                   ''

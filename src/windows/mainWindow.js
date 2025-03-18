@@ -17,12 +17,31 @@ export async function createMainWindow() {
       session: session,
       preload: join(__dirname, '/../preload/index.js'),
       contextIsolation: true,
+      spellcheck: true, // Enables spellchecker
       nodeIntegration: true,
       sandbox: false
     },
     frame: false
   })
-
+  import('electron-context-menu')
+    .then((contextMenu) => {
+      contextMenu.default({
+        window: mainWindow,
+        showLookUpSelection: true,
+        showSearchWithGoogle: true,
+        showCopyImage: true,
+        showSaveImageAs: true,
+        showInspectElement: false,
+        showLearnSpelling: true,
+        labels: {
+          cut: 'Cut',
+          copy: 'Copy',
+          paste: 'Paste',
+          learnSpelling: 'Add to Dictionary'
+        }
+      })
+    })
+    .catch((error) => console.error('Failed to load context menu:', error))
   // Show the window when it's ready
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()

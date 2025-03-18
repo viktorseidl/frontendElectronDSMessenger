@@ -34,22 +34,22 @@ const MonthGrid = ({ date }) => {
   console.log(monthDays)
 
   const [events, setEvents] = useState([
-    { id: '1', title: 'Conference', start: '2025-03-05', end: '2025-03-07', color: 'bg-red-500' },
+    { id: '1', title: 'Krank', start: '2025-03-05', end: '2025-03-06', color: 'bg-red-500' },
     {
       id: '2',
-      title: 'Project Work',
+      title: 'Urlaub',
       start: '2025-03-10',
       end: '2025-03-12',
-      color: 'bg-blue-500'
+      color: 'bg-green-500'
     },
     {
       id: '5',
-      title: 'Project Work',
-      start: '2025-03-10',
-      end: '2025-03-11',
+      title: 'Fortbildung',
+      start: '2025-03-27',
+      end: '2025-03-27',
       color: 'bg-blue-500'
     },
-    { id: '3', title: 'Vacation', start: '2025-03-15', end: '2025-03-20', color: 'bg-green-500' }
+    { id: '3', title: 'Urlaub', start: '2025-03-15', end: '2025-03-16', color: 'bg-green-500' }
   ])
 
   const moveEvent = (eventId, newDate) => {

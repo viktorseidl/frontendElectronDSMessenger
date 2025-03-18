@@ -104,7 +104,46 @@ const YearlyCalendar = () => {
     setdialogev(true)
   }
   const createNewEntry = async (date) => {
-    console.log(date)
+    const [tag, monat, jahr] = date.split('.')
+    const DatumObj = new Date(jahr, monat - 1, tag, 0, 0)
+    const DatumObjEnde = new Date(jahr, monat - 1, tag, 23, 59)
+    console.log(DatumObj)
+    setdtobj({
+      id: DatumObj.getTime(),
+      time: 0,
+      realtimestartDate: DatumObj,
+      realtimestart: '00:00',
+      duration: 96,
+      realtimeendDate: DatumObjEnde,
+      realtimeend: '23:59',
+      hexcolor: '#c1cff7FF',
+      title: '',
+      datum: `${jahr}-${monat > 9 ? monat : '0' + monat}-${tag > 9 ? tag : '0' + tag}`,
+      isNoteAttached: null,
+      isEditable: true,
+      isAlarm: null,
+      isAlarmStamp: DatumObj,
+      eventTyp: 0,
+      isPublic: 0
+    })
+    /*{
+      "id": DatumObj.getTime(),
+      "time": 0,
+      "realtimestartDate": DatumObj,
+      "realtimestart": "00:00",
+      "duration": 96,
+      "realtimeendDate": DatumObjEnde,
+      "realtimeend": "23:59",
+      "hexcolor": "#c1cff7FF",
+      "title": "",
+      "datum": `${jahr}-${monat>9?monat:'0'+monat}-${tag>9?tag:'0'+tag}`,
+      "isNoteAttached": null,
+      "isEditable": true,
+      "isAlarm": null,
+      "isAlarmStamp": new Date(),
+      "eventTyp": 0,
+      "isPublic": 0
+    }*/
   }
   const updateEntry = async (item) => {
     console.log(item)
@@ -132,7 +171,7 @@ const YearlyCalendar = () => {
       <DialogEventDayEntry
         show={isObject(dtobj) && dtobj != null ? true : false}
         close={setdtobj}
-        titel={isObject(dtobj) && dtobj != null ? 'Termin bearbeiten' : 'Neuer Termin'}
+        titel={isObject(dtobj) && dtobj.title != '' ? 'Termin bearbeiten' : 'Neuer Termin'}
         obj={isObject(dtobj) && dtobj != null ? dtobj : null}
       />
       <div className="absolute select-none z-0 inset left-0 top-0 w-full h-full flex flex-col items-center justify-center dark:text-[12rem] text-[12rem] overflow-hidden dark:opacity-15 opacity-10 exo font-bold">
