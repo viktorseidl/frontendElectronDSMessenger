@@ -3,10 +3,25 @@ import DayGrid from './DayGrid'
 import { MdArrowLeft, MdArrowRight, MdClose } from 'react-icons/md'
 import { FaSearch } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
-import { formatGermanDate, getShiftedDate, getTodayDate } from './functions/functionHandler'
+import {
+  formatGermanDate,
+  getGermanHolidays,
+  getShiftedDate,
+  getTodayDate
+} from './functions/functionHandler'
 import ColumnIntervalRow from './ColumnIntervalRow'
+import { util } from 'node-forge'
+import { useFetchAuthAll } from '../../../services/useFetchAll'
 
-const TagesAnsicht = ({ date, publicView, layer }) => {
+const TagesAnsicht = ({
+  date,
+  layer,
+  dialogev,
+  setdialogev,
+  filteredevents,
+  kategorien,
+  updateFilteredEvents
+}) => {
   const divRef = useRef(null)
   const viewRef = useRef(null)
   const navigate = useNavigate()
@@ -23,7 +38,7 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
         setCurrentTime(new Date())
       }, 1000)
       return () => clearInterval(interval)
-    }, [publicView])
+    }, [])
 
     const currentTimePixels = currentTime.getHours() * 60 + currentTime.getMinutes()
     return (
@@ -57,11 +72,12 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
         parseInt(getTodayDate().split('.')[0])
     )
   }
+
   useEffect(() => {
     if (divRef.current && minHeight == 0) {
       setMinHeight(divRef.current.clientHeight)
     }
-  }, [])
+  }, [date])
   return (
     <div ref={divRef} className="w-full h-full  flex flex-col items-start justify-start ">
       <div className="w-full h-20 py-4 px-4 flex flex-row items-center justify-start gap-x-2">
@@ -113,7 +129,7 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
             <label className="  w-[70%] flex flex-col items-center justify-center relative">
               <input
                 title="Suche nach Einträgen"
-                className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
+                className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
                 placeholder="Suche nach..."
                 value={''}
                 onChange={(e) => 'handleFilterChange("Betrefftxt", e.target.value)'}
@@ -131,11 +147,9 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
               ref={viewRef}
               onChange={() => changeView()}
               defaultValue={layer}
-              className=" w-auto px-4 py-2 dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none text-sm "
+              className="block  w-auto px-4 py-2 dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/30 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1 ring-gray-700   outline-none text-sm "
             >
-              <option value={'day'} selected>
-                Tag
-              </option>
+              <option value={'day'}>Tag</option>
               <option value={'week'}>Woche</option>
               <option value={'month'}>Monat</option>
               <option value={'year'}>Jahr</option>
@@ -153,7 +167,15 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
               ))}
             </div>
             <div className="w-full h-full bg-transparent">
-              <DayGrid fullheight={minHeight} date={date} publicView={publicView} />
+              <DayGrid
+                fullheight={minHeight}
+                date={date}
+                dialogev={dialogev}
+                setdialogev={setdialogev}
+                filteredevents={filteredevents}
+                updateFilteredEvents={updateFilteredEvents}
+                kategorien={kategorien}
+              />
             </div>
             <CurrentTimeLine pixel={2.5} />
           </div>

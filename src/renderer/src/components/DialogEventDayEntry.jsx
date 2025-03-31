@@ -13,9 +13,11 @@ import {
 import {
   MdAddAlert,
   MdAlarm,
+  MdCategory,
   MdClose,
   MdColorize,
   MdEvent,
+  MdLogoDev,
   MdNote,
   MdNoteAdd,
   MdPublic,
@@ -26,8 +28,18 @@ import {
 import Switch from './Switch'
 import { isDate } from 'date-fns'
 import dayjs from 'dayjs'
+import { IoIosCart, IoIosInformationCircleOutline } from 'react-icons/io'
 registerLocale('de-DE', de)
-const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, callbackBtn2 }) => {
+const DialogEventDayEntry = ({
+  show,
+  close,
+  typed,
+  title,
+  message,
+  editobj,
+  callbackBtn2,
+  kategorien
+}) => {
   const [betreff, setbetreff] = useState('')
   const [start, setstart] = useState(null)
   const [end, setend] = useState(null)
@@ -57,10 +69,10 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
       setend(message)
       setremind(message)
     } else {
-      setbetreff(editobj?.title)
+      setbetreff(editobj?.titel)
       setispublic(editobj?.isPublic == 0 ? false : true)
       setnotice(editobj?.isNoteAttached)
-      setcolor(editobj?.hexcolor.toString())
+      setcolor(editobj?.ColorHex.toString())
       setremindon(editobj?.isAlarm)
       setstart(convertToDateTimeObj(editobj.datum + ' ' + editobj.realtimestart))
       setend(convertToDateTimeObj(editobj.datum + ' ' + editobj.realtimeend))
@@ -86,7 +98,7 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
       ARR.duration = duration
       ARR.realtimeend = calculateTime(timeSlot, duration).endTime
       ARR.hexcolor = color.toString()
-      ARR.title = betreff.toString()
+      ARR.titel = betreff.toString()
       ARR.datum =
         (startTag > 9 ? startTag : '0' + startTag) +
         '.' +
@@ -101,7 +113,6 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
       callbackBtn2(ARR)
     }
   }
-  console.log(editobj)
   useEffect(() => {
     updater()
   }, [message, typed])
@@ -132,12 +143,37 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
                 <input
                   title="Betreff"
                   name="title"
-                  className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
+                  className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
                   placeholder="Betreff"
                   value={betreff}
                   onChange={(e) => setbetreff(e.target.value)}
                 />
                 <MdEvent className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
+                <MdClose
+                  onClick={() => 'handleFilterChange("Betrefftxt", "")'}
+                  className={
+                    'absolute hidden cursor-pointer inset right-3 text-2xl top-[0.1rem] text-gray-500 hover:text-gray-400'
+                  }
+                />
+              </label>
+            </div>
+            <div className="w-full flex flex-row items-center justify-start dark:bg-gray-900 bg-white px-6 py-2 pt-4 dark:text-white text-black text-sm font-[Arial]">
+              <label className="  w-full flex flex-col items-center justify-center relative">
+                <select
+                  title="Kategorie"
+                  name="kategorie"
+                  className="block w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
+                  placeholder="Kategorie"
+                  value={betreff}
+                  onChange={(e) => setbetreff(e.target.value)}
+                >
+                  <option className="w-full dark:bg-gray-900">Privater Eintrag</option>
+                  {kategorien.length > 0 &&
+                    kategorien.map((item) => (
+                      <option className="w-full dark:bg-gray-900">{item.bezeichnung}</option>
+                    ))}
+                </select>
+                <IoIosInformationCircleOutline className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
                 <MdClose
                   onClick={() => 'handleFilterChange("Betrefftxt", "")'}
                   className={
@@ -161,7 +197,7 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
                   closeOnScroll={true}
                   dateFormat={'Pp'}
                   showTimeSelect
-                  className=" w-full ml-2 col-span-3 dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400 py-2 px-4 text-sm"
+                  className=" w-full ml-2 col-span-3 dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400 py-2 px-4 text-sm"
                   selected={start}
                   onChange={(date) => setstart(date)}
                 />
@@ -182,7 +218,7 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
                   closeOnScroll={true}
                   dateFormat={'Pp'}
                   showTimeSelect
-                  className=" w-full ml-2  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400 py-2 px-4 text-sm"
+                  className=" w-full ml-2  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400 py-2 px-4 text-sm"
                   selected={end}
                   onChange={(date) => setend(date)}
                 />
@@ -192,7 +228,7 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
               <label className="  w-full flex flex-col items-center justify-center relative">
                 <textarea
                   title="Betreff"
-                  className="resize-none w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 h-32 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
+                  className="resize-none w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 h-32 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
                   placeholder="Notiz hinzufügen"
                   value={notice}
                   onChange={(e) => setnotice(e.target.value)}
@@ -229,7 +265,7 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
                         closeOnScroll={true}
                         dateFormat={'Pp'}
                         showTimeSelect
-                        className=" w-full ml-2  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400 py-2 px-4 text-sm"
+                        className=" w-full ml-2  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1   outline-none shadow-gray-700/25   dark:ring-gray-700 ring-gray-400 py-2 px-4 text-sm"
                         selected={remind}
                         onChange={(date) => setremind(date)}
                       />
@@ -249,7 +285,7 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
                   <select
                     title="Sichtbarkeit"
                     name="title"
-                    className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
+                    className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
                     value={ispublic}
                     onChange={(e) => setispublic(e.target.value == 'true' ? true : false)}
                   >
@@ -275,7 +311,7 @@ const DialogEventDayEntry = ({ show, close, typed, title, message, editobj, call
                 <input
                   title="Betreff"
                   name="hexcolor"
-                  className=" w-full h-10 font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
+                  className=" w-full h-10 font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
                   type="color"
                   placeholder="Betreff"
                   value={color}

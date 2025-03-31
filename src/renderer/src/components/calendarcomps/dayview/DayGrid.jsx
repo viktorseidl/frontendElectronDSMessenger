@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { DndProvider, useDrag, useDrop } from 'react-dnd'
+import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import DialogEventDayEntry from '../../DialogEventDayEntry'
 import dayjs from 'dayjs'
@@ -7,20 +7,73 @@ import {
   calculateTime,
   convertToDateTimeObj,
   formatDateTimeAlarmToString,
-  getGermanHolidays,
   getIntervalCount
 } from './functions/functionHandler'
 import TimeSlot from './TimeSlot'
+import { useRoles } from '../../../styles/RoleContext'
+import { util } from 'node-forge'
+import { useFetchAuthAll } from '../../../services/useFetchAll'
 
 const ItemType = 'EVENT'
-
-const DayGrid = ({ fullheight, date, publicView }) => {
-  const [dialogev, setdialogev] = useState(false)
+/**
+ * EVENT OBJ PRIVATE SHOULD LOOK LIKE:
+{
+  "id": 1742897368187, --------
+  "realtimestartDate": "25.03.2025",  --------
+  "realtimestart": "03:00", ---------
+  "time": 3, ---------
+  "duration": 4, ----------
+  "realtimeendDate": "25.03.2025", ----------
+  "realtimeend": "04:00", ---------
+  "hexcolor": "#72c4ff",   ---------
+  "title": "fgfgfg",  ---------
+  "datum": "25.03.2025",  ---------
+  "isNoteAttached": null, ------
+  "isEditable": true, --------
+  "isAlarm": false,  --------
+  "isAlarmStamp": null,   "26.03.2025 10:30"
+  "eventTyp": 0,  --------
+  "isPublic": 0 ---------
+  } 
+  * EVENT OBJ PUBLIC SHOULD LOOK LIKE:
+{
+  "id": 1740388137775,
+  "realtimestartDate": "25.03.2025",
+  "realtimestart": "08:00",
+  "time": 8,
+  "duration": 9,
+  "realtimeendDate": "25.03.2025",
+  "realtimeend": "10:15",
+  "hexcolor": "#99ffFEFF",
+  "title": "Geburtstag Annemarie Hürten",
+  "datum": "25.03.2025",
+  "isNoteAttached": null,
+  "isEditable": false,   <----on public
+  "isAlarm": false,
+  "isAlarmStamp": null,
+  "eventTyp": 0,
+  "isPublic": 1     <----on public
+}
+ */
+const DayGrid = ({
+  fullheight,
+  date,
+  dialogev,
+  setdialogev,
+  filteredevents,
+  updateFilteredEvents,
+  kategorien
+}) => {
+  console.log(filteredevents)
+  const { hasPermission } = useRoles()
   const [dialogtyp, setdialogtyp] = useState(null)
   const [dtobj, setdtobj] = useState(null)
   const [editobj, seteditobj] = useState(null)
   const [events, setEvents] = useState([])
-  console.log(events)
+  const apache = localStorage.getItem('dbConfig')
+    ? JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost
+    : 'localhost'
+  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const handleDrop = (timeSlot, item) => {
     console.log(timeSlot)
     setEvents((prev) =>
@@ -48,12 +101,13 @@ const DayGrid = ({ fullheight, date, publicView }) => {
     }
   }
   const editEvent = (item) => {
-    setdtobj(dayjs(date + ' ' + item.realtimestart, 'DD.MM:YYYY HH:mm').toDate())
+    setdtobj(dayjs(item.realtimestartDate + ' ' + item.realtimestart, 'DD.MM:YYYY HH:mm').toDate())
     seteditobj(item)
     setdialogtyp(true)
     setdialogev(true)
   }
   const addEvent = (timeSlot, e) => {
+    if (!hasPermission('create:calendar')) return
     if (e.target.getAttribute('aria-label') == 'isbuttondoubleclick') return
     if (e.target.classList.contains('resize-handle')) return
     setdtobj(
@@ -133,9 +187,30 @@ const DayGrid = ({ fullheight, date, publicView }) => {
     }
     closeDialog()
   }
-
-  const updateEventDuration = (id, newDuration) => {
-    setEvents((prev) =>
+  const updateEventDuration = async (id, newDuration) => {
+    //Update in database then in state
+    const query = await useFetchAuthAll(
+      'http://' +
+        apache +
+        '/electronbackend/index.php?path=updateMoveDailyView&a=' +
+        util.encode64(
+          JSON.stringify({
+            uname: User.Name,
+            id: id,
+            starthour: newDuration,
+            starttime: calculateTime(ev.time, newDuration).startTime,
+            endtime: calculateTime(ev.time, newDuration).endTime
+          })
+        ) +
+        '&t=' +
+        util.encode64(User.usertypeVP),
+      'ssdsdsd',
+      'PUT',
+      null,
+      null
+    )
+    console.log(query)
+    /*setEvents((prev) =>
       prev.map((ev) =>
         ev.id === id
           ? {
@@ -146,7 +221,7 @@ const DayGrid = ({ fullheight, date, publicView }) => {
             }
           : ev
       )
-    )
+    )*/
   }
   const deleteMyEvent = (id) => {
     setEvents((prev) => prev.filter((ev) => ev.id !== id))
@@ -155,84 +230,10 @@ const DayGrid = ({ fullheight, date, publicView }) => {
     setdialogtyp(null)
     setdialogev(!dialogev)
   }
-  const getFeiertage = () => {
-    console.log(date)
-    const [aday, amonth, ayear] =
-      date != null
-        ? date.split('.')
-        : [new Date().getDate(), new Date().getMonth(), new Date().getFullYear()]
-    const parsedDate = new Date(`${ayear}-${amonth}-${aday}T00:00:00`).toISOString().split('T')[0]
-    console.log(parsedDate)
-    // console.log(formatDateTimeAlarmToString(parsedDate).split(' ')[0])
-    let Feiertage = getGermanHolidays(date.split('.')[2])
-    Feiertage = [
-      ...Feiertage,
-      {
-        id: 1740388137335,
-        time: 12,
-        realtimestartDate: dayjs(
-          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
-            ' ' +
-            calculateTime(8, 9).startTime,
-          'DD.MM:YYYY HH:mm'
-        ).toDate(),
-        realtimestart: calculateTime(8, 9).startTime,
-        duration: 9,
-        realtimeendDate: dayjs(
-          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
-            ' ' +
-            calculateTime(8, 9).endTime,
-          'DD.MM:YYYY HH:mm'
-        ).toDate(),
-        realtimeend: calculateTime(8, 9).endTime,
-        hexcolor: '#9Fff33FF',
-        title: 'Schulung',
-        datum: parsedDate,
-        isNoteAttached: null,
-        isEditable: false,
-        isAlarm: false,
-        isAlarmStamp: null,
-        eventTyp: 0,
-        isPublic: 1
-      },
-      {
-        id: 1740388137775,
-        time: 8,
-        realtimestartDate: dayjs(
-          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
-            ' ' +
-            calculateTime(8, 9).startTime,
-          'DD.MM:YYYY HH:mm'
-        ).toDate(),
-        realtimestart: calculateTime(8, 9).startTime,
-        duration: 9,
-        realtimeendDate: dayjs(
-          `${aday > 9 ? aday : '0' + aday}.${amonth > 9 ? amonth : '0' + amonth}.${ayear}` +
-            ' ' +
-            calculateTime(8, 9).endTime,
-          'DD.MM:YYYY HH:mm'
-        ).toDate(),
-        realtimeend: calculateTime(8, 9).endTime,
-        hexcolor: '#99ffFEFF',
-        title: 'Geburtstag Annemarie Hürten',
-        datum: parsedDate,
-        isNoteAttached: null,
-        isEditable: false,
-        isAlarm: false,
-        isAlarmStamp: null,
-        eventTyp: 0,
-        isPublic: 1
-      }
-    ]
-    setEvents(Feiertage.filter((e) => e.datum == parsedDate))
-    console.log(
-      date,
-      Feiertage.filter((e) => e.datum == parsedDate)
-    )
-  }
+
   useEffect(() => {
-    getFeiertage()
-  }, [date])
+    setEvents(filteredevents)
+  }, [date, filteredevents])
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="grid grid-cols-1 divide-y dark:divide-gray-800 divide-gray-300">
@@ -259,6 +260,7 @@ const DayGrid = ({ fullheight, date, publicView }) => {
         editobj={editobj}
         title={dialogtyp == null ? 'Neuer Termin' : 'Termin bearbeiten'}
         message={dtobj}
+        kategorien={kategorien}
         callbackBtn2={dialogtyp == null ? addNote : saveChanges}
       />
     </DndProvider>

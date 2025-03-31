@@ -3,8 +3,14 @@ import { IoMdMove } from 'react-icons/io'
 import { MdDelete, MdEdit, MdNotes } from 'react-icons/md'
 import { motion } from 'framer-motion'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
-import { calculateHeight } from './functions/functionHandler'
+import { adjustForMode, calculateHeight } from './functions/functionHandler'
+import { useTheme } from '../../../styles/ThemeContext'
+import { useRoles } from '../../../styles/RoleContext'
+import { util } from 'node-forge'
 const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent, ityp }) => {
+  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+  const { hasPermission } = useRoles()
+  const { theme } = useTheme()
   const [isResizing, setIsResizing] = useState(false)
   const [isDraggingAllowed, setIsDraggingAllowed] = useState(false)
   let longPressTimer = null
@@ -39,12 +45,12 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
   return (
     <motion.div
       ref={preview} // Ensures the event stays visible while dragging
-      className={`p-1 text-black rounded relative calshadow ${isDragging ? 'opacity-50' : ''}`}
+      className={`p-1 text-black rounded dark:ring-0 ring-1 ring-gray-400 relative calshadow ${isDragging ? 'opacity-50' : ''}`}
       id={event.id}
       style={{
         minHeight: '28px',
         height: `${calculateHeight(event.duration, 40)}px`,
-        background: `${event.hexcolor}`
+        background: `${theme ? adjustForMode(event.ColorHex, 'light') : adjustForMode(event.ColorHex, 'dark')}`
       }}
     >
       <div className="w-full flex flex-row items-start justify-start">
@@ -66,7 +72,7 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
             ({event.realtimestart} - {event.realtimeend}) |
             <b title={event.title} className="px-1  truncate">
               {' '}
-              {event.title}
+              {event.titel}
             </b>
           </div>
           <pre
@@ -77,35 +83,50 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
             {event.isNoteAttached}
           </pre>
         </div>
-        {event.isEditable || event.isPublic == 0 ? (
-          <>
-            <button
-              ref={drag}
-              className=" w-auto mr-1 bg-red-600 hover:bg-red-500 text-white p-1 rounded text-xs"
-              onClick={() => deleteEvent(event.id)}
-              aria-label="isbuttondoubleclick"
-            >
-              <MdDelete aria-label="isbuttondoubleclick" />
-            </button>
-            <button
-              ref={drag}
-              className=" w-auto mr-1 bg-blue-600 hover:bg-blue-500 text-white p-1 rounded text-xs"
-              onClick={() => editEvent(event)}
-              aria-label="isbuttondoubleclick"
-            >
-              <MdEdit aria-label="isbuttondoubleclick" />
-            </button>
-            <button
-              ref={drag}
-              className=" w-auto bg-gray-700 hover:bg-gray-600 text-white p-1 rounded text-xs"
-              aria-label="isbuttondoubleclick"
-              onMouseDown={handleLongPressStart} // Start long press detection
-              onMouseUp={handleLongPressEnd} // Reset after release
-              onMouseLeave={handleLongPressEnd} // Reset if moved away
-            >
-              <IoMdMove aria-label="isbuttondoubleclick" />
-            </button>
-          </>
+        {hasPermission('delete:calendar') ||
+        (event.isEditable == true &&
+          event.isPublic == true &&
+          event.ersteller == User.Name.toString().toUpperCase()) ? (
+          <button
+            ref={drag}
+            className=" w-auto mr-1 bg-red-600 hover:bg-red-500 text-white p-1 rounded text-xs"
+            onClick={() => deleteEvent(event.id)}
+            aria-label="isbuttondoubleclick"
+          >
+            <MdDelete aria-label="isbuttondoubleclick" />
+          </button>
+        ) : (
+          ''
+        )}
+        {hasPermission('update:calendar') ||
+        (event.isEditable == true &&
+          event.isPublic == true &&
+          event.ersteller == User.Name.toString().toUpperCase()) ? (
+          <button
+            ref={drag}
+            className=" w-auto mr-1 bg-blue-600 hover:bg-blue-500 text-white p-1 rounded text-xs"
+            onClick={() => editEvent(event)}
+            aria-label="isbuttondoubleclick"
+          >
+            <MdEdit aria-label="isbuttondoubleclick" />
+          </button>
+        ) : (
+          ''
+        )}
+        {hasPermission('update:calendar') ||
+        (event.isEditable == true &&
+          event.isPublic == true &&
+          event.ersteller == User.Name.toString().toUpperCase()) ? (
+          <button
+            ref={drag}
+            className=" w-auto bg-gray-700 hover:bg-gray-600 text-white p-1 rounded text-xs"
+            aria-label="isbuttondoubleclick"
+            onMouseDown={handleLongPressStart} // Start long press detection
+            onMouseUp={handleLongPressEnd} // Reset after release
+            onMouseLeave={handleLongPressEnd} // Reset if moved away
+          >
+            <IoMdMove aria-label="isbuttondoubleclick" />
+          </button>
         ) : (
           ''
         )}

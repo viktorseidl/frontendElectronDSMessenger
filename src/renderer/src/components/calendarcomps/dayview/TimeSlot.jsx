@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import Event from './Event'
+import { useRoles } from '../../../styles/RoleContext'
 const TimeSlot = ({
   time,
   events,
@@ -19,8 +20,10 @@ const TimeSlot = ({
       isOver: !!monitor.isOver()
     })
   })
+  console.log(events)
 
-  const slotEvents = events.filter((event) => event.time === time)
+  const slotEvents = events.length > 0 ? events.filter((event) => event.time === time) : []
+  useEffect(() => {}, [events])
   return (
     <div
       ref={drop}

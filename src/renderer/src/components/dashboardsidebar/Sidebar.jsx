@@ -16,7 +16,6 @@ const Sidebar = () => {
   const [menubar, setmenubar] = useState()
   const [messages, setmessages] = useState(0)
   const { hasPermission } = useRoles()
-  console.log(hasPermission('view:calendar'))
   const navigate = useNavigate()
   const logout = () => {
     window.sessionStorage.clear()
@@ -53,7 +52,6 @@ const Sidebar = () => {
       null,
       null
     )
-    console.log(query)
     if (query > 0) {
       setmessages(query)
       if (!window.localStorage.getItem('notifierInt')) {

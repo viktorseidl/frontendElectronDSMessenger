@@ -86,27 +86,27 @@ export function getGermanHolidays(year) {
     id: `holiday-${index}`,
     time: 0, // Full-day event
     realtimestartDate:
-      (holiday.date.toISOString().split('T')[0].split('-')[2] > 9
-        ? holiday.date.toISOString().split('T')[0].split('-')[2]
-        : '0' + holiday.date.toISOString().split('T')[0].split('-')[2]) +
+      (parseInt(holiday.date.toISOString().split('T')[0].split('-')[2]) > 9
+        ? parseInt(holiday.date.toISOString().split('T')[0].split('-')[2])
+        : '0' + parseInt(holiday.date.toISOString().split('T')[0].split('-')[2])) +
       '.' +
-      (holiday.date.toISOString().split('T')[0].split('-')[1] > 9
-        ? holiday.date.toISOString().split('T')[0].split('-')[1]
-        : '0' + holiday.date.toISOString().split('T')[0].split('-')[1]) +
+      (parseInt(holiday.date.toISOString().split('T')[0].split('-')[1]) > 9
+        ? parseInt(holiday.date.toISOString().split('T')[0].split('-')[1])
+        : '0' + parseInt(holiday.date.toISOString().split('T')[0].split('-')[1])) +
       '.' +
-      holiday.date.toISOString().split('T')[0].split('-')[0],
+      parseInt(holiday.date.toISOString().split('T')[0].split('-')[0]),
     realtimestart: '00:00',
     duration: 24 * 4,
     realtimeendDate:
-      (holiday.date.toISOString().split('T')[0].split('-')[2] > 9
-        ? holiday.date.toISOString().split('T')[0].split('-')[2]
-        : '0' + holiday.date.toISOString().split('T')[0].split('-')[2]) +
+      (parseInt(holiday.date.toISOString().split('T')[0].split('-')[2]) > 9
+        ? parseInt(holiday.date.toISOString().split('T')[0].split('-')[2])
+        : '0' + parseInt(holiday.date.toISOString().split('T')[0].split('-')[2])) +
       '.' +
-      (holiday.date.toISOString().split('T')[0].split('-')[1] > 9
-        ? holiday.date.toISOString().split('T')[0].split('-')[1]
-        : '0' + holiday.date.toISOString().split('T')[0].split('-')[1]) +
+      (parseInt(holiday.date.toISOString().split('T')[0].split('-')[1]) > 9
+        ? parseInt(holiday.date.toISOString().split('T')[0].split('-')[1])
+        : '0' + parseInt(holiday.date.toISOString().split('T')[0].split('-')[1])) +
       '.' +
-      holiday.date.toISOString().split('T')[0].split('-')[0],
+      parseInt(holiday.date.toISOString().split('T')[0].split('-')[0]),
     realtimeend: '23:59',
     hexcolor: '#c3f0fa', // Gold color for holidays
     title: holiday.name,
@@ -115,7 +115,7 @@ export function getGermanHolidays(year) {
     isEditable: false,
     isAlarm: false,
     isAlarmStamp: null,
-    eventTyp: 1,
+    eventTyp: 0,
     isPublic: 1
   }))
 
@@ -204,4 +204,50 @@ export function searchAllEvents(events, searchTerm) {
       event.title.toLowerCase().includes(lowerSearchTerm) ||
       (event.isNoteAttached && event.isNoteAttached.toLowerCase().includes(lowerSearchTerm))
   )
+}
+export function adjustForMode(hex, mode = 'dark', factor = 0.2) {
+  // Ensure valid hex format
+  if (!/^#?[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(hex)) {
+    if (mode === 'dark') {
+      hex = '#666666'
+    } else {
+      hex = '#EEEEEE'
+    }
+  }
+  if (mode === 'dark' && (hex === '#000000' || hex === '#000000FF')) {
+    hex = '#666666'
+  } else if (mode === 'light' && (hex === '#000000' || hex === '#000000FF')) {
+    hex = '#DEDEDE'
+  }
+  // Remove '#' if present
+  hex = hex.replace('#', '')
+
+  // Convert hex to RGB
+  let r = parseInt(hex.substring(0, 2), 16)
+  let g = parseInt(hex.substring(2, 4), 16)
+  let b = parseInt(hex.substring(4, 6), 16)
+  let a = hex.length === 8 ? parseInt(hex.substring(6, 8), 16) : 255
+
+  // Adjust brightness
+  if (mode === 'dark') {
+    factor = 0.2
+    r = Math.min(255, r + (255 - r) * factor) // Lighten
+    g = Math.min(255, g + (255 - g) * factor)
+    b = Math.min(255, b + (255 - b) * factor)
+  } else {
+    factor = 0.08
+    r = Math.max(0, r * (1 - factor)) // Darken
+    g = Math.max(0, g * (1 - factor))
+    b = Math.max(0, b * (1 - factor))
+  }
+
+  // Convert back to hex
+  const toHex = (c) => Math.round(c).toString(16).padStart(2, '0')
+  let newHex = `#${toHex(r)}${toHex(g)}${toHex(b)}`
+
+  // Append alpha channel if originally present
+  if (hex.length === 8) {
+    newHex += toHex(a)
+  }
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }

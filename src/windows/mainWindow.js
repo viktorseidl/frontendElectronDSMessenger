@@ -34,10 +34,23 @@ export async function createMainWindow() {
         showInspectElement: false,
         showLearnSpelling: true,
         labels: {
-          cut: 'Cut',
-          copy: 'Copy',
-          paste: 'Paste',
-          learnSpelling: 'Add to Dictionary'
+          cut: 'Ausschneiden',
+          copy: 'Kopieren',
+          paste: 'Einfügen',
+          selectAll: 'Alles auswählen',
+          searchWithGoogle: 'Google-Suche',
+          saveImage: 'Bild speichern',
+          saveImageAs: 'Bild speichern unter...',
+          saveLinkAs: 'Link speichern unter...',
+          lookUpSelection: 'Untersuchen',
+          saveVideo: 'Video speichern',
+          saveVideoAs: 'Video speichern unter...',
+          services: 'Services',
+          copyImage: 'Bild kopieren',
+          copyImageAddress: 'Bildadresse kopieren',
+          copyLink: 'Linkadresse kopieren',
+          copyVideoAddress: 'Videoadresse kopieren',
+          learnSpelling: 'Zu Wörterbuch hinzufügen'
         }
       })
     })
