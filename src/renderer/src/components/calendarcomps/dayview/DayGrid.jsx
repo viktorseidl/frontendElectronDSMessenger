@@ -74,20 +74,40 @@ const DayGrid = ({
     ? JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost
     : 'localhost'
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-  const handleDrop = (timeSlot, item) => {
-    console.log(timeSlot)
-    setEvents((prev) =>
-      prev.map((ev) =>
-        ev.id === item.id
-          ? {
-              ...ev,
-              time: timeSlot,
-              realtimestart: calculateTime(timeSlot, ev.duration).startTime,
-              realtimeend: calculateTime(timeSlot, ev.duration).endTime
-            }
-          : ev
-      )
+  const handleDrop = async (timeSlot, item) => {
+    console.log(timeSlot, item)
+    const query = await useFetchAuthAll(
+      'http://' +
+        apache +
+        '/electronbackend/index.php?path=updateMoveDailyView&a=' +
+        util.encode64(
+          JSON.stringify({
+            id: item.id,
+            newstarthour:
+              item.realtimestartDate + ' ' + timeSlot + ':' + item.realtimestart.split(':')[1],
+            oldstart: item.realtimestartDate + ' ' + item.realtimestart,
+            oldend: item.realtimeendDate + ' ' + item.realtimeend
+          })
+        ),
+      'ssdsdsd',
+      'PUT',
+      null,
+      null
     )
+    if (query.length > 0 && query[0] == true) {
+      setEvents((prev) =>
+        prev.map((ev) =>
+          ev.id === item.id
+            ? {
+                ...ev,
+                time: timeSlot,
+                realtimestart: query[1],
+                realtimeend: query[2]
+              }
+            : ev
+        )
+      )
+    }
   }
   const showNoteIDS = (id, lastheight, toogle) => {
     if (toogle == true && document.getElementById('shownote' + id).style.display != 'block') {
@@ -188,29 +208,7 @@ const DayGrid = ({
     closeDialog()
   }
   const updateEventDuration = async (id, newDuration) => {
-    //Update in database then in state
-    const query = await useFetchAuthAll(
-      'http://' +
-        apache +
-        '/electronbackend/index.php?path=updateMoveDailyView&a=' +
-        util.encode64(
-          JSON.stringify({
-            uname: User.Name,
-            id: id,
-            starthour: newDuration,
-            starttime: calculateTime(ev.time, newDuration).startTime,
-            endtime: calculateTime(ev.time, newDuration).endTime
-          })
-        ) +
-        '&t=' +
-        util.encode64(User.usertypeVP),
-      'ssdsdsd',
-      'PUT',
-      null,
-      null
-    )
-    console.log(query)
-    /*setEvents((prev) =>
+    setEvents((prev) =>
       prev.map((ev) =>
         ev.id === id
           ? {
@@ -221,9 +219,27 @@ const DayGrid = ({
             }
           : ev
       )
-    )*/
+    )
   }
-  const deleteMyEvent = (id) => {
+  const deleteMyEvent = async (id) => {
+    if (!hasPermission('delete:calendar')) return
+    console.log(id)
+    const query = await useFetchAuthAll(
+      'http://' +
+        apache +
+        '/electronbackend/index.php?path=deleteEventOnDailyView&a=' +
+        util.encode64(
+          JSON.stringify({
+            id: id
+          })
+        ),
+      'ssdsdsd',
+      'DELETE',
+      null,
+      null
+    )
+    console.log(query)
+    updateFilteredEvents()
     setEvents((prev) => prev.filter((ev) => ev.id !== id))
   }
   const closeDialog = () => {

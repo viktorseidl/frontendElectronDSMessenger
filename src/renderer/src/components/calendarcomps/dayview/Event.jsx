@@ -36,6 +36,7 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
   }
 
   const handleResize = (e) => {
+    console.log(e)
     if (!isResizing) return
     e.stopPropagation()
     updateEventDuration(event.id, event.duration + 1)
@@ -45,7 +46,7 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
   return (
     <motion.div
       ref={preview} // Ensures the event stays visible while dragging
-      className={`p-1 text-black rounded dark:ring-0 ring-1 ring-gray-400 relative calshadow ${isDragging ? 'opacity-50' : ''}`}
+      className={`p-1 text-black rounded dark:ring-1 ring-1 dark:ring-gray-700 ring-gray-400 relative calshadow ${isDragging ? 'opacity-50' : ''}`}
       id={event.id}
       style={{
         minHeight: '28px',
@@ -70,7 +71,7 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
         <div className={` w-48 h-full max-w-52 flex flex-col text-xs   truncate`}>
           <div className="w-full flex flex-row items-center justify-start  truncate">
             ({event.realtimestart} - {event.realtimeend}) |
-            <b title={event.title} className="px-1  truncate">
+            <b title={event.titel} className="px-1  truncate">
               {' '}
               {event.titel}
             </b>
@@ -83,10 +84,13 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
             {event.isNoteAttached}
           </pre>
         </div>
-        {hasPermission('delete:calendar') ||
-        (event.isEditable == true &&
-          event.isPublic == true &&
-          event.ersteller == User.Name.toString().toUpperCase()) ? (
+        {(hasPermission('delete:calendar') &&
+          event.isEditable == false &&
+          event.ersteller == User.Name.toString().toUpperCase()) ||
+        (hasPermission('delete:calendar') &&
+          event.isEditable == true &&
+          event.ersteller == User.Name.toString().toUpperCase()) ||
+        (hasPermission('delete:calendar') && User.usertypeVP != 'P') ? (
           <button
             ref={drag}
             className=" w-auto mr-1 bg-red-600 hover:bg-red-500 text-white p-1 rounded text-xs"
@@ -98,10 +102,13 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
         ) : (
           ''
         )}
-        {hasPermission('update:calendar') ||
-        (event.isEditable == true &&
-          event.isPublic == true &&
-          event.ersteller == User.Name.toString().toUpperCase()) ? (
+        {(hasPermission('update:calendar') &&
+          event.isEditable == false &&
+          event.ersteller == User.Name.toString().toUpperCase()) ||
+        (hasPermission('update:calendar') &&
+          event.isEditable == true &&
+          event.ersteller == User.Name.toString().toUpperCase()) ||
+        (hasPermission('delete:calendar') && User.usertypeVP != 'P') ? (
           <button
             ref={drag}
             className=" w-auto mr-1 bg-blue-600 hover:bg-blue-500 text-white p-1 rounded text-xs"
@@ -113,10 +120,15 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
         ) : (
           ''
         )}
-        {hasPermission('update:calendar') ||
-        (event.isEditable == true &&
-          event.isPublic == true &&
-          event.ersteller == User.Name.toString().toUpperCase()) ? (
+        {(hasPermission('update:calendar') &&
+          event.duration != 24 * 4 &&
+          event.isEditable == false &&
+          event.ersteller == User.Name.toString().toUpperCase()) ||
+        (hasPermission('update:calendar') &&
+          event.duration != 24 * 4 &&
+          event.isEditable == true &&
+          event.ersteller == User.Name.toString().toUpperCase()) ||
+        (hasPermission('update:calendar') && event.duration != 24 * 4 && User.usertypeVP != 'P') ? (
           <button
             ref={drag}
             className=" w-auto bg-gray-700 hover:bg-gray-600 text-white p-1 rounded text-xs"

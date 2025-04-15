@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import Event from './Event'
 import { useRoles } from '../../../styles/RoleContext'
+import EventKategorien from './EventKategorien'
 const TimeSlot = ({
   time,
   events,
@@ -20,8 +21,6 @@ const TimeSlot = ({
       isOver: !!monitor.isOver()
     })
   })
-  console.log(events)
-
   const slotEvents = events.length > 0 ? events.filter((event) => event.time === time) : []
   useEffect(() => {}, [events])
   return (
@@ -33,17 +32,53 @@ const TimeSlot = ({
       onDoubleClick={(e) => addEvent(time, e)}
     >
       <div className="flex space-x-2 max-w-full overflow-hidden">
-        {slotEvents.map((event) => (
-          <Event
-            key={event.id}
-            event={event}
-            updateEventDuration={updateEventDuration}
-            deleteEvent={deleteEvent}
-            editEvent={editEvent}
-            showNoteIDS={showNoteIDS}
-            ityp={ityp}
+        {slotEvents.filter(
+          (e) =>
+            e.katBezeichnung !== null &&
+            (e.katBezeichnung === 'Personalausweis' ||
+              e.katBezeichnung === 'BewohnerGEZ' ||
+              e.katBezeichnung === 'BewohnerGeburtstag' ||
+              e.katBezeichnung === 'BewohnerGenehmigung' ||
+              e.katBezeichnung === 'Pflegewohngeld' ||
+              e.katBezeichnung === 'Tabellenwohngeld' ||
+              e.katBezeichnung === 'Schwerbehindertausweis' ||
+              e.katBezeichnung === 'Pflegevisite' ||
+              e.katBezeichnung === 'Evaluierung' ||
+              e.katBezeichnung === 'Geburtstag')
+        ).length > 0 ? (
+          <EventKategorien
+            key={'BewohnerPersonalausweisAnsichtBewohner'}
+            event={slotEvents.filter(
+              (e) =>
+                e.katBezeichnung !== null &&
+                (e.katBezeichnung === 'Personalausweis' ||
+                  e.katBezeichnung === 'BewohnerGEZ' ||
+                  e.katBezeichnung === 'BewohnerGeburtstag' ||
+                  e.katBezeichnung === 'BewohnerGenehmigung' ||
+                  e.katBezeichnung === 'Pflegewohngeld' ||
+                  e.katBezeichnung === 'Tabellenwohngeld' ||
+                  e.katBezeichnung === 'Schwerbehindertausweis' ||
+                  e.katBezeichnung === 'Pflegevisite' ||
+                  e.katBezeichnung === 'Evaluierung' ||
+                  e.katBezeichnung === 'Geburtstag')
+            )}
           />
-        ))}
+        ) : (
+          ''
+        )}
+        {slotEvents
+          .filter((e) => e.katBezeichnung == 'Termin')
+          .map((event) => (
+            <Event
+              key={event.id}
+              event={event}
+              updateEventDuration={updateEventDuration}
+              deleteEvent={deleteEvent}
+              editEvent={editEvent}
+              showNoteIDS={showNoteIDS}
+              ityp={ityp}
+            />
+          ))}
       </div>
     </div>
   )

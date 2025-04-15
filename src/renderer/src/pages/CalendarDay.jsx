@@ -61,11 +61,11 @@ const CalendarDay = () => {
       }, [])
 
       // Update selectedKategorien based on user type
-      if (User.usertypeVP === 'P') {
+      /*if (User.usertypeVP === 'P') {
         setSelectedKategorien(arr.filter((item) => item.pstart === true))
       } else {
         setSelectedKategorien(arr.filter((item) => item.vstart === true))
-      }
+      }*/
 
       setKategorien(uniqueBezeichnungen) // Update state with unique categories
     } else {
@@ -88,6 +88,7 @@ const CalendarDay = () => {
   }, [fullEvents, selectedKategorien])
   const getEventsDB = async () => {
     const dailyFeiertage = getFeiertage()
+    console.log(dailyFeiertage)
     const query = await useFetchAuthAll(
       'http://' +
         apache +
@@ -105,9 +106,10 @@ const CalendarDay = () => {
       null
     )
     if (query.length > 0) {
+      console.log([...dailyFeiertage, ...query])
       setFullEvents([...dailyFeiertage, ...query])
     } else {
-      setFullEvents([])
+      setFullEvents([...dailyFeiertage])
     }
   }
   const updateEventDuration = (id, newDuration) => {
@@ -140,7 +142,7 @@ const CalendarDay = () => {
       />
     )
   })
-  console.log(selectedKategorien)
+
   useEffect(() => {
     if (jahr && monat && tag) {
       getEventsDB()
@@ -152,7 +154,7 @@ const CalendarDay = () => {
       <div className="w-full h-full relative flex flex-col items-start justify-start pl-14">
         <Sidebar />
         <div className="w-full h-full flex flex-col items-start justify-start animate-fadeInfast dark:bg-gray-950 bg-stone-100 overflow-hidden">
-          <div className="w-full flex flex-row items-start justify-start h-full">
+          <div className="w-full flex flex-row items-start justify-start h-full overflow-hidden">
             <div className="w-80 h-full flex flex-col items-start justify-start pt-4 overflow-auto dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 ">
               <div className="w-full flex flex-row items-center justify-center text-xl">
                 <span className="w-full flex flex-row items-center justify-center">
@@ -221,6 +223,14 @@ const CalendarDay = () => {
                     kategorien.map((item, index) => (
                       <div
                         key={item + index + 'allkats'}
+                        onClick={() =>
+                          setSelectedKategorien(
+                            (prev) =>
+                              prev.some((sel) => sel.ID === item.ID)
+                                ? prev.filter((sel) => sel.ID !== item.ID) // Remove item if it's already selected
+                                : [...prev, item] // Add item if it's not selected
+                          )
+                        }
                         className="w-full grid grid-cols-10 items-center justify-items-start gap-x-2 "
                       >
                         <div className="w-full h-4 col-span-2 flex flex-col items-center justify-center text-sm">
@@ -229,14 +239,6 @@ const CalendarDay = () => {
                               accentColor: item.colorhex
                             }}
                             checked={selectedKategorien.some((sel) => sel.ID === item.ID)}
-                            onChange={() =>
-                              setSelectedKategorien(
-                                (prev) =>
-                                  prev.some((sel) => sel.ID === item.ID)
-                                    ? prev.filter((sel) => sel.ID !== item.ID) // Remove item if it's already selected
-                                    : [...prev, item] // Add item if it's not selected
-                              )
-                            }
                             type="checkbox"
                             className={`w-4 h-4  `}
                           />

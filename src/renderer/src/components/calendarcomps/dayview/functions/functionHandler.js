@@ -84,6 +84,7 @@ export function getGermanHolidays(year) {
   // Convert to event objects
   const events = allHolidays.map((holiday, index) => ({
     id: `holiday-${index}`,
+    titel: holiday.name,
     time: 0, // Full-day event
     realtimestartDate:
       (parseInt(holiday.date.toISOString().split('T')[0].split('-')[2]) > 9
@@ -108,18 +109,51 @@ export function getGermanHolidays(year) {
       '.' +
       parseInt(holiday.date.toISOString().split('T')[0].split('-')[0]),
     realtimeend: '23:59',
-    hexcolor: '#c3f0fa', // Gold color for holidays
-    title: holiday.name,
+    ColorHex: '#f5d902', // Gold color for holidays
     datum: holiday.date.toISOString().split('T')[0], // Format YYYY-MM-DD
     isNoteAttached: null,
     isEditable: false,
     isAlarm: false,
     isAlarmStamp: null,
-    eventTyp: 0,
-    isPublic: 1
+    eventTyp: null,
+    ersteller: 'System',
+    haus: null,
+    wohnbereich: null,
+    kategorie: null,
+    katBezeichnung: null,
+    katBackColor: null,
+    katForeColor: null,
+    VerwaltungPflege: null,
+    isPublic: true
   }))
 
   return events
+}
+export function getTimestamps(dateStr) {
+  // Split the date string into parts
+  const [day, month, year] = dateStr.split('.').map(Number)
+
+  // Create a Date object for the given date
+  const date = new Date(year, month - 1, day)
+
+  // Get the timestamp for the given date
+  const timestamp = date.getTime()
+
+  // Create a date object for one month before
+  const oneMonthBefore = new Date(date)
+  oneMonthBefore.setMonth(oneMonthBefore.getMonth() - 1)
+  const timestampOneMonthBefore = oneMonthBefore.getTime()
+
+  // Create a date object for four days before
+  const fourDaysBefore = new Date(date)
+  fourDaysBefore.setDate(fourDaysBefore.getDate() - 6)
+  const timestampFourDaysBefore = fourDaysBefore.getTime()
+
+  return {
+    originalTimestamp: timestamp,
+    oneMonthBeforeTimestamp: timestampOneMonthBefore,
+    fourDaysBeforeTimestamp: timestampFourDaysBefore
+  }
 }
 export function formatGermanDate(dateString) {
   // Split the input date string into day, month, and year
@@ -230,15 +264,15 @@ export function adjustForMode(hex, mode = 'dark', factor = 0.2) {
 
   // Adjust brightness
   if (mode === 'dark') {
-    factor = 0.2
-    r = Math.min(255, r + (255 - r) * factor) // Lighten
-    g = Math.min(255, g + (255 - g) * factor)
-    b = Math.min(255, b + (255 - b) * factor)
-  } else {
-    factor = 0.08
+    factor = 0.02
     r = Math.max(0, r * (1 - factor)) // Darken
     g = Math.max(0, g * (1 - factor))
     b = Math.max(0, b * (1 - factor))
+  } else {
+    factor = 0.6
+    r = Math.min(255, r + (255 - r) * factor) // Lighten
+    g = Math.min(255, g + (255 - g) * factor)
+    b = Math.min(255, b + (255 - b) * factor)
   }
 
   // Convert back to hex
