@@ -28,7 +28,7 @@ const DraggableEvent = ({ event, index }) => {
         isDragging ? 'opacity-50' : ''
       } ${index == 0 ? ' mt-[20px] ' : ' mt-[' + index * 20 + 'px]'}`}
       style={{
-        top: `${startHour * 180 + (startMinutes / 60) * 180}px`,
+        top: `${startHour * 40 + (startMinutes / 60) * 40}px`,
         left: '0',
         marginTop: `${stepper}px`
       }}

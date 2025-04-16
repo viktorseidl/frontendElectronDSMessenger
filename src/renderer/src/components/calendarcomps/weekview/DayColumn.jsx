@@ -42,7 +42,7 @@ const DayColumn = ({ day, events, moveEvent }) => {
             )
           }
           key={hour}
-          className=" w-full h-[180px] pl-1 pt-1 text-xs text-gray-500"
+          className=" w-full h-[40px] pl-1 pt-1 text-xs text-gray-500"
         >
           {`${
             day.toLocaleDateString('de-DE', {

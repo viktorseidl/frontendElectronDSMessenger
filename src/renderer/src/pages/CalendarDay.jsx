@@ -244,7 +244,7 @@ const CalendarDay = () => {
                           />
                         </div>
                         <div className="w-full   text-sm col-span-8 flex flex-col items-start justify-center">
-                          <a className=" w-full truncate pr-4">{item.bezeichnung}</a>
+                          <a className=" w-full truncate pr-4">{item.kategoriename}</a>
                         </div>
                       </div>
                     ))}

@@ -85,7 +85,7 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
     return (
       <div
         className="w-[88%] absolute inset left-32 right-0 h-[1px] dark:bg-red-500 bg-gray-800 z-0"
-        style={{ top: `${parseInt(currentTimePixels) * ((24 * 180) / 1440) + 40}px` }}
+        style={{ top: `${parseInt(currentTimePixels) * ((24 * 40) / 1440) + 40}px` }}
       >
         <div className="w-full relative">
           <div className="absolute left-0 -top-[4px] p-1 rounded-full dark:bg-red-500 bg-gray-800"></div>

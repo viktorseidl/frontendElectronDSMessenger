@@ -44,6 +44,14 @@ const TimeSlot = ({
               e.katBezeichnung === 'Schwerbehindertausweis' ||
               e.katBezeichnung === 'Pflegevisite' ||
               e.katBezeichnung === 'Evaluierung' ||
+              e.katBezeichnung === 'Wundauswertung' ||
+              e.katBezeichnung === 'Wundvermessung' ||
+              e.katBezeichnung === 'Evaluierung Betreuung' ||
+              e.katBezeichnung === 'Bradenskala' ||
+              e.katBezeichnung === 'Nortonskala' ||
+              e.katBezeichnung === 'Dekubitusprophylaxemaßnahmen' ||
+              e.katBezeichnung === 'Sicherheitstechnische Kontrolle' ||
+              e.katBezeichnung === 'Evaluierung Kontraktur' ||
               e.katBezeichnung === 'Geburtstag')
         ).length > 0 ? (
           <EventKategorien
@@ -60,6 +68,14 @@ const TimeSlot = ({
                   e.katBezeichnung === 'Schwerbehindertausweis' ||
                   e.katBezeichnung === 'Pflegevisite' ||
                   e.katBezeichnung === 'Evaluierung' ||
+                  e.katBezeichnung === 'Wundauswertung' ||
+                  e.katBezeichnung === 'Wundvermessung' ||
+                  e.katBezeichnung === 'Evaluierung Betreuung' ||
+                  e.katBezeichnung === 'Bradenskala' ||
+                  e.katBezeichnung === 'Nortonskala' ||
+                  e.katBezeichnung === 'Dekubitusprophylaxemaßnahmen' ||
+                  e.katBezeichnung === 'Sicherheitstechnische Kontrolle' ||
+                  e.katBezeichnung === 'Evaluierung Kontraktur' ||
                   e.katBezeichnung === 'Geburtstag')
             )}
           />
