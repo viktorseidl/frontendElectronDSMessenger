@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import DayGrid from './DayGrid'
-import { MdArrowLeft, MdArrowRight, MdClose } from 'react-icons/md'
+import { MdArrowLeft, MdArrowRight, MdClose, MdPerson } from 'react-icons/md'
 import { FaSearch } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import {
+  adjustForMode,
   formatGermanDate,
-  getGermanHolidays,
   getShiftedDate,
   getTodayDate
 } from './functions/functionHandler'
@@ -20,7 +20,8 @@ const TagesAnsicht = ({
   setdialogev,
   filteredevents,
   kategorien,
-  updateFilteredEvents
+  updateFilteredEvents,
+  setKalenderEntry
 }) => {
   const divRef = useRef(null)
   const viewRef = useRef(null)
@@ -160,6 +161,1023 @@ const TagesAnsicht = ({
       </div>
       <div className="w-full h-[91.8%] shadow-inner dark:shadow-gray-200">
         <div className="w-full flex flex-col items-start justify-start max-h-full overflow-y-scroll dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
+          {filteredevents.filter(
+            (e) =>
+              e.katBezeichnung !== null &&
+              (e.katBezeichnung === 'Feiertag' ||
+                e.katBezeichnung === 'Personalausweis' ||
+                e.katBezeichnung === 'BewohnerGEZ' ||
+                e.katBezeichnung === 'BewohnerGeburtstag' ||
+                e.katBezeichnung === 'BewohnerGenehmigung' ||
+                e.katBezeichnung === 'Pflegewohngeld' ||
+                e.katBezeichnung === 'Tabellenwohngeld' ||
+                e.katBezeichnung === 'Schwerbehindertausweis' ||
+                e.katBezeichnung === 'Pflegevisite' ||
+                e.katBezeichnung === 'Evaluierung' ||
+                e.katBezeichnung === 'Wundauswertung' ||
+                e.katBezeichnung === 'Wundvermessung' ||
+                e.katBezeichnung === 'Evaluierung Betreuung' ||
+                e.katBezeichnung === 'Bradenskala' ||
+                e.katBezeichnung === 'Nortonskala' ||
+                e.katBezeichnung === 'Dekubitusprophylaxemaßnahmen' ||
+                e.katBezeichnung === 'Sicherheitstechnische Kontrolle' ||
+                e.katBezeichnung === 'Evaluierung Kontraktur' ||
+                e.katBezeichnung === 'Ergebniserfassung' ||
+                e.katBezeichnung === 'Geburtstag')
+          ).length > 0 ? (
+            <div className="flex flex-col items-start justify-start w-full dark:bg-gray-900 bg-stone-200  ">
+              <div className="text-xs pl-4 py-1 w-full border-y border-gray-300 dark:border-gray-600">
+                🗓️ Ereignisse
+              </div>
+              <div className="flex flex-col items-start justify-start w-full">
+                {filteredevents.filter((e) => e.katBezeichnung === 'Feiertag').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Feiertag')[0].ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Feiertag')[0].ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Feiertag" className="w-full text-xs truncate px-2">
+                        Feiertag
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Feiertag')
+                        .map((item, index) => (
+                          <div
+                            title={'⭐ Feiertag: ' + item.titel}
+                            key={'bname' + item + index}
+                            className="w-auto  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-row items-center justify-start rounded "
+                          >
+                            ⭐ {item.titel}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Geburtstag').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Geburtstag')[0].ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Geburtstag')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a
+                        title="Geburstage der Mitarbeiter"
+                        className="w-full text-xs truncate px-2"
+                      >
+                        Geburstage der Mitarbeiter
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Geburtstag')
+                        .map((item, index) => (
+                          <div
+                            title={'🎂 Mitarbeiter: ' + item.titel}
+                            key={'bname' + item + index}
+                            className="w-auto  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-row items-center justify-start rounded "
+                          >
+                            🎂 {item.titel}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'BewohnerGeburtstag').length >
+                0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'BewohnerGeburtstag')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'BewohnerGeburtstag')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Geburstage der Bewohner" className="w-full truncate px-2">
+                        Geburstage der Bewohner
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'BewohnerGeburtstag')
+                        .map((item, index) => (
+                          <div
+                            title={'🎂 Bewohner: ' + item.titel}
+                            key={'bname' + item + index}
+                            className="w-auto  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-row items-center justify-start rounded "
+                          >
+                            🎂 {item.titel}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'BewohnerGEZ').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'BewohnerGEZ')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'BewohnerGEZ')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="GEZ Befreiung" className="w-full truncate px-2">
+                        GEZ Befreiung
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'BewohnerGEZ')
+                        .map((item, index) => (
+                          <div
+                            title={'📺 GEZ Befreiung: ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate">📺 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟: {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'BewohnerGenehmigung').length >
+                0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'BewohnerGenehmigung')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter(
+                            (e) => e.katBezeichnung === 'BewohnerGenehmigung'
+                          )[0].ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Bewohner Genehmigungen" className="w-full truncate px-2">
+                        Bewohner Genehmigungen
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'BewohnerGenehmigung')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'🗒️ Genehmigung: ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate">
+                              {' '}
+                              <MdPerson className="inline" /> {item.Bewohner}
+                            </a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                            <a className="w-full truncate ">
+                              🗒️ {item.titel === ' ' ? 'keine Angaben' : item.titel}
+                            </a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Pflegevisite').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Pflegevisite')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Pflegevisite')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Bewohner Pflegevisite" className="w-full truncate px-2">
+                        Bewohner Pflegevisite
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Pflegevisite')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'📅 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate">📅 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Ergebniserfassung').length >
+                0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Ergebniserfassung')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Ergebniserfassung')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Ergebniserfassung" className="w-full truncate px-2">
+                        Ergebniserfassung
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Ergebniserfassung')
+                        .map((item, index) => (
+                          <div
+                            title={'🏠 ' + item.titel}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate">🏠 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Evaluierung Kontraktur')
+                  .length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter(
+                          (e) => e.katBezeichnung === 'Evaluierung Kontraktur'
+                        )[0].ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter(
+                            (e) => e.katBezeichnung === 'Evaluierung Kontraktur'
+                          )[0].ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Evaluierung Kontraktur" className="w-full truncate px-2">
+                        Evaluierung Kontraktur
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Evaluierung Kontraktur')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'🩺 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate">🩺 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter(
+                  (e) => e.katBezeichnung === 'Sicherheitstechnische Kontrolle'
+                ).length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter(
+                          (e) => e.katBezeichnung === 'Sicherheitstechnische Kontrolle'
+                        )[0].ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter(
+                            (e) => e.katBezeichnung === 'Sicherheitstechnische Kontrolle'
+                          )[0].ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Sicherheitstechnische Kontrolle" className="w-full truncate px-2">
+                        Sicherheitstechnische Kontrolle
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Sicherheitstechnische Kontrolle')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'🛂 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 🛂 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Dekubitusprophylaxemaßnahmen')
+                  .length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter(
+                          (e) => e.katBezeichnung === 'Dekubitusprophylaxemaßnahmen'
+                        )[0].ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter(
+                            (e) => e.katBezeichnung === 'Dekubitusprophylaxemaßnahmen'
+                          )[0].ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a
+                        title="Bewohner Dekubitusprophylaxemaßnahmen"
+                        className="w-full truncate px-2"
+                      >
+                        Dekubitusprophylaxemaßnahmen
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Dekubitusprophylaxemaßnahmen')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'🩹 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate">
+                              {' '}
+                              <MdPerson className="inline" /> {item.Bewohner}
+                            </a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Personalausweis').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Personalausweis')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Personalausweis')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Bewohner Personalausweis" className="w-full truncate px-2">
+                        Personalausweis
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Personalausweis')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'💳 Personalausweis: ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 💳 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Pflegewohngeld').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Pflegewohngeld')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Pflegewohngeld')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Pflegewohngeld" className="w-full truncate px-2">
+                        Pflegewohngeld
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Pflegewohngeld')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'💶 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 💶 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Wundvermessung').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Wundvermessung')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Wundvermessung')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Wundvermessung Bewohner" className="w-full truncate px-2">
+                        Wundvermessung
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Wundvermessung')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'🩹 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 🩹 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Wundauswertung').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Wundauswertung')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Wundauswertung')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Wundauswertung der Bewohner" className="w-full truncate px-2">
+                        Wundauswertung
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Wundauswertung')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'📈 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 📈 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Tabellenwohngeld').length >
+                0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Tabellenwohngeld')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Tabellenwohngeld')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Tabellenwohngeld der Bewohner" className="w-full truncate px-2">
+                        Tabellenwohngeld
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Tabellenwohngeld')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'📄 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 📄 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Schwerbehindertausweis')
+                  .length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter(
+                          (e) => e.katBezeichnung === 'Schwerbehindertausweis'
+                        )[0].ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter(
+                            (e) => e.katBezeichnung === 'Schwerbehindertausweis'
+                          )[0].ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a
+                        title="Schwerbehindertausweis der Bewohner"
+                        className="w-full truncate px-2"
+                      >
+                        Schwerbehindertausweis
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Schwerbehindertausweis')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'🦽 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 🦽 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Evaluierung').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Evaluierung')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Evaluierung')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Evaluierung der Bewohner" className="w-full truncate px-2">
+                        Evaluierung
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Evaluierung')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'📊 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 📊 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Evaluierung Betreuung').length >
+                0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter(
+                          (e) => e.katBezeichnung === 'Evaluierung Betreuung'
+                        )[0].ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter(
+                            (e) => e.katBezeichnung === 'Evaluierung Betreuung'
+                          )[0].ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Evaluierung der Betreuung" className="w-full truncate px-2">
+                        Evaluierung der Betreuung
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Evaluierung Betreuung')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'📊 ' + item.titel + ': ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 📊 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Bradenskala').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Bradenskala')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Bradenskala')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Braden-Skala" className="w-full truncate px-2">
+                        Braden-Skala
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Bradenskala')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'📊 Braden-Skala: ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 📊 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Nortonskala').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Nortonskala')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Nortonskala')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Norton-Skala" className="w-full truncate px-2">
+                        Norton-Skala
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Nortonskala')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Bewohner === curr.Bewohner)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'📊 Norton-Skala: ' + item.Bewohner}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 📊 {item.Bewohner}</a>
+                            <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+              </div>
+            </div>
+          ) : (
+            ''
+          )}
           <div className="w-full relative  dark:bg-gray-900 bg-blue-50 flex flex-row items-start justify-start ">
             <div className="w-40 flex flex-col dark:bg-gray-800 bg-white items-start justify-evenly h-full dark:border-r border-r dark:border-gray-700 border-gray-300 divide-y dark:divide-gray-700 divide-gray-300">
               {rows.map((item, index) => (
@@ -175,6 +1193,7 @@ const TagesAnsicht = ({
                 filteredevents={filteredevents}
                 updateFilteredEvents={updateFilteredEvents}
                 kategorien={kategorien}
+                setKalenderEntry={setKalenderEntry}
               />
             </div>
             <CurrentTimeLine pixel={2.5} />

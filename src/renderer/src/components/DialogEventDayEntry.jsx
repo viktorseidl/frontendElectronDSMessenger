@@ -29,6 +29,7 @@ import Switch from './Switch'
 import { isDate } from 'date-fns'
 import dayjs from 'dayjs'
 import { IoIosCart, IoIosInformationCircleOutline } from 'react-icons/io'
+import { util } from 'node-forge'
 registerLocale('de-DE', de)
 const DialogEventDayEntry = ({
   show,
@@ -38,8 +39,10 @@ const DialogEventDayEntry = ({
   message,
   editobj,
   callbackBtn2,
-  kategorien
+  kategorien,
+  setKalenderEntry
 }) => {
+  console.log(setKalenderEntry)
   const [betreff, setbetreff] = useState('')
   const [start, setstart] = useState(null)
   const [end, setend] = useState(null)
@@ -48,6 +51,9 @@ const DialogEventDayEntry = ({
   const [ispublic, setispublic] = useState(false)
   const [notice, setnotice] = useState(null)
   const [color, setcolor] = useState('#72c4ff')
+  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+  const Bereiche = JSON.parse(util.decode64(window.sessionStorage.getItem('userWohnbereiche')))
+  console.log(User.usertypeVP) //
   const closer = (e) => {
     if (!e.target.closest("[aria-label='Ditab']")) {
       setbetreff('')
@@ -224,7 +230,7 @@ const DialogEventDayEntry = ({
                 />
               </div>
             </div>
-            <div className="w-full flex flex-row items-center justify-start dark:bg-gray-900 bg-white px-6 py-2 pt-4 dark:text-white text-black text-sm font-[Arial]">
+            <div className="w-full flex flex-row items-center justify-start dark:bg-gray-900 bg-white px-6 py-2 pt-2 dark:text-white text-black text-sm font-[Arial]">
               <label className="  w-full flex flex-col items-center justify-center relative">
                 <textarea
                   title="Betreff"
@@ -287,12 +293,13 @@ const DialogEventDayEntry = ({
                     name="title"
                     className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
                     value={ispublic}
-                    onChange={(e) => setispublic(e.target.value == 'true' ? true : false)}
+                    onChange={(e) => setispublic(e.target.value)}
                   >
-                    <option value={false}>Privat</option>
-                    <option value={true}>Öffentlich</option>
+                    <option value={'ME'}>Privat</option>
+                    <option value={'P'}>Pflege</option>
+                    <option value={'V'}>Verwaltung</option>
                   </select>
-                  {ispublic ? (
+                  {ispublic != 'ME' ? (
                     <MdPublic className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
                   ) : (
                     <MdPublicOff className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
@@ -306,6 +313,36 @@ const DialogEventDayEntry = ({
                 </label>
               </div>
             </div>
+            {ispublic == 'P' ? (
+              <div className="w-full flex flex-row items-start justify-start dark:bg-gray-900 bg-white px-6 py-2 dark:text-white text-black text-sm font-[Arial]">
+                <div className="w-[30%] h-10 flex flex-row items-center justify-start">
+                  <a className="mr-2.5 text-sm">Wohnbereich</a>
+                </div>
+                <div className="w-[70%] h-10 flex flex-row items-center justify-start">
+                  <label className="  w-5/6 flex flex-col items-center justify-center relative">
+                    <select
+                      title="Sichtbarkeit"
+                      name="title"
+                      className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-200/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-gray-900 ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
+                      value={ispublic}
+                      onChange={(e) => setispublic(e.target.value)}
+                    >
+                      <option key={'BDaalle'} value={'null'}>
+                        Alle Bereiche
+                      </option>
+                      {Bereiche.length > 0 &&
+                        Bereiche.map((item, index) => (
+                          <option key={'BDa' + item + index} value={item.Station}>
+                            {item.Hausname} {item.Station}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                </div>
+              </div>
+            ) : (
+              ''
+            )}
             <div className="w-full flex flex-row items-center justify-start dark:bg-gray-900 bg-white px-6 py-2  dark:text-white text-black text-sm font-[Arial]">
               <label className="  w-full flex flex-col items-center justify-center relative">
                 <input

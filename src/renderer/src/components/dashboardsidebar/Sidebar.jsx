@@ -95,7 +95,7 @@ const Sidebar = () => {
       setmenubar(5)
     } else if (window.location.hash == '#/pinwall') {
       setmenubar(6)
-    } else if (window.location.hash == '#/calendar') {
+    } else if (window.location.hash.includes('#/calendar')) {
       setmenubar(7)
     }
   }, [])
@@ -286,7 +286,7 @@ const Sidebar = () => {
                 className="dark:bg-blue-600/60 bg-blue-600/60 text-gray-200 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]"
               >
                 <div
-                  title="Meine Termine"
+                  title="Kalender"
                   className="w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer"
                 >
                   <BiCalendar />
@@ -304,7 +304,7 @@ const Sidebar = () => {
                 className="text-gray-500 p-1 text-2xl w-full aspect-square flex flex-col items-center justify-center  shadow-inner shadow-[rgba(255,255,255,0.1)]"
               >
                 <div
-                  title="Meine Termine"
+                  title="Kalender"
                   className="w-full h-full flex flex-col items-center justify-center dark:hover:bg-blue-500/30 dark:hover:text-gray-100 hover:text-gray-200 hover:bg-blue-500/30 rounded cursor-pointer"
                 >
                   <BiCalendar />

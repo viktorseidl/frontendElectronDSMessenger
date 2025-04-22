@@ -120,7 +120,7 @@ export function getGermanHolidays(year) {
     haus: null,
     wohnbereich: null,
     kategorie: null,
-    katBezeichnung: null,
+    katBezeichnung: 'Feiertag',
     katBackColor: null,
     katForeColor: null,
     VerwaltungPflege: null,
@@ -268,20 +268,20 @@ export function adjustForMode(hex, mode = 'dark', factor = 0.2) {
     r = Math.max(0, r * (1 - factor)) // Darken
     g = Math.max(0, g * (1 - factor))
     b = Math.max(0, b * (1 - factor))
+    a = 255
   } else {
-    factor = 0.6
+    factor = 0.7
     r = Math.min(255, r + (255 - r) * factor) // Lighten
     g = Math.min(255, g + (255 - g) * factor)
     b = Math.min(255, b + (255 - b) * factor)
+    a = 230
   }
-
-  // Convert back to hex
-  const toHex = (c) => Math.round(c).toString(16).padStart(2, '0')
-  let newHex = `#${toHex(r)}${toHex(g)}${toHex(b)}`
-
-  // Append alpha channel if originally present
   if (hex.length === 8) {
     newHex += toHex(a)
   }
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+  // Convert back to hex
+  const toHex = (c) => Math.round(c).toString(16).padStart(2, '0')
+  let newHex = `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(a)}`
+
+  return newHex
 }

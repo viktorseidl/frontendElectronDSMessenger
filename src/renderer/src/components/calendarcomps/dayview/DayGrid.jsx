@@ -62,7 +62,8 @@ const DayGrid = ({
   setdialogev,
   filteredevents,
   updateFilteredEvents,
-  kategorien
+  kategorien,
+  setKalenderEntry
 }) => {
   console.log(filteredevents)
   const { hasPermission } = useRoles()
@@ -109,17 +110,7 @@ const DayGrid = ({
       )
     }
   }
-  const showNoteIDS = (id, lastheight, toogle) => {
-    if (toogle == true && document.getElementById('shownote' + id).style.display != 'block') {
-      document.getElementById(id).style.height = 'auto'
-      document.getElementById(id).style.zIndex = 1000
-      document.getElementById('shownote' + id).style.display = 'block'
-    } else {
-      document.getElementById(id).style.height = lastheight + 'px'
-      document.getElementById(id).style.zIndex = 0
-      document.getElementById('shownote' + id).style.display = 'none'
-    }
-  }
+
   const editEvent = (item) => {
     setdtobj(dayjs(item.realtimestartDate + ' ' + item.realtimestart, 'DD.MM:YYYY HH:mm').toDate())
     seteditobj(item)
@@ -263,7 +254,6 @@ const DayGrid = ({
             updateEventDuration={updateEventDuration}
             deleteEvent={deleteMyEvent}
             editEvent={editEvent}
-            showNoteIDS={showNoteIDS}
             height={fullheight}
             ityp={ItemType}
           />
@@ -277,6 +267,7 @@ const DayGrid = ({
         title={dialogtyp == null ? 'Neuer Termin' : 'Termin bearbeiten'}
         message={dtobj}
         kategorien={kategorien}
+        setKalenderEntry={setKalenderEntry}
         callbackBtn2={dialogtyp == null ? addNote : saveChanges}
       />
     </DndProvider>

@@ -126,22 +126,34 @@ const CalendarDay = () => {
       )
     )
   }
+  const addNewKalenderEntry = async (data) => {
+    const query = await useFetchAuthAll(
+      'http://' + apache + '/electronbackend/index.php?path=addNewEventKalendar&a=' + data,
+      'ssdsdsd',
+      'POST',
+      null,
+      null
+    )
+  }
   const CalendarMiniM = React.memo(({ date, layout }) => {
     return <CalendarMini date={date} layout={layout} />
   })
-  const TagesAnsichtM = React.memo(({ date, layer, dialogev, setdialogev, kategorien }) => {
-    return (
-      <TagesAnsicht
-        date={date}
-        layer={layer}
-        dialogev={dialogev}
-        setdialogev={setdialogev}
-        filteredevents={filterMEvents}
-        updateFilteredEvents={getEventsDB}
-        kategorien={kategorien}
-      />
-    )
-  })
+  const TagesAnsichtM = React.memo(
+    ({ date, layer, dialogev, setdialogev, kategorien, setKalenderEntry }) => {
+      return (
+        <TagesAnsicht
+          date={date}
+          layer={layer}
+          dialogev={dialogev}
+          setdialogev={setdialogev}
+          filteredevents={filterMEvents}
+          updateFilteredEvents={getEventsDB}
+          kategorien={kategorien}
+          setKalenderEntry={setKalenderEntry}
+        />
+      )
+    }
+  )
 
   useEffect(() => {
     if (jahr && monat && tag) {
@@ -260,6 +272,7 @@ const CalendarDay = () => {
                 dialogev={dialogev}
                 setdialogev={setdialogev}
                 kategorien={kategorien}
+                setKalenderEntry={addNewKalenderEntry}
               />
             </div>
           </div>

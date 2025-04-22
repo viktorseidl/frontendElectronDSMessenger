@@ -7,7 +7,7 @@ import { adjustForMode, calculateHeight } from './functions/functionHandler'
 import { useTheme } from '../../../styles/ThemeContext'
 import { useRoles } from '../../../styles/RoleContext'
 import { util } from 'node-forge'
-const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent, ityp }) => {
+const Event = ({ event, updateEventDuration, deleteEvent, editEvent, ityp }) => {
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const { hasPermission } = useRoles()
   const { theme } = useTheme()
@@ -46,36 +46,28 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
   return (
     <motion.div
       ref={preview} // Ensures the event stays visible while dragging
-      className={`p-1 text-black rounded dark:ring-1 ring-1 dark:ring-gray-700 ring-gray-400 relative calshadow ${isDragging ? 'opacity-50' : ''}`}
+      className={`pb-1 text-black rounded-sm dark:ring-1 ring-1 dark:ring-gray-700 flex flex-col ring-gray-400 relative calshadow ${isDragging ? 'opacity-50' : ''}`}
       id={event.id}
       style={{
-        minHeight: '28px',
-        height: `${calculateHeight(event.duration, 40)}px`,
-        background: `${theme ? adjustForMode(event.ColorHex, 'light') : adjustForMode(event.ColorHex, 'dark')}`
+        minHeight: event.isNoteAttached != null ? 'auto' : '28px',
+        height:
+          event.duration < 4
+            ? `${calculateHeight(4, 40)}px`
+            : `${calculateHeight(event.duration, 40)}px`,
+        background: `${adjustForMode('#cfddfa', 'dark')}`
       }}
     >
-      <div className="w-full flex flex-row items-start justify-start">
-        <div className={`${event.isEditable ? ' -mt-[5px]  ' : ' mt-0 '} text-xs`}>
-          {event.isNoteAttached != null ? (
-            <button
-              onClick={() => showNoteIDS(event.id, calculateHeight(event.duration, 40), true)}
-              className="inline w-5 mr-1 mt-1  group aspect-square text-center bg-yellow-100 hover:bg-yellow-200 ring-1 outline-none ring-gray-300 text-black p-1 rounded text-xs"
-              aria-label="isbuttondoubleclick"
-            >
-              <MdNotes aria-label="isbuttondoubleclick" />
-            </button>
-          ) : (
-            ''
-          )}
+      <div className="w-full text-xs bg-blue-300 px-1 pb-[2px] rounded-t-sm">
+        <div className="w-full flex flex-row items-center justify-start  truncate">
+          📌 ({event.realtimestart} - {event.realtimeend}) |
+          <b title={event.titel} className="px-1  truncate">
+            {' '}
+            {event.titel}
+          </b>
         </div>
-        <div className={` w-48 h-full max-w-52 flex flex-col text-xs   truncate`}>
-          <div className="w-full flex flex-row items-center justify-start  truncate">
-            ({event.realtimestart} - {event.realtimeend}) |
-            <b title={event.titel} className="px-1  truncate">
-              {' '}
-              {event.titel}
-            </b>
-          </div>
+      </div>
+      <div className="w-full flex flex-row items-start justify-start px-1 pt-[1px]">
+        <div className={` w-full h-full max-w-52 flex flex-col text-xs   truncate`}>
           <pre
             className="w-full text-wrap hidden mt-2 font-[arial]"
             onClick={() => showNoteIDS(event.id, calculateHeight(event.duration, 40), false)}
@@ -84,12 +76,24 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
             {event.isNoteAttached}
           </pre>
         </div>
+        {event.isNoteAttached != null ? (
+          <div
+            className={`w-5 h-5 mr-1 relative group bg-lime-600 hover:bg-lime-500 text-white px-[2px] flex flex-col items-center justify-center rounded text-xs`}
+          >
+            📄
+            <div className="w-72 h-10 -left-48 -top-4 hidden group-hover:block shadow-lg shadow-[rgba(0,0,0,0.3)] rounded absolute  bg-yellow-100 text-black">
+              <div className="w-full h-full overflow-auto flex flex-wrap scrollbar-thin scrollbar-thumb-gray-500  scrollbar-track-gray-200 p-1 ">
+                {event.isNoteAttached}
+              </div>
+            </div>
+          </div>
+        ) : (
+          ''
+        )}
         {(hasPermission('delete:calendar') &&
-          event.isEditable == false &&
-          event.ersteller == User.Name.toString().toUpperCase()) ||
+          event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
         (hasPermission('delete:calendar') &&
-          event.isEditable == true &&
-          event.ersteller == User.Name.toString().toUpperCase()) ||
+          event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
         (hasPermission('delete:calendar') && User.usertypeVP != 'P') ? (
           <button
             ref={drag}
@@ -103,11 +107,9 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
           ''
         )}
         {(hasPermission('update:calendar') &&
-          event.isEditable == false &&
-          event.ersteller == User.Name.toString().toUpperCase()) ||
+          event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
         (hasPermission('update:calendar') &&
-          event.isEditable == true &&
-          event.ersteller == User.Name.toString().toUpperCase()) ||
+          event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
         (hasPermission('delete:calendar') && User.usertypeVP != 'P') ? (
           <button
             ref={drag}
@@ -122,12 +124,10 @@ const Event = ({ event, updateEventDuration, deleteEvent, showNoteIDS, editEvent
         )}
         {(hasPermission('update:calendar') &&
           event.duration != 24 * 4 &&
-          event.isEditable == false &&
-          event.ersteller == User.Name.toString().toUpperCase()) ||
+          event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
         (hasPermission('update:calendar') &&
           event.duration != 24 * 4 &&
-          event.isEditable == true &&
-          event.ersteller == User.Name.toString().toUpperCase()) ||
+          event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
         (hasPermission('update:calendar') && event.duration != 24 * 4 && User.usertypeVP != 'P') ? (
           <button
             ref={drag}
