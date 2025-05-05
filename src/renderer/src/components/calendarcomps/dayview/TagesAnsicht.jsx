@@ -10,8 +10,6 @@ import {
   getTodayDate
 } from './functions/functionHandler'
 import ColumnIntervalRow from './ColumnIntervalRow'
-import { util } from 'node-forge'
-import { useFetchAuthAll } from '../../../services/useFetchAll'
 
 const TagesAnsicht = ({
   date,

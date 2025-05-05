@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import DialogEventDayEntry from '../../DialogEventDayEntry'
+import NewCalendarEntryDialog from './../NewCalendarEntryDialog'
 import dayjs from 'dayjs'
 import {
   calculateTime,
@@ -65,7 +65,6 @@ const DayGrid = ({
   kategorien,
   setKalenderEntry
 }) => {
-  console.log(filteredevents)
   const { hasPermission } = useRoles()
   const [dialogtyp, setdialogtyp] = useState(null)
   const [dtobj, setdtobj] = useState(null)
@@ -259,7 +258,7 @@ const DayGrid = ({
           />
         ))}
       </div>
-      <DialogEventDayEntry
+      <NewCalendarEntryDialog
         show={dialogev}
         close={closeDialog}
         typed={dialogtyp}

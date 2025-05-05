@@ -83,6 +83,8 @@ const Event = ({ event, updateEventDuration, deleteEvent, editEvent, ityp }) => 
             📄
             <div className="w-72 h-10 -left-48 -top-4 hidden group-hover:block shadow-lg shadow-[rgba(0,0,0,0.3)] rounded absolute  bg-yellow-100 text-black">
               <div className="w-full h-full overflow-auto flex flex-wrap scrollbar-thin scrollbar-thumb-gray-500  scrollbar-track-gray-200 p-1 ">
+                Notiz:
+                <br />
                 {event.isNoteAttached}
               </div>
             </div>
