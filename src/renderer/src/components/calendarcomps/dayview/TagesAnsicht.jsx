@@ -29,7 +29,7 @@ const TagesAnsicht = ({
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
   ]
 
-  const CurrentTimeLine = ({ pixel }) => {
+  const CurrentTimeLine = () => {
     const [currentTime, setCurrentTime] = useState(new Date())
 
     useEffect(() => {
@@ -181,7 +181,8 @@ const TagesAnsicht = ({
                 e.katBezeichnung === 'Sicherheitstechnische Kontrolle' ||
                 e.katBezeichnung === 'Evaluierung Kontraktur' ||
                 e.katBezeichnung === 'Ergebniserfassung' ||
-                e.katBezeichnung === 'Geburtstag')
+                e.katBezeichnung === 'Geburtstag' ||
+                e.katBezeichnung === 'rrule')
           ).length > 0 ? (
             <div className="flex flex-col items-start justify-start w-full dark:bg-gray-900 bg-stone-200  ">
               <div className="text-xs pl-4 py-1 w-full border-y border-gray-300 dark:border-gray-600">
@@ -1164,6 +1165,68 @@ const TagesAnsicht = ({
                           >
                             <a className="w-full truncate"> 📊 {item.Bewohner}</a>
                             <a className="w-full truncate">🕟 {item.realtimeendDate}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
+                {/*TODO Einbinden des Interface für bearbeitung */}
+                {filteredevents.filter((e) => e.katBezeichnung === 'rrule' && e.zeitraum === 1440)
+                  .length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'rrule')[0].ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'rrule')[0].ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Serien-Termine" className="w-full truncate px-2">
+                        {filteredevents.filter((e) => e.katBezeichnung === 'rrule').length > 1
+                          ? 'Serien-Termine'
+                          : 'Serien-Termin'}
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'rrule')
+                        .map((item, index) => (
+                          <div className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer">
+                            <div
+                              title={
+                                '🔁 Serie: ' +
+                                item.titel +
+                                ' | Betreff: ' +
+                                item.betreff +
+                                ' | Zeitraum: ' +
+                                (item.zeitraum == 1440 ? 'ganztags' : `${item.von} - ${item.bis}`)
+                              }
+                              key={'bname' + item + index}
+                              className=" p-2 py-1 flex flex-col items-center justify-start rounded-sm "
+                              style={{ background: item.boxColor + '55' }}
+                            >
+                              <a className="w-full truncate"> 🔁 {item.titel}</a>
+                              <a className="w-full truncate">🗒️ {item.betreff}</a>
+                              {item.zeitraum == 1440 ? (
+                                <a className="w-full truncate">🔵 ganztags</a>
+                              ) : (
+                                <a className="w-full truncate">
+                                  🕟 {item.von} - {item.bis}
+                                </a>
+                              )}
+                            </div>
                           </div>
                         ))}
                     </div>

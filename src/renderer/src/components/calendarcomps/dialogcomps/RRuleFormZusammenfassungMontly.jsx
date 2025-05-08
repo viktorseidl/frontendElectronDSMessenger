@@ -24,7 +24,9 @@ const RRuleFormZusammenfassungMontly = ({
             <div className="w-full grid grid-cols-2">
               {rruleTerminJaehrlichJahresMusterDatum_TageArray.length > 0 ? (
                 rruleTerminJaehrlichJahresMusterDatum_TageArray.map((item, index) => (
-                  <div className="w-full">- jeden {item}. im Monat</div>
+                  <div key={'rzsmodnb' + item + index} className="w-full">
+                    - jeden {item}. im Monat
+                  </div>
                 ))
               ) : (
                 <div className="w-full">Keine vorhanden</div>

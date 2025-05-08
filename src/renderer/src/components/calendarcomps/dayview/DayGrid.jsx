@@ -15,46 +15,7 @@ import { util } from 'node-forge'
 import { useFetchAuthAll } from '../../../services/useFetchAll'
 
 const ItemType = 'EVENT'
-/**
- * EVENT OBJ PRIVATE SHOULD LOOK LIKE:
-{
-  "id": 1742897368187, --------
-  "realtimestartDate": "25.03.2025",  --------
-  "realtimestart": "03:00", ---------
-  "time": 3, ---------
-  "duration": 4, ----------
-  "realtimeendDate": "25.03.2025", ----------
-  "realtimeend": "04:00", ---------
-  "hexcolor": "#72c4ff",   ---------
-  "title": "fgfgfg",  ---------
-  "datum": "25.03.2025",  ---------
-  "isNoteAttached": null, ------
-  "isEditable": true, --------
-  "isAlarm": false,  --------
-  "isAlarmStamp": null,   "26.03.2025 10:30"
-  "eventTyp": 0,  --------
-  "isPublic": 0 ---------
-  } 
-  * EVENT OBJ PUBLIC SHOULD LOOK LIKE:
-{
-  "id": 1740388137775,
-  "realtimestartDate": "25.03.2025",
-  "realtimestart": "08:00",
-  "time": 8,
-  "duration": 9,
-  "realtimeendDate": "25.03.2025",
-  "realtimeend": "10:15",
-  "hexcolor": "#99ffFEFF",
-  "title": "Geburtstag Annemarie Hürten",
-  "datum": "25.03.2025",
-  "isNoteAttached": null,
-  "isEditable": false,   <----on public
-  "isAlarm": false,
-  "isAlarmStamp": null,
-  "eventTyp": 0,
-  "isPublic": 1     <----on public
-}
- */
+
 const DayGrid = ({
   fullheight,
   date,
@@ -235,11 +196,13 @@ const DayGrid = ({
   const closeDialog = () => {
     setdialogtyp(null)
     setdialogev(!dialogev)
+    updateFilteredEvents()
   }
 
   useEffect(() => {
     setEvents(filteredevents)
   }, [date, filteredevents])
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="grid grid-cols-1 divide-y dark:divide-gray-800 divide-gray-300">

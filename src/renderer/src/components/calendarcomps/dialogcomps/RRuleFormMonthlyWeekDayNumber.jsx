@@ -14,6 +14,7 @@ const RRuleFormMonthlyWeekDayNumber = ({
       <div className="w-[86%]  grid grid-cols-7 items-start justify-items-start gap-1">
         {tage.map((item, index) => (
           <div
+            key={'rmonwednb' + item + index}
             onClick={() => rruleterminmonat_datum_tage_array_action(item)}
             className={`w-full cursor-pointer flex flex-col items-center justify-center ring-1 ring-gray-700 ${rruleterminmonat_wochentage_tage_array.includes(item) ? ' bg-blue-400/30 ' : ''}`}
           >

@@ -23,7 +23,7 @@ const RRuleFormYearlyYearday = ({
             >
               {Array.from({ length: 366 }, (_, i) => i + 1).map((item, index) => (
                 <option
-                  key={'jahrtag' + item + index}
+                  key={'jahrtagss' + item + index}
                   value={item}
                   className="w-full dark:bg-gray-900"
                 >
@@ -57,7 +57,7 @@ const RRuleFormYearlyYearday = ({
         {rruleterminjahr_jahrestage_tage_array.length > 0 ? (
           <div className="w-full flex flex-col items-center justify-center text-xs divide-y dark:divide-gray-700 ring-1 ring-gray-700">
             {rruleterminjahr_jahrestage_tage_array.map((item, index) => (
-              <div className="w-full text-left  py-1">
+              <div key={'yyld' + item + index} className="w-full text-left  py-1">
                 <a className="mx-6">{index + 1}.</a>
                 jeder{' '}
                 {item == 366

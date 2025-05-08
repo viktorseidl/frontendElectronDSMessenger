@@ -54,7 +54,7 @@ const RRuleFormZusammenfassungYearly = ({
               <div className="w-full grid grid-cols-2">
                 {rruleTerminJaehrlichJahresMusterDatum_TageArray.length > 0 ? (
                   rruleTerminJaehrlichJahresMusterDatum_TageArray.map((item, index) => (
-                    <a>- {item}.</a>
+                    <a key={'djahmtag' + item + index}>- {item}.</a>
                   ))
                 ) : (
                   <a>Kein Datum vorhanden</a>
@@ -65,7 +65,7 @@ const RRuleFormZusammenfassungYearly = ({
               <div className="w-full grid grid-cols-3">
                 {rruleTerminJaehrlichJahresMusterDatum_MonateArray.length > 0 ? (
                   rruleTerminJaehrlichJahresMusterDatum_MonateArray.map((item, index) => (
-                    <a>
+                    <a key={'djahmtagss' + item + index}>
                       -{' '}
                       {item == 1
                         ? 'Januar'
@@ -120,7 +120,7 @@ const RRuleFormZusammenfassungYearly = ({
             <div className="w-full flex flex-col items-start justify-start pl-4">
               {rruleTerminJaehrlichJahresMusterDatum_TageArray.length > 0 ? (
                 rruleTerminJaehrlichJahresMusterDatum_TageArray.map((item, index) => (
-                  <a>
+                  <a key={'djahmtag' + item + index}>
                     - jeder{' '}
                     {typeof item === 'string' && item.includes(':')
                       ? ordinals.find((o) => o.value == item.split(':')[0])?.label
@@ -150,7 +150,7 @@ const RRuleFormZusammenfassungYearly = ({
               <div className="w-full grid grid-cols-3">
                 {rruleTerminJaehrlichJahresMusterDatum_MonateArray.length > 0 ? (
                   rruleTerminJaehrlichJahresMusterDatum_MonateArray.map((item, index) => (
-                    <a>
+                    <a key={'djahmtagss' + item + index}>
                       -{' '}
                       {item == 1
                         ? 'Januar'
@@ -200,7 +200,7 @@ const RRuleFormZusammenfassungYearly = ({
               <div className="w-full grid grid-cols-2">
                 {rruleTerminJaehrlichJahresMusterJahrestag_TageArray.length > 0 ? (
                   rruleTerminJaehrlichJahresMusterJahrestag_TageArray.map((item, index) => (
-                    <a>
+                    <a key={'djahmtag' + item + index}>
                       - jeder{' '}
                       {item == 366
                         ? 'letzte Tag im Jahr (nur an Schaltjahre)'
@@ -239,7 +239,7 @@ const RRuleFormZusammenfassungYearly = ({
             <div className="w-full flex flex-col items-start justify-start px-4">
               {rruleTerminJaehrlichJahresMusterJahrestag_WochennummerArray.length > 0 ? (
                 rruleTerminJaehrlichJahresMusterJahrestag_WochennummerArray.map((item, index) => (
-                  <a>
+                  <a key={'djahmtagss' + item + index}>
                     - jede{' '}
                     {item == 53
                       ? 'letzte Woche im Jahr (nur Jahre mit 53 Wochen)'
@@ -258,7 +258,7 @@ const RRuleFormZusammenfassungYearly = ({
               <div className="w-full grid grid-cols-2">
                 {rruleTerminJaehrlichJahresMusterJahrestag_WochenTageArray.length > 0 ? (
                   rruleTerminJaehrlichJahresMusterJahrestag_WochenTageArray.map((item, index) => (
-                    <a>
+                    <a key={'djahmtag' + item + index}>
                       -{' '}
                       {item == 'MO'
                         ? 'Montag'

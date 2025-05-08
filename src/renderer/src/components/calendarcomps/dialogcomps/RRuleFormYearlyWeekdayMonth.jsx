@@ -35,6 +35,7 @@ const RRuleFormYearlyWeekdayMonth = ({
         <div className="w-[70%] grid grid-cols-3 items-start justify-items-start gap-1">
           {monate.map((item, index) => (
             <div
+              key={'ywkdmonth' + item + index}
               onClick={() => rruleterminjahr_wochentage_monate_array_action(item)}
               className={`w-full cursor-pointer flex flex-col items-center justify-center ring-1 ring-gray-700 ${rruleterminjahr_wochentage_monate_array.includes(item) ? ' bg-blue-400/30 ' : ''}`}
             >
@@ -79,7 +80,11 @@ const RRuleFormYearlyWeekdayMonth = ({
               placeholder="Nach spezifischen Wochentag"
             >
               {ordinals.map((item, index) => (
-                <option value={item.value} className="w-full dark:bg-gray-900">
+                <option
+                  key={'wkdspez' + item + index}
+                  value={item.value}
+                  className="w-full dark:bg-gray-900"
+                >
                   {item.label}
                 </option>
               ))}
@@ -96,7 +101,7 @@ const RRuleFormYearlyWeekdayMonth = ({
               placeholder="Nach spezifischen Wochentag"
             >
               {tage.map((item, index) => (
-                <option value={item} className="w-full dark:bg-gray-900">
+                <option key={'ddm' + item + index} value={item} className="w-full dark:bg-gray-900">
                   {item == 'MO'
                     ? 'Montag'
                     : item == 'DI'
@@ -135,7 +140,7 @@ const RRuleFormYearlyWeekdayMonth = ({
         {rruleterminjahr_wochentage_tage_array.length > 0 ? (
           <div className="w-full flex flex-col items-center justify-center text-xs divide-y dark:divide-gray-700 ring-1 ring-gray-700">
             {rruleterminjahr_wochentage_tage_array.map((item, index) => (
-              <div className="w-full text-left  py-1">
+              <div key={'ywkdmonthzz' + item + index} className="w-full text-left  py-1">
                 <a className="mx-6">{index + 1}.</a>
                 jeder{' '}
                 {typeof item === 'string' && item.includes(':')

@@ -6,7 +6,7 @@ import { registerLocale } from 'react-datepicker'
 import Switch from './Switch'
 import { de } from 'date-fns/locale/de'
 import { IoIosInformationCircleOutline } from 'react-icons/io'
-import { MdError, MdEvent, MdNote, MdPerson3, MdPublic, MdPublicOff } from 'react-icons/md'
+import { MdDone, MdError, MdEvent, MdNote, MdPerson3, MdPublic, MdPublicOff } from 'react-icons/md'
 registerLocale('de-DE', de)
 const GeneralForm = ({
   kategorien,
@@ -25,7 +25,8 @@ const GeneralForm = ({
   terminerinnerungdatum,
   terminerinnerungdatumaction,
   iserror,
-  errorarray
+  errorarray,
+  issuccess
 }) => {
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const Bereiche = JSON.parse(util.decode64(window.sessionStorage.getItem('userWohnbereiche')))
@@ -59,6 +60,17 @@ const GeneralForm = ({
                   <li key={'errormessagestxt' + index + item}>{item}</li>
                 ))}
             </ul>
+          </div>
+        </div>
+      ) : (
+        ''
+      )}
+      {issuccess ? (
+        <div className="w-full flex flex-col items-center justify-start dark:bg-gray-900 bg-white px-6 py-2 pt-2 dark:text-white text-black text-sm font-[Arial]">
+          <div className="w-full px-2 py-1 dark:bg-lime-700 bg-lime-600 rounded-sm text-xs text-white flex flex-col items-start justify-start">
+            <div className="w-full flex flex-row items-center justify-start">
+              <MdDone className="inline mr-2" /> Eintrag wurde gespeichert.
+            </div>
           </div>
         </div>
       ) : (
@@ -148,7 +160,10 @@ const GeneralForm = ({
                 </option>
                 {Bereiche.length > 0 &&
                   Bereiche.map((item, index) => (
-                    <option key={'BerDa' + item + index} value={item.Station}>
+                    <option
+                      key={'BerDa' + item + index}
+                      value={item.Hausname + ':X:' + item.Station}
+                    >
                       {item.Hausname} {item.Station}
                     </option>
                   ))}

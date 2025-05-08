@@ -24,7 +24,11 @@ const RRuleFormYearlyWeeknumber = ({
               placeholder="Nach spezifischen Kalenderwochen"
             >
               {Array.from({ length: 53 }, (_, i) => i + 1).map((item, index) => (
-                <option value={item} className="w-full dark:bg-gray-900">
+                <option
+                  key={'ywknb' + item + index}
+                  value={item}
+                  className="w-full dark:bg-gray-900"
+                >
                   {item == 53
                     ? 'letzte Woche im Jahr (nur Jahre mit 53 Wochen)'
                     : item == 52
@@ -54,9 +58,8 @@ const RRuleFormYearlyWeeknumber = ({
       <div className="w-full col-span-4 flex flex-col items-start justify-start dark:bg-gray-900 bg-white px-6 py-2  dark:text-white text-black text-sm font-[Arial] ">
         {rruleterminjahr_jahrestage_wochennummer_array.length > 0 ? (
           <div className="w-full flex flex-col items-center justify-center text-xs divide-y dark:divide-gray-700 ring-1 ring-gray-700">
-            {console.log(rruleterminjahr_jahrestage_wochennummer_array)}
             {rruleterminjahr_jahrestage_wochennummer_array.map((item, index) => (
-              <div className="w-full text-left  py-1">
+              <div key={'ywmmnb' + item + index} className="w-full text-left  py-1">
                 <a className="mx-6">{index + 1}.</a>
                 jede{' '}
                 {item == 53
@@ -84,6 +87,7 @@ const RRuleFormYearlyWeeknumber = ({
         <div className="w-[80%] h-8 grid grid-cols-7 items-start justify-items-start gap-1">
           {tage.map((item, index) => (
             <div
+              key={'ywtndb' + item + index}
               onClick={() => rruleterminjahr_jahrestage_wochentage_array_action(item)}
               className={`w-full cursor-pointer flex flex-col items-center justify-center ring-1 ring-gray-700 ${rruleterminjahr_jahrestage_wochentage_array.includes(item) ? ' bg-blue-400/30 ' : ''}`}
             >

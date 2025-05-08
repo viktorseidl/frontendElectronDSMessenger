@@ -120,7 +120,7 @@ const RRuleFormZusammenfassung = ({
                 <div className="w-full grid grid-cols-2">
                   {rruleTerminJaehrlichJahresMusterJahrestag_WochenTageArray.length > 0 ? (
                     rruleTerminJaehrlichJahresMusterJahrestag_WochenTageArray.map((item, index) => (
-                      <div className="w-full">
+                      <div className="w-full" key={'wkd' + item + index}>
                         -{' '}
                         {item == 'MO'
                           ? 'Montag'

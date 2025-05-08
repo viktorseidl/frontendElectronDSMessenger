@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
-import { DndProvider, useDrag, useDrop } from 'react-dnd'
+import { useDrop } from 'react-dnd'
 import Event from './Event'
 import { useRoles } from '../../../styles/RoleContext'
+import EventRR from './EventRR'
 const TimeSlot = ({
   time,
   events,
@@ -12,6 +13,7 @@ const TimeSlot = ({
   editEvent,
   ityp
 }) => {
+  console.log(events)
   const [{ isOver }, drop] = useDrop({
     accept: ityp,
     drop: (item) => onDrop(time, item),
@@ -21,6 +23,7 @@ const TimeSlot = ({
   })
   const slotEvents = events.length > 0 ? events.filter((event) => event.time === time) : []
   useEffect(() => {}, [events])
+
   return (
     <div
       ref={drop}
@@ -30,6 +33,7 @@ const TimeSlot = ({
       onDoubleClick={(e) => addEvent(time, e)}
     >
       <div className="flex space-x-2 max-w-full overflow-hidden">
+        {/*TODO Old Events bearbeiten */}
         {slotEvents
           .filter((e) => e.katBezeichnung == 'Termin')
           .map((event) => (
@@ -41,6 +45,12 @@ const TimeSlot = ({
               editEvent={editEvent}
               ityp={ityp}
             />
+          ))}
+        {/*TODO RRules Events bearbeiten */}
+        {slotEvents
+          .filter((e) => e.katBezeichnung == 'rrule' && e.zeitraum != 1440)
+          .map((event, index) => (
+            <EventRR key={event.id + index} event={event} editEvent={editEvent} ityp={ityp} />
           ))}
       </div>
     </div>
