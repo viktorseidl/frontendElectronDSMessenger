@@ -8,12 +8,11 @@ const TimeSlot = ({
   events,
   onDrop,
   addEvent,
-  updateEventDuration,
   deleteEvent,
-  editEvent,
+  updateEventStandard,
+  updateEventRRule,
   ityp
 }) => {
-  console.log(events)
   const [{ isOver }, drop] = useDrop({
     accept: ityp,
     drop: (item) => onDrop(time, item),
@@ -40,9 +39,8 @@ const TimeSlot = ({
             <Event
               key={event.id}
               event={event}
-              updateEventDuration={updateEventDuration}
+              updateEventStandard={updateEventStandard}
               deleteEvent={deleteEvent}
-              editEvent={editEvent}
               ityp={ityp}
             />
           ))}
@@ -50,7 +48,13 @@ const TimeSlot = ({
         {slotEvents
           .filter((e) => e.katBezeichnung == 'rrule' && e.zeitraum != 1440)
           .map((event, index) => (
-            <EventRR key={event.id + index} event={event} editEvent={editEvent} ityp={ityp} />
+            <EventRR
+              key={event.id + index}
+              event={event}
+              ityp={ityp}
+              deleteEvent={deleteEvent}
+              updateEventRRule={updateEventRRule}
+            />
           ))}
       </div>
     </div>

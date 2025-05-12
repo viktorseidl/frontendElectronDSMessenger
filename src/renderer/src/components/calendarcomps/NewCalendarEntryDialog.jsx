@@ -1,14 +1,8 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import React, { Fragment, useRef, useState } from 'react'
 import imgs from './../../assets/Logo.png'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
 import { de } from 'date-fns/locale/de'
-import {
-  formatDateTimeAlarmToString,
-  convertToDateTimeObj,
-  getIntervalCount,
-  calculateTime
-} from './dayview/functions/functionHandler'
 import { MdClose, MdColorize } from 'react-icons/md'
 import { util } from 'node-forge'
 import GeneralForm from './dialogcomps/GeneralForm'
@@ -22,17 +16,7 @@ import RRuleFormZusammenfassung from './dialogcomps/RRuleFormZusammenfassung'
 import { useFetchAuthAll } from '../../services/useFetchAll'
 registerLocale('de-DE', de)
 
-const NewCalendarEntryDialog = ({
-  show,
-  close,
-  typed,
-  title,
-  message,
-  editobj,
-  callbackBtn2,
-  kategorien,
-  setKalenderEntry
-}) => {
+const NewCalendarEntryDialog = ({ show, close, title, kategorien }) => {
   const apache = localStorage.getItem('dbConfig')
     ? JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost
     : 'localhost'
@@ -517,7 +501,6 @@ const NewCalendarEntryDialog = ({
       }
     }
   }
-  useEffect(() => {}, [message, typed])
   return (
     <Fragment>
       {show && (

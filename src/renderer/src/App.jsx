@@ -2,6 +2,8 @@ import imgs from './assets/Logo.png'
 import { HashRouter as Router, Route, Routes } from 'react-router-dom'
 import DatabaseScreen from './pages/DatabaseScreen'
 import { useState } from 'react'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import { ThemeProvider } from './styles/ThemeContext'
 import TabBar from './components/TabBar'
 import LogScreen from './pages/LogScreen'
@@ -32,7 +34,7 @@ function App() {
     window.api.windowControls.close()
   }
   return (
-    <>
+    <DndProvider backend={HTML5Backend}>
       <ThemeProvider>
         <RoleProvider>
           <TabBar
@@ -63,7 +65,7 @@ function App() {
           </Router>
         </RoleProvider>
       </ThemeProvider>
-    </>
+    </DndProvider>
   )
 }
 

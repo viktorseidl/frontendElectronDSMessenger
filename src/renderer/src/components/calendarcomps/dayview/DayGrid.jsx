@@ -1,42 +1,43 @@
 import React, { useEffect, useState } from 'react'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
 import NewCalendarEntryDialog from './../NewCalendarEntryDialog'
-import dayjs from 'dayjs'
-import {
-  calculateTime,
-  convertToDateTimeObj,
-  formatDateTimeAlarmToString,
-  getIntervalCount
-} from './functions/functionHandler'
 import TimeSlot from './TimeSlot'
 import { useRoles } from '../../../styles/RoleContext'
 import { util } from 'node-forge'
 import { useFetchAuthAll } from '../../../services/useFetchAll'
+import DeleteAlertDialog from './DeleteAlertDialog'
+import UpdateEntryStandard from './UpdateEntryStandard'
+import UpdateEntryRRuleSerie from './UpdateEntryRRuleSerie'
 
 const ItemType = 'EVENT'
 
 const DayGrid = ({
   fullheight,
   date,
-  dialogev,
-  setdialogev,
+  newEntryAlertValue,
+  newEntryAlertSetter,
   filteredevents,
   updateFilteredEvents,
-  kategorien,
-  setKalenderEntry
+  kategorien
 }) => {
-  const { hasPermission } = useRoles()
-  const [dialogtyp, setdialogtyp] = useState(null)
-  const [dtobj, setdtobj] = useState(null)
-  const [editobj, seteditobj] = useState(null)
-  const [events, setEvents] = useState([])
+  /* GENERAL VARIABLES */
   const apache = localStorage.getItem('dbConfig')
     ? JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost
     : 'localhost'
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+  const { hasPermission } = useRoles()
+  const [events, setEvents] = useState([])
+  /* DELETE STATES */
+  const [deleteMessage, setDeleteMessage] = useState(null)
+  const [deleteObject, setDeleteObject] = useState(null)
+  /* UPDATE STATES */
+  const [updateDialogStandard, setUpdateDialogStandard] = useState(false)
+  const [updateDialogRRule, setUpdateDialogRRule] = useState(false)
+  const [updateObject, setUpdateObject] = useState(null)
+
+  /** HANDLE UPDATE MOVE PRIVAT EVENTS BETWEEN TIMES (ONLY KALENDAR ENTRIES)
+   * @function handleDrop Updates Times in Database
+   */
   const handleDrop = async (timeSlot, item) => {
-    console.log(timeSlot, item)
     const query = await useFetchAuthAll(
       'http://' +
         apache +
@@ -71,117 +72,31 @@ const DayGrid = ({
     }
   }
 
-  const editEvent = (item) => {
-    setdtobj(dayjs(item.realtimestartDate + ' ' + item.realtimestart, 'DD.MM:YYYY HH:mm').toDate())
-    seteditobj(item)
-    setdialogtyp(true)
-    setdialogev(true)
-  }
-  const addEvent = (timeSlot, e) => {
-    if (!hasPermission('create:calendar')) return
-    if (e.target.getAttribute('aria-label') == 'isbuttondoubleclick') return
-    if (e.target.classList.contains('resize-handle')) return
-    setdtobj(
-      dayjs(
-        date + ' ' + (timeSlot > 9 ? timeSlot : '0' + timeSlot) + ':00',
-        'DD.MM:YYYY HH:mm'
-      ).toDate()
-    )
-    setdialogtyp(null)
-    setdialogev(true)
-  }
-  const addNote = (Arr) => {
-    setdialogev(false) //Close Dialog
-    const timeSlot = Arr[1].getHours()
-    const duration = getIntervalCount(Arr[1], Arr[2], timeSlot)
-    const isprivate = Arr[7] ? 1 : 0
-    const startTag = Arr[1].getDate()
-    const endeTag = Arr[2].getDate()
-    const startMonat = Arr[1].getMonth() + 1
-    const endeMonat = Arr[2].getMonth() + 1
-    const startJahr = Arr[1].getFullYear()
-    const endeJahr = Arr[2].getFullYear()
-    const isNote = Arr[3] != null ? Arr[3] : null
-    const isAlarm = Arr[5]
-    const alarmStamp = isAlarm ? formatDateTimeAlarmToString(Arr[4]) : null
-    //UPDATE DATABASE /////////////////////////////////////////////////////////////////////////////////////////////ON ENTRY
-
-    if (
-      parseInt(date.split('.')[1]) == startMonat &&
-      parseInt(date.split('.')[0]) == startTag &&
-      parseInt(date.split('.')[2]) == startJahr
-    ) {
-      const newObj = {
-        id: Date.now(),
-        realtimestartDate:
-          (startTag > 9 ? startTag : '0' + startTag) +
-          '.' +
-          (startMonat > 9 ? startMonat : '0' + startMonat) +
-          '.' +
-          startJahr,
-        realtimestart: calculateTime(timeSlot, duration).startTime,
-        time: timeSlot,
-        duration: duration,
-        realtimeendDate:
-          (endeTag > 9 ? endeTag : '0' + endeTag) +
-          '.' +
-          (endeMonat > 9 ? endeMonat : '0' + endeMonat) +
-          '.' +
-          endeJahr,
-        realtimeend: calculateTime(timeSlot, duration).endTime,
-        hexcolor: Arr[6].toString(),
-        title: Arr[0].toString(),
-        datum:
-          (startTag > 9 ? startTag : '0' + startTag) +
-          '.' +
-          (startMonat > 9 ? startMonat : '0' + startMonat) +
-          '.' +
-          startJahr,
-        isNoteAttached: isNote,
-        isEditable: true,
-        isAlarm: isAlarm,
-        isAlarmStamp: alarmStamp,
-        eventTyp: 0,
-        isPublic: isprivate
-      }
-      setEvents([...events, newObj])
-    }
-  }
-  const saveChanges = (Arr) => {
-    console.log(Arr)
-    if (date == Arr.datum) {
-      setEvents((prevEvents) =>
-        prevEvents.map((event) => (event.id === Arr.id ? { ...event, ...Arr } : event))
-      )
-    } else {
-      setEvents((prev) => prev.filter((ev) => ev.id !== Arr.id))
-    }
-    closeDialog()
-  }
-  const updateEventDuration = async (id, newDuration) => {
-    setEvents((prev) =>
-      prev.map((ev) =>
-        ev.id === id
-          ? {
-              ...ev,
-              duration: newDuration,
-              realtimestart: calculateTime(ev.time, newDuration).startTime,
-              realtimeend: calculateTime(ev.time, newDuration).endTime
-            }
-          : ev
-      )
-    )
-  }
-  const deleteMyEvent = async (id) => {
+  /** HANDLE DELETING EVENTS
+   * @function deleteMyEvent Open Dialog and set Delete Information
+   * @function deleteMessageClose Close DIalog
+   * @function deleteFunction execute Delete
+   */
+  const deleteMyEvent = async (id, type) => {
     if (!hasPermission('delete:calendar')) return
-    console.log(id)
+    setDeleteObject({ id: id, type: type })
+    setDeleteMessage(true)
+  }
+  const deleteMessageClose = () => {
+    setDeleteMessage(null)
+    setDeleteObject(null)
+  }
+  const deleteFunction = async (obj) => {
+    if (!hasPermission('delete:calendar')) return
+    if (deleteObject == null) return
     const query = await useFetchAuthAll(
       'http://' +
         apache +
         '/electronbackend/index.php?path=deleteEventOnDailyView&a=' +
         util.encode64(
           JSON.stringify({
-            id: id
+            id: obj.id,
+            typed: obj.type
           })
         ),
       'ssdsdsd',
@@ -189,13 +104,53 @@ const DayGrid = ({
       null,
       null
     )
-    console.log(query)
     updateFilteredEvents()
-    setEvents((prev) => prev.filter((ev) => ev.id !== id))
+    setEvents((prev) => prev.filter((ev) => ev.id !== obj.id))
   }
-  const closeDialog = () => {
-    setdialogtyp(null)
-    setdialogev(!dialogev)
+
+  /**HANDLE UPDATE STANDARD EVENT
+   * @function updateMyEventStandard Open Dialog and set Update Information
+   * @function updateStandardClose Close DIalog and reset Update Information
+   */
+  const updateMyEventStandard = (item) => {
+    if (!hasPermission('update:calendar')) return
+    setUpdateObject(item)
+    setUpdateDialogStandard(true)
+  }
+  const updateStandardClose = () => {
+    setUpdateDialogStandard(false)
+    setUpdateObject(null)
+    updateFilteredEvents()
+  }
+
+  /** HANDLE UPDATE RRULE EVENT
+   * @function updateMyEventRRule Open Dialog and set Update Information
+   * @function updateRRuleClose Close DIalog and reset Update Information
+   */
+  const updateMyEventRRule = (item) => {
+    console.log(item)
+    //if (!hasPermission('update:calendar')) return
+    setUpdateObject(item)
+    setUpdateDialogRRule(true)
+  }
+  const updateRRuleClose = () => {
+    setUpdateDialogRRule(false)
+    setUpdateObject(null)
+    updateFilteredEvents()
+  }
+
+  /** HANDLE NEW EVENT ENTRY
+   * @function newEntryEvent Open EntryForm
+   * @function closeNewEntryDialog Close DIalog and Update
+   */
+  const newEntryEvent = (timeSlot, e) => {
+    if (!hasPermission('create:calendar')) return
+    if (e.target.getAttribute('aria-label') == 'isbuttondoubleclick') return
+    if (e.target.classList.contains('resize-handle')) return
+    newEntryAlertSetter(true)
+  }
+  const closeNewEntryDialog = () => {
+    newEntryAlertSetter(!newEntryAlertValue)
     updateFilteredEvents()
   }
 
@@ -204,7 +159,7 @@ const DayGrid = ({
   }, [date, filteredevents])
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <>
       <div className="grid grid-cols-1 divide-y dark:divide-gray-800 divide-gray-300">
         {[...Array(24)].map((_, index) => (
           <TimeSlot
@@ -212,27 +167,50 @@ const DayGrid = ({
             time={index}
             events={events}
             onDrop={handleDrop}
-            addEvent={addEvent}
-            updateEventDuration={updateEventDuration}
+            addEvent={newEntryEvent}
             deleteEvent={deleteMyEvent}
-            editEvent={editEvent}
+            updateEventStandard={updateMyEventStandard}
+            updateEventRRule={updateMyEventRRule}
             height={fullheight}
             ityp={ItemType}
           />
         ))}
       </div>
       <NewCalendarEntryDialog
-        show={dialogev}
-        close={closeDialog}
-        typed={dialogtyp}
-        editobj={editobj}
-        title={dialogtyp == null ? 'Neuer Termin' : 'Termin bearbeiten'}
-        message={dtobj}
+        show={newEntryAlertValue}
+        close={closeNewEntryDialog}
+        title={'Neuer Termin'}
         kategorien={kategorien}
-        setKalenderEntry={setKalenderEntry}
-        callbackBtn2={dialogtyp == null ? addNote : saveChanges}
       />
-    </DndProvider>
+      <DeleteAlertDialog
+        show={deleteMessage}
+        cancel={deleteMessageClose}
+        deleteObj={deleteObject}
+        deletefunc={deleteFunction}
+      />
+      {updateDialogStandard ? (
+        <UpdateEntryStandard
+          show={updateDialogStandard}
+          close={updateStandardClose}
+          title={'Termin bearbeiten'}
+          updateObject={updateObject}
+          kategorien={kategorien}
+        />
+      ) : (
+        ''
+      )}
+      {updateDialogRRule ? (
+        <UpdateEntryRRuleSerie
+          show={updateDialogRRule}
+          close={updateRRuleClose}
+          title={'Serien-Termin bearbeiten'}
+          updateObject={updateObject}
+          kategorien={kategorien}
+        />
+      ) : (
+        ''
+      )}
+    </>
   )
 }
 

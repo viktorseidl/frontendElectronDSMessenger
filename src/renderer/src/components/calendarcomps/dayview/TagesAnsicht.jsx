@@ -10,17 +10,18 @@ import {
   getTodayDate
 } from './functions/functionHandler'
 import ColumnIntervalRow from './ColumnIntervalRow'
+import { useTheme } from '../../../styles/ThemeContext'
 
 const TagesAnsicht = ({
   date,
   layer,
-  dialogev,
-  setdialogev,
+  newEntryAlertValue,
+  newEntryAlertSetter,
   filteredevents,
   kategorien,
-  updateFilteredEvents,
-  setKalenderEntry
+  updateFilteredEvents
 }) => {
+  const { theme } = useTheme()
   const divRef = useRef(null)
   const viewRef = useRef(null)
   const navigate = useNavigate()
@@ -158,7 +159,8 @@ const TagesAnsicht = ({
         </div>
       </div>
       <div className="w-full h-[91.8%] shadow-inner dark:shadow-gray-200">
-        <div className="w-full flex flex-col items-start justify-start max-h-full overflow-y-scroll dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
+        <div className="w-full flex flex-col items-start justify-start max-h-full pb-4 overflow-y-scroll dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
+          {console.log(filteredevents)}
           {filteredevents.filter(
             (e) =>
               e.katBezeichnung !== null &&
@@ -1173,8 +1175,7 @@ const TagesAnsicht = ({
                   ''
                 )}
                 {/*TODO Einbinden des Interface für bearbeitung */}
-                {filteredevents.filter((e) => e.katBezeichnung === 'rrule' && e.zeitraum === 1440)
-                  .length > 0 ? (
+                {filteredevents.filter((e) => e.katBezeichnung === 'rrule').length > 0 ? (
                   <div
                     style={{
                       background: `${adjustForMode(
@@ -1186,10 +1187,7 @@ const TagesAnsicht = ({
                   >
                     <div
                       style={{
-                        background: `${adjustForMode(
-                          filteredevents.filter((e) => e.katBezeichnung === 'rrule')[0].ColorHex,
-                          'light'
-                        )}`
+                        background: `${adjustForMode('#999999', 'light')}`
                       }}
                       className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
                     >
@@ -1215,7 +1213,9 @@ const TagesAnsicht = ({
                               }
                               key={'bname' + item + index}
                               className=" p-2 py-1 flex flex-col items-center justify-start rounded-sm "
-                              style={{ background: item.boxColor + '55' }}
+                              style={{
+                                background: theme ? item.boxColor + '55' : item.boxColor + '88'
+                              }}
                             >
                               <a className="w-full truncate"> 🔁 {item.titel}</a>
                               <a className="w-full truncate">🗒️ {item.betreff}</a>
@@ -1249,12 +1249,11 @@ const TagesAnsicht = ({
               <DayGrid
                 fullheight={minHeight}
                 date={date}
-                dialogev={dialogev}
-                setdialogev={setdialogev}
+                newEntryAlertValue={newEntryAlertValue}
+                newEntryAlertSetter={newEntryAlertSetter}
                 filteredevents={filteredevents}
                 updateFilteredEvents={updateFilteredEvents}
                 kategorien={kategorien}
-                setKalenderEntry={setKalenderEntry}
               />
             </div>
             <CurrentTimeLine pixel={2.5} />

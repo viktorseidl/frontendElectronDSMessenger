@@ -12,13 +12,15 @@ import {
 import { useFetchAuthAll } from '../services/useFetchAll'
 import { useRoles } from '../styles/RoleContext'
 const CalendarDay = () => {
+  const Wohnbereiche = JSON.parse(util.decode64(window.sessionStorage.getItem('userWohnbereiche')))
   const apache = localStorage.getItem('dbConfig')
     ? JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost
     : 'localhost'
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const { jahr, monat, tag } = useParams()
-  const [dialogev, setdialogev] = useState(false)
+  const [newEntryAlert, setNewEntryAlert] = useState(false)
   const layer = 'day'
+  const [selectedbereich, setSelectedbereich] = useState('false')
   const [btnmy, setbtnmy] = useState(false)
   const [kategorien, setKategorien] = useState([])
   const [selectedKategorien, setSelectedKategorien] = useState([])
@@ -74,18 +76,29 @@ const CalendarDay = () => {
     }
   }
   const filterMEvents = useMemo(() => {
-    if (selectedKategorien.length > 0) {
-      return fullEvents.filter((event) => {
-        if (event.kategorie === null) {
-          return true
-        }
-
-        return selectedKategorien.some((category) => category.ID === event.kategorie)
-      })
-    } else {
-      return fullEvents
-    }
-  }, [fullEvents, selectedKategorien])
+    return fullEvents.filter((event) => {
+      // Filter by isprivate state
+      const privateMatches =
+        btnmy == false
+          ? event.isprivate == false || event.isprivate == true
+          : event.isprivate === true
+      // Filter by isprivate state
+      const BereichMatches =
+        selectedbereich != 'false' ? event.wohnbereich == selectedbereich : true
+      const categoryMatches =
+        selectedKategorien.length === 0 ||
+        selectedKategorien.some((category) => {
+          if (category.ID === 'serien') {
+            return category.ID === event.kategorieid
+          }
+          if (category.ID === 'holidays') {
+            return category.ID === event.kategorie // or event.kategorieid, depending on your structure
+          }
+          return category.ID === event.kategorie
+        })
+      return categoryMatches && privateMatches && BereichMatches
+    })
+  }, [fullEvents, selectedKategorien, btnmy, selectedbereich])
   const getEventsDB = async () => {
     const dailyFeiertage = getFeiertage()
     console.log(dailyFeiertage)
@@ -112,44 +125,21 @@ const CalendarDay = () => {
       setFullEvents([...dailyFeiertage])
     }
   }
-  const updateEventDuration = (id, newDuration) => {
-    setFullEvents((prev) =>
-      prev.map((ev) =>
-        ev.id === id
-          ? {
-              ...ev,
-              duration: newDuration,
-              realtimestart: calculateTime(ev.time, newDuration).startTime,
-              realtimeend: calculateTime(ev.time, newDuration).endTime
-            }
-          : ev
-      )
-    )
-  }
-  const addNewKalenderEntry = async (data) => {
-    const query = await useFetchAuthAll(
-      'http://' + apache + '/electronbackend/index.php?path=addNewEventKalendar&a=' + data,
-      'ssdsdsd',
-      'POST',
-      null,
-      null
-    )
-  }
+
   const CalendarMiniM = React.memo(({ date, layout }) => {
     return <CalendarMini date={date} layout={layout} />
   })
   const TagesAnsichtM = React.memo(
-    ({ date, layer, dialogev, setdialogev, kategorien, setKalenderEntry }) => {
+    ({ date, layer, newEntryAlert, setNewEntryAlert, kategorien }) => {
       return (
         <TagesAnsicht
           date={date}
           layer={layer}
-          dialogev={dialogev}
-          setdialogev={setdialogev}
+          newEntryAlertValue={newEntryAlert}
+          newEntryAlertSetter={setNewEntryAlert}
           filteredevents={filterMEvents}
           updateFilteredEvents={getEventsDB}
           kategorien={kategorien}
-          setKalenderEntry={setKalenderEntry}
         />
       )
     }
@@ -197,15 +187,14 @@ const CalendarDay = () => {
               <div className="w-full px-4 mt-6 flex flex-col items-start justify-start gap-y-6 ">
                 <select
                   title="Nach Bereich filtern"
+                  value={selectedbereich}
+                  onChange={(e) => setSelectedbereich(e.target.value)}
                   className=" w-auto px-4 py-2  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none text-sm "
                 >
-                  <option>Alle Bereiche</option>
-                  {JSON.parse(util.decode64(window.sessionStorage.getItem('userWohnbereiche')))
-                    .length > 0 &&
-                    JSON.parse(
-                      util.decode64(window.sessionStorage.getItem('userWohnbereiche'))
-                    ).map((item, index) => (
-                      <option key={item + index}>
+                  <option value={false}>Alle Bereiche</option>
+                  {Wohnbereiche.length > 0 &&
+                    Wohnbereiche.map((item, index) => (
+                      <option key={item + index} value={item.Station}>
                         {item.Station} {item.Hausname}
                       </option>
                     ))}
@@ -231,6 +220,73 @@ const CalendarDay = () => {
                   Weitere Filter
                 </div>
                 <div className="w-full flex flex-col items-start justify-start gap-y-2 dark:bg-gray-600/40 bg-stone-300/30 py-4 mb-6 ">
+                  {/**STANDARD KATEGORIE */}
+                  <div
+                    key={'holidayallkats'}
+                    onClick={() =>
+                      setSelectedKategorien(
+                        (prev) =>
+                          prev.some((sel) => sel.ID === 'holidays')
+                            ? prev.filter((sel) => sel.ID !== 'holidays') // Remove item if it's already selected
+                            : [
+                                ...prev,
+                                {
+                                  ID: 'holidays',
+                                  colorhex: '#FFFFFF'
+                                }
+                              ] // Add item if it's not selected
+                      )
+                    }
+                    className="w-full grid grid-cols-10 items-center justify-items-start gap-x-2 "
+                  >
+                    <div className="w-full h-4 col-span-2 flex flex-col items-center justify-center text-sm">
+                      <input
+                        style={{
+                          accentColor: '#00AAFF'
+                        }}
+                        checked={selectedKategorien.some((sel) => sel.ID === 'holidays')}
+                        type="checkbox"
+                        className={`w-4 h-4  `}
+                      />
+                    </div>
+                    <div className="w-full   text-sm col-span-8 flex flex-col items-start justify-center">
+                      <a className=" w-full truncate pr-4">Feiertage</a>
+                    </div>
+                  </div>
+                  {/**STANDARD KATEGORIE */}
+                  <div
+                    key={'serienallkats'}
+                    onClick={() =>
+                      setSelectedKategorien(
+                        (prev) =>
+                          prev.some((sel) => sel.ID === 'serien')
+                            ? prev.filter((sel) => sel.ID !== 'serien') // Remove item if it's already selected
+                            : [
+                                ...prev,
+                                {
+                                  ID: 'serien',
+                                  colorhex: '#FFFFFF'
+                                }
+                              ] // Add item if it's not selected
+                      )
+                    }
+                    className="w-full grid grid-cols-10 items-center justify-items-start gap-x-2 "
+                  >
+                    <div className="w-full h-4 col-span-2 flex flex-col items-center justify-center text-sm">
+                      <input
+                        style={{
+                          accentColor: '#00AAFF'
+                        }}
+                        checked={selectedKategorien.some((sel) => sel.ID == 'serien')}
+                        type="checkbox"
+                        className={`w-4 h-4  `}
+                      />
+                    </div>
+                    <div className="w-full   text-sm col-span-8 flex flex-col items-start justify-center">
+                      <a className=" w-full truncate pr-4">Serientermine</a>
+                    </div>
+                  </div>
+                  {/**DATABASE KATEGORIE */}
                   {kategorien.length > 0 &&
                     kategorien.map((item, index) => (
                       <div
@@ -269,10 +325,9 @@ const CalendarDay = () => {
                   (tag > 9 ? tag : '0' + tag) + '.' + (monat > 9 ? monat : '0' + monat) + '.' + jahr
                 }
                 layer={layer}
-                dialogev={dialogev}
-                setdialogev={setdialogev}
+                newEntryAlert={newEntryAlert}
+                setNewEntryAlert={setNewEntryAlert}
                 kategorien={kategorien}
-                setKalenderEntry={addNewKalenderEntry}
               />
             </div>
           </div>

@@ -1,18 +1,14 @@
 import React, { useState } from 'react'
 import { IoMdMove } from 'react-icons/io'
-import { MdDelete, MdEdit, MdNotes } from 'react-icons/md'
+import { MdDelete, MdEdit } from 'react-icons/md'
 import { motion } from 'framer-motion'
-import { DndProvider, useDrag, useDrop } from 'react-dnd'
+import { useDrag } from 'react-dnd'
 import { adjustForMode, calculateHeight } from './functions/functionHandler'
-import { useTheme } from '../../../styles/ThemeContext'
 import { useRoles } from '../../../styles/RoleContext'
 import { util } from 'node-forge'
-const Event = ({ event, updateEventDuration, deleteEvent, editEvent, ityp }) => {
-  console.log(event)
+const Event = ({ event, updateEventStandard, deleteEvent, ityp }) => {
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const { hasPermission } = useRoles()
-  const { theme } = useTheme()
-  const [isResizing, setIsResizing] = useState(false)
   const [isDraggingAllowed, setIsDraggingAllowed] = useState(false)
   let longPressTimer = null
 
@@ -36,25 +32,14 @@ const Event = ({ event, updateEventDuration, deleteEvent, editEvent, ityp }) => 
     setTimeout(() => setIsDraggingAllowed(false), 200) // Prevent immediate re-dragging
   }
 
-  const handleResize = (e) => {
-    console.log(e)
-    if (!isResizing) return
-    e.stopPropagation()
-    updateEventDuration(event.id, event.duration + 1)
-    setIsResizing(false)
-  }
-
   return (
     <motion.div
       ref={preview} // Ensures the event stays visible while dragging
-      className={`min-w-80 pb-1 text-black rounded-sm dark:ring-1 ring-1 dark:ring-gray-700 flex flex-col ring-gray-400 relative calshadow ${isDragging ? 'opacity-50' : ''}`}
+      className={`min-w-60 pb-1 text-black rounded-sm dark:ring-1 ring-1 dark:ring-gray-700 flex flex-col ring-gray-400 relative calshadow ${isDragging ? 'opacity-50' : ''}`}
       id={event.id}
       style={{
         minHeight: '28px',
-        height:
-          event.duration < 4
-            ? `${calculateHeight(4, 40)}px`
-            : `${calculateHeight(event.duration, 40)}px`,
+        height: event.duration < 4 ? `${calculateHeight(4, 40)}px` : `${calculateHeight(4, 40)}px`,
         background: `${adjustForMode('#cfddfa', 'dark')}`
       }}
     >
@@ -67,7 +52,7 @@ const Event = ({ event, updateEventDuration, deleteEvent, editEvent, ityp }) => 
           </b>
         </div>
       </div>
-      <div className="w-full flex flex-row items-start justify-start px-1 pt-[1px]">
+      <div className="w-full flex flex-row items-end justify-end px-1 pt-[1px]">
         <div className={` w-full h-full max-w-52 flex flex-col text-xs   truncate`}></div>
         {event.isNoteAttached != null ? (
           <div
@@ -76,18 +61,15 @@ const Event = ({ event, updateEventDuration, deleteEvent, editEvent, ityp }) => 
             📄
             <div
               title="Notiz"
-              className={` -left-48 -top-[1.21rem] hidden group-hover:block shadow-lg shadow-[rgba(0,0,0,0.3)] rounded absolute  bg-yellow-100 text-black`}
+              className={` -left-[8.3rem] -top-[1.19rem] hidden group-hover:block shadow-lg shadow-[rgba(0,0,0,0.3)] rounded absolute  bg-yellow-100 text-black`}
               style={{
-                height:
-                  calculateHeight(event.duration, 40) > 40
-                    ? ` ${calculateHeight(event.duration, 40) - 5}px `
-                    : ' 40px ',
-                width: '288px'
+                height: '38px ',
+                width: '235px'
               }}
             >
-              <div className="w-full h-full overflow-auto flex flex-wrap scrollbar-thin scrollbar-thumb-gray-500  scrollbar-track-gray-200 p-1 ">
+              <div className="w-full h-full overflow-auto flex flex-col scrollbar-thin scrollbar-thumb-gray-500  scrollbar-track-gray-200 p-1 ">
                 <div className="w-5/6 border-b border-gray-500">Notiz:</div>
-                <div className="w-[280px]  mt-1">
+                <div className="w-full  mt-1">
                   <pre className=" text-wrap">{event.isNoteAttached}</pre>
                 </div>
               </div>
@@ -105,7 +87,7 @@ const Event = ({ event, updateEventDuration, deleteEvent, editEvent, ityp }) => 
             title="Eintrag löschen"
             ref={drag}
             className=" w-auto mr-1 bg-red-600 hover:bg-red-500 text-white p-1 rounded text-xs"
-            onClick={() => deleteEvent(event.id)}
+            onClick={() => deleteEvent(event.id, 'standard')}
             aria-label="isbuttondoubleclick"
           >
             <MdDelete aria-label="isbuttondoubleclick" />
@@ -122,7 +104,7 @@ const Event = ({ event, updateEventDuration, deleteEvent, editEvent, ityp }) => 
             ref={drag}
             title="Eintrag bearbeiten"
             className=" w-auto mr-1 bg-blue-600 hover:bg-blue-500 text-white p-1 rounded text-xs"
-            onClick={() => editEvent(event)}
+            onClick={() => updateEventStandard(event)}
             aria-label="isbuttondoubleclick"
           >
             <MdEdit aria-label="isbuttondoubleclick" />
@@ -152,16 +134,6 @@ const Event = ({ event, updateEventDuration, deleteEvent, editEvent, ityp }) => 
           ''
         )}
       </div>
-
-      {/* Drag Handle Button */}
-
-      {/* Resizing Handle */}
-      {isResizing && (
-        <div
-          className="absolute bottom-0 left-0 right-0 h-2 bg-gray-700 cursor-s-resize resize-handle"
-          onMouseDown={handleResize}
-        ></div>
-      )}
     </motion.div>
   )
 }

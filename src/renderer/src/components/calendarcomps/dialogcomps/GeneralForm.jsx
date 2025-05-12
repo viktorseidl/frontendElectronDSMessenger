@@ -103,10 +103,16 @@ const GeneralForm = ({
               value={terminkategorie}
               onChange={(e) => terminkategorieaction(e.target.value)}
             >
-              <option className="w-full dark:bg-gray-900">Privater Eintrag</option>
+              <option className="w-full dark:bg-gray-900" value={'Privater Eintrag'}>
+                Privater Eintrag
+              </option>
               {kategorien.length > 0 &&
                 kategorien.map((item, index) => (
-                  <option key={'kategorienmap' + item + index} className="w-full dark:bg-gray-900">
+                  <option
+                    key={'kategorienmap' + item + index}
+                    className="w-full dark:bg-gray-900"
+                    value={item.bezeichnung}
+                  >
                     {item.bezeichnung}
                   </option>
                 ))}
