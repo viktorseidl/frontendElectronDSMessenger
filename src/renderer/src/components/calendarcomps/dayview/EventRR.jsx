@@ -11,7 +11,7 @@ const EventRR = ({ event, deleteEvent, updateEventRRule, ityp }) => {
   const { hasPermission } = useRoles()
   return (
     <motion.div
-      className={`min-w-60  text-black rounded-sm dark:ring-1 ring-1 bg-white dark:ring-gray-700 flex flex-col ring-gray-400 relative calshadow `}
+      className={`w-60  text-black rounded-sm dark:ring-1 ring-1 bg-white dark:ring-gray-700 flex flex-col ring-gray-400 relative calshadow `}
       id={event.id}
       style={{
         minHeight: '28px',

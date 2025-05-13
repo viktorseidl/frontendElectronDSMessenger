@@ -11,6 +11,7 @@ import {
 } from './functions/functionHandler'
 import ColumnIntervalRow from './ColumnIntervalRow'
 import { useTheme } from '../../../styles/ThemeContext'
+import UpdateEntryRRuleSerie from './UpdateEntryRRuleSerie'
 
 const TagesAnsicht = ({
   date,
@@ -29,7 +30,21 @@ const TagesAnsicht = ({
   const rows = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
   ]
-
+  {
+    /*RULE UPDATE STATES AND FUNCTIONS */
+  }
+  const [updateDialogRRule, setUpdateDialogRRule] = useState(false)
+  const [updateObject, setUpdateObject] = useState(null)
+  const updateMyEventRRule = (item) => {
+    //if (!hasPermission('update:calendar')) return
+    setUpdateObject(item)
+    setUpdateDialogRRule(true)
+  }
+  const updateRRuleClose = () => {
+    setUpdateDialogRRule(false)
+    setUpdateObject(null)
+    updateFilteredEvents()
+  }
   const CurrentTimeLine = () => {
     const [currentTime, setCurrentTime] = useState(new Date())
 
@@ -1201,7 +1216,11 @@ const TagesAnsicht = ({
                       {filteredevents
                         .filter((e) => e.katBezeichnung === 'rrule')
                         .map((item, index) => (
-                          <div className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer">
+                          <div
+                            key={'sjdhopo' + item + index + 'sds'}
+                            onClick={() => updateMyEventRRule(item)}
+                            className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer"
+                          >
                             <div
                               title={
                                 '🔁 Serie: ' +
@@ -1258,6 +1277,17 @@ const TagesAnsicht = ({
             </div>
             <CurrentTimeLine pixel={2.5} />
           </div>
+          {updateDialogRRule ? (
+            <UpdateEntryRRuleSerie
+              show={updateDialogRRule}
+              close={updateRRuleClose}
+              title={'Serien-Termin bearbeiten'}
+              updateObject={updateObject}
+              kategorien={kategorien}
+            />
+          ) : (
+            ''
+          )}
         </div>
       </div>
     </div>

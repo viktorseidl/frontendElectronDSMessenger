@@ -128,7 +128,6 @@ const DayGrid = ({
    * @function updateRRuleClose Close DIalog and reset Update Information
    */
   const updateMyEventRRule = (item) => {
-    console.log(item)
     //if (!hasPermission('update:calendar')) return
     setUpdateObject(item)
     setUpdateDialogRRule(true)
