@@ -527,7 +527,7 @@ const NewCalendarEntryDialog = ({ show, close, title, kategorien }) => {
 
             <div
               ref={_divRef}
-              className="w-full h-[85%] overflow-auto flex flex-col scrollbar-thin scrollbar-thumb-gray-500  scrollbar-track-gray-200"
+              className="w-full h-[85%] overflow-auto flex flex-col scrollbar-thin dark:scrollbar-thumb-gray-800   scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200"
             >
               <GeneralForm
                 terminbetreff={terminBetreff}

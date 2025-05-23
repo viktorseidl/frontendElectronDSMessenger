@@ -69,26 +69,46 @@ export function getGermanHolidays(year) {
   function getRelativeHoliday(daysOffset, name) {
     const date = new Date(easterSunday)
     date.setDate(easterSunday.getDate() + daysOffset)
-    return { date, name }
+    return { ddate: date.toLocaleDateString('de-DE'), date: date, name: name }
   }
 
   // Fixed holidays
   const fixedHolidays = [
-    { date: new Date(year, 0, 1 + 1), name: 'Neujahr' },
-    { date: new Date(year, 4, 1 + 1), name: 'Tag der Arbeit' },
-    { date: new Date(year, 9, 3 + 1), name: 'Tag der Deutschen Einheit' },
-    { date: new Date(year, 11, 25 + 1), name: 'Erster Weihnachtstag' },
-    { date: new Date(year, 11, 26 + 1), name: 'Zweiter Weihnachtstag' }
+    {
+      ddate: new Date(year, 0, 1).toLocaleDateString('de-DE'),
+      date: new Date(year, 0, 1),
+      name: 'Neujahr'
+    },
+    {
+      ddate: new Date(year, 4, 1).toLocaleDateString('de-DE'),
+      date: new Date(year, 4, 1),
+      name: 'Tag der Arbeit'
+    },
+    {
+      ddate: new Date(year, 9, 3).toLocaleDateString('de-DE'),
+      date: new Date(year, 9, 3),
+      name: 'Tag der Deutschen Einheit'
+    },
+    {
+      ddate: new Date(year, 11, 25).toLocaleDateString('de-DE'),
+      date: new Date(year, 11, 25),
+      name: 'Erster Weihnachtstag'
+    },
+    {
+      ddate: new Date(year, 11, 26).toLocaleDateString('de-DE'),
+      date: new Date(year, 11, 26),
+      name: 'Zweiter Weihnachtstag'
+    }
   ]
 
   // Easter-based holidays
   const movableHolidays = [
-    getRelativeHoliday(-2 + 1, 'Karfreitag'),
-    getRelativeHoliday(0 + 1, 'Ostersonntag'),
-    getRelativeHoliday(1 + 1, 'Ostermontag'),
-    getRelativeHoliday(39 + 1, 'Christi Himmelfahrt'),
-    getRelativeHoliday(49 + 1, 'Pfingstsonntag'),
-    getRelativeHoliday(50 + 1, 'Pfingstmontag')
+    getRelativeHoliday(-2, 'Karfreitag'),
+    getRelativeHoliday(0, 'Ostersonntag'),
+    getRelativeHoliday(1, 'Ostermontag'),
+    getRelativeHoliday(39, 'Christi Himmelfahrt'),
+    getRelativeHoliday(49, 'Pfingstsonntag'),
+    getRelativeHoliday(50, 'Pfingstmontag')
   ]
 
   // Combine all holidays
@@ -96,19 +116,58 @@ export function getGermanHolidays(year) {
   // Convert to event objects
   const events = allHolidays.map((holiday, index) => ({
     id: `holiday-${index}`,
+    titel: holiday.name,
+    ddate:
+      (parseInt(holiday.ddate.split('.')[0]) > 9
+        ? parseInt(holiday.ddate.split('.')[0])
+        : '0' + parseInt(holiday.ddate.split('.')[0])) +
+      '.' +
+      (parseInt(holiday.ddate.split('.')[1]) > 9
+        ? parseInt(holiday.ddate.split('.')[1])
+        : '0' + parseInt(holiday.ddate.split('.')[1])) +
+      '.' +
+      holiday.ddate.split('.')[2],
     time: 0, // Full-day event
+    realtimestartDate:
+      (parseInt(holiday.date.toISOString().split('T')[0].split('-')[2]) > 9
+        ? parseInt(holiday.date.toISOString().split('T')[0].split('-')[2])
+        : '0' + parseInt(holiday.date.toISOString().split('T')[0].split('-')[2])) +
+      '.' +
+      (parseInt(holiday.date.toISOString().split('T')[0].split('-')[1]) > 9
+        ? parseInt(holiday.date.toISOString().split('T')[0].split('-')[1])
+        : '0' + parseInt(holiday.date.toISOString().split('T')[0].split('-')[1])) +
+      '.' +
+      holiday.date.toISOString().split('T')[0].split('-')[0],
     realtimestart: '00:00',
     duration: 24 * 4,
+    realtimeendDate:
+      (parseInt(holiday.date.toISOString().split('T')[0].split('-')[2]) > 9
+        ? parseInt(holiday.date.toISOString().split('T')[0].split('-')[2])
+        : '0' + parseInt(holiday.date.toISOString().split('T')[0].split('-')[2])) +
+      '.' +
+      (parseInt(holiday.date.toISOString().split('T')[0].split('-')[1]) > 9
+        ? parseInt(holiday.date.toISOString().split('T')[0].split('-')[1])
+        : '0' + parseInt(holiday.date.toISOString().split('T')[0].split('-')[1])) +
+      '.' +
+      holiday.date.toISOString().split('T')[0].split('-')[0],
     realtimeend: '23:59',
-    hexcolor: '#c3f0fa', // Gold color for holidays
-    title: holiday.name,
+    ColorHex: '#f5d902', // Gold color for holidays
     datum: holiday.date.toISOString().split('T')[0], // Format YYYY-MM-DD
     isNoteAttached: null,
     isEditable: false,
     isAlarm: false,
     isAlarmStamp: null,
-    eventTyp: 1,
-    isPublic: 1
+    eventTyp: null,
+    isprivate: false,
+    ersteller: 'System',
+    haus: null,
+    wohnbereich: null,
+    kategorie: 'holidays',
+    katBezeichnung: 'Feiertag',
+    katBackColor: null,
+    katForeColor: null,
+    VerwaltungPflege: null,
+    isPublic: true
   }))
 
   return events
@@ -170,7 +229,6 @@ function calculateHolidaysForImage(year) {
     const dd = String(date.getDate()).padStart(2, '0')
     return `${yyyy}-${mm}-${dd}`
   }
-
   // Return the dates in an array
   return [
     formatDate(easterSunday),
@@ -299,4 +357,22 @@ export function searchAllEvents(events, searchTerm) {
       event.title.toLowerCase().includes(lowerSearchTerm) ||
       (event.isNoteAttached && event.isNoteAttached.toLowerCase().includes(lowerSearchTerm))
   )
+}
+export function filterOnKategorieShortener(events, filter) {
+  return events.filter((e) => e.katBezeichnung === filter.toString()).length > 0
+    ? events.filter((e) => e.katBezeichnung === filter.toString())
+    : []
+}
+export function filterOnMonthShortener(events, filter) {
+  return events.filter(
+    (e) =>
+      (parseInt(e.datum.split('-')[1]) === parseInt(filter) && e.ddate == undefined) ||
+      (e.ddate != undefined && parseInt(e.ddate.split('.')[1]) === parseInt(filter))
+  ).length > 0
+    ? events.filter(
+        (e) =>
+          (parseInt(e.datum.split('-')[1]) === parseInt(filter) && e.ddate == undefined) ||
+          (e.ddate != undefined && parseInt(e.ddate.split('.')[1]) === parseInt(filter))
+      )
+    : []
 }

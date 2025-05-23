@@ -1,5 +1,5 @@
-import { util } from 'node-forge'
 import React, { useEffect } from 'react'
+import { util } from 'node-forge'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
@@ -111,9 +111,9 @@ const GeneralForm = ({
                   <option
                     key={'kategorienmap' + item + index}
                     className="w-full dark:bg-gray-900"
-                    value={item.bezeichnung}
+                    value={item.bezeichnung.trim()}
                   >
-                    {item.bezeichnung}
+                    {item.bezeichnung.trim()}
                   </option>
                 ))}
             </select>

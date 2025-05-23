@@ -152,7 +152,6 @@ const DayGrid = ({
     newEntryAlertSetter(!newEntryAlertValue)
     updateFilteredEvents()
   }
-
   useEffect(() => {
     setEvents(filteredevents)
   }, [date, filteredevents])

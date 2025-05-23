@@ -5,10 +5,7 @@ import { MdFilterList, MdViewDay } from 'react-icons/md'
 import CalendarMini from '../components/calendarcomps/CalenderMini'
 import { useParams } from 'react-router-dom'
 import { util } from 'node-forge'
-import {
-  calculateTime,
-  getGermanHolidays
-} from '../components/calendarcomps/dayview/functions/functionHandler'
+import { getGermanHolidaysDay } from '../components/calendarcomps/dayview/functions/functionHandler'
 import { useFetchAuthAll } from '../services/useFetchAll'
 import { useRoles } from '../styles/RoleContext'
 const CalendarDay = () => {
@@ -33,8 +30,8 @@ const CalendarDay = () => {
     )
       .toISOString()
       .split('T')[0]
-    // console.log(formatDateTimeAlarmToString(parsedDate).split(' ')[0])
-    let Feiertage = getGermanHolidays(jahr.toString())
+
+    let Feiertage = getGermanHolidaysDay(jahr.toString())
     Feiertage = [...Feiertage].filter((e) => e.datum == parsedDate)
     return Feiertage
   }
@@ -89,19 +86,18 @@ const CalendarDay = () => {
         selectedKategorien.length === 0 ||
         selectedKategorien.some((category) => {
           if (category.ID === 'serien') {
-            return category.ID === event.kategorieid
+            return category.ID == event.kategorieid
           }
           if (category.ID === 'holidays') {
-            return category.ID === event.kategorie // or event.kategorieid, depending on your structure
+            return category.ID == event.kategorie // or event.kategorieid, depending on your structure
           }
-          return category.ID === event.kategorie
+          return category.ID == event.kategorie
         })
       return categoryMatches && privateMatches && BereichMatches
     })
   }, [fullEvents, selectedKategorien, btnmy, selectedbereich])
   const getEventsDB = async () => {
     const dailyFeiertage = getFeiertage()
-    console.log(dailyFeiertage)
     const query = await useFetchAuthAll(
       'http://' +
         apache +
@@ -119,13 +115,11 @@ const CalendarDay = () => {
       null
     )
     if (query.length > 0) {
-      console.log([...dailyFeiertage, ...query])
       setFullEvents([...dailyFeiertage, ...query])
     } else {
       setFullEvents([...dailyFeiertage])
     }
   }
-
   const CalendarMiniM = React.memo(({ date, layout }) => {
     return <CalendarMini date={date} layout={layout} />
   })
@@ -167,7 +161,7 @@ const CalendarDay = () => {
               {hasPermission('create:calendar') ? (
                 <div className="w-full flex flex-col items-center justify-center p-4 mt-4">
                   <button
-                    onClick={() => setdialogev(true)}
+                    onClick={() => setNewEntryAlert(true)}
                     title="Neuen Kalendereintrag"
                     className="px-4 py-3 w-5/6 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 text-gray-700 rounded-xl  dark:bg-transparent ring-1 ring-gray-700   outline-none"
                   >
@@ -184,6 +178,7 @@ const CalendarDay = () => {
                 }
                 layout={layer}
               />
+
               <div className="w-full px-4 mt-6 flex flex-col items-start justify-start gap-y-6 ">
                 <select
                   title="Nach Bereich filtern"
@@ -232,7 +227,8 @@ const CalendarDay = () => {
                                 ...prev,
                                 {
                                   ID: 'holidays',
-                                  colorhex: '#FFFFFF'
+                                  colorhex: '#FFFFFF',
+                                  kategoriename: 'holidays'
                                 }
                               ] // Add item if it's not selected
                       )
@@ -265,7 +261,8 @@ const CalendarDay = () => {
                                 ...prev,
                                 {
                                   ID: 'serien',
-                                  colorhex: '#FFFFFF'
+                                  colorhex: '#FFFFFF',
+                                  kategoriename: 'holidays'
                                 }
                               ] // Add item if it's not selected
                       )
@@ -296,7 +293,14 @@ const CalendarDay = () => {
                             (prev) =>
                               prev.some((sel) => sel.ID === item.ID)
                                 ? prev.filter((sel) => sel.ID !== item.ID) // Remove item if it's already selected
-                                : [...prev, item] // Add item if it's not selected
+                                : [
+                                    ...prev,
+                                    {
+                                      ID: item.ID,
+                                      colorhex: item.colorhex,
+                                      kategoriename: item.kategoriename.trim()
+                                    }
+                                  ] // Add item if it's not selected
                           )
                         }
                         className="w-full grid grid-cols-10 items-center justify-items-start gap-x-2 "

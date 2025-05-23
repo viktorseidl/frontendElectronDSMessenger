@@ -5,7 +5,7 @@ import { calculateHeight } from './functions/functionHandler'
 import { useRoles } from '../../../styles/RoleContext'
 import { util } from 'node-forge'
 import { useTheme } from '../../../styles/ThemeContext'
-const EventRR = ({ event, deleteEvent, updateEventRRule, ityp }) => {
+const EventRR = ({ event, deleteEvent, updateEventRRule }) => {
   const { theme } = useTheme()
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const { hasPermission } = useRoles()

@@ -1,39 +1,32 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { MdArrowLeft, MdArrowRight, MdClose } from 'react-icons/md'
 import { FaSearch } from 'react-icons/fa'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   formatGermanDateMonthView,
   getShiftedDateMonthView,
   getTodayDate
 } from './functions/functionHandler'
 import MonthGrid from './MonthGrid'
-
-const TagesAnsicht = ({ date, publicView, layer }) => {
+const TagesAnsicht = ({
+  date,
+  layer,
+  filteredevents,
+  kategorien,
+  updateFilteredEvents,
+  handleDrop
+}) => {
+  const { jahr, monat, tag } = useParams()
   const divRef = useRef(null)
   const viewRef = useRef(null)
   const navigate = useNavigate()
-  const [minHeight, setMinHeight] = useState(0)
   const changeView = () => {
     const layer = viewRef.current.value
-    navigate(
-      '/calendar/' +
-        layer +
-        '/' +
-        parseInt(getTodayDate().split('.')[2]) +
-        '/' +
-        parseInt(getTodayDate().split('.')[1]) +
-        '/' +
-        parseInt(getTodayDate().split('.')[0])
-    )
+    navigate('/calendar/' + layer + '/' + jahr + '/' + monat + '/' + tag)
   }
-  useEffect(() => {
-    if (divRef.current && minHeight == 0) {
-      setMinHeight(divRef.current.clientHeight)
-    }
-  }, [])
+  useEffect(() => {}, [date])
   return (
-    <div className="w-full h-full  flex flex-col items-start justify-start  ">
+    <div ref={divRef} className="w-full h-full  flex flex-col items-start justify-start ">
       <div className="w-full h-20 py-4 px-4 flex flex-row items-center justify-start gap-x-2">
         <div className="w-[40%] h-20 flex flex-row items-center justify-start ">
           <Link
@@ -119,8 +112,14 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
       <div className="w-full h-[91.8%] shadow-inner dark:shadow-gray-200">
         <div className="w-full flex flex-col items-start justify-start h-full  overflow-hidden">
           <div className="w-full h-full dark:bg-gray-900 bg-blue-50 flex flex-row items-start justify-start ">
-            <div className="w-full h-full dark:bg-gray-950 bg-stone-100 dark:text-gray-400 text-gray-900 border-t border-l dark:border-gray-700 border-gray-300">
-              <MonthGrid fullheight={minHeight} date={date} publicView={publicView} />
+            <div className="w-full h-full dark:bg-gray-950 bg-stone-100 dark:text-gray-400 text-gray-900 border-t border-l dark:border-gray-700 border-gray-400">
+              <MonthGrid
+                handleDrop={handleDrop}
+                date={date}
+                filteredevents={filteredevents}
+                updateFilteredEvents={updateFilteredEvents}
+                kategorien={kategorien}
+              />
             </div>
           </div>
         </div>

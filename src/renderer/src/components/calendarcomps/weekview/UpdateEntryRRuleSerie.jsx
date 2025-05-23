@@ -622,7 +622,7 @@ const UpdateEntryRRuleSerie = ({ show, close, title, kategorien, updateObject })
             </div>
 
             {switchEditException ? (
-              <div className="w-full h-[60%] overflow-auto flex flex-col scrollbar-thin scrollbar-thumb-gray-500   scrollbar-track-gray-200">
+              <div className="w-full h-[60%] overflow-auto flex flex-col dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
                 <UpdateEntryRRuleSerieAusnahmen
                   apache={apache}
                   user={User}
@@ -633,7 +633,7 @@ const UpdateEntryRRuleSerie = ({ show, close, title, kategorien, updateObject })
               <>
                 <div
                   ref={_divRef}
-                  className="w-full h-[85%] overflow-auto flex flex-col scrollbar-thin scrollbar-thumb-gray-500  scrollbar-track-gray-200"
+                  className="w-full h-[85%] overflow-auto flex flex-col dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200"
                 >
                   <GeneralForm
                     terminbetreff={terminBetreff}

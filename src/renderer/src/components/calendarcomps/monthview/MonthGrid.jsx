@@ -1,155 +1,127 @@
 import React, { useState } from 'react'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
 import {
   format,
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
-  isWithinInterval,
-  addDays,
-  parseISO,
   startOfWeek,
   endOfWeek
 } from 'date-fns'
 import dayjs from 'dayjs'
-import { getGermanHolidays } from './functions/functionHandler'
-import DayCell from './DayCell'
+import DayContainer from './DayContainer'
+import DailyListHeader from './DailyListHeader'
+import DeleteAlertDialog from './DeleteAlertDialog'
+import UpdateEntryStandard from './UpdateEntryStandard'
+import UpdateEntryRRuleSerie from './UpdateEntryRRuleSerie'
+import { useRoles } from '../../../styles/RoleContext'
+import { useFetchAuthAll } from '../../../services/useFetchAll'
+import { util } from 'node-forge'
 
-const MonthGrid = ({ date }) => {
-  const today = new Date()
+const MonthGrid = ({ handleDrop, date, filteredevents, updateFilteredEvents, kategorien }) => {
+  const apache = localStorage.getItem('dbConfig')
+    ? JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost
+    : 'localhost'
+  const { hasPermission } = useRoles()
   const startOfCurrentMonth = startOfMonth(dayjs(date, 'DD.MM.YYYY'))
   const endOfCurrentMonth = endOfMonth(dayjs(date, 'DD.MM.YYYY'))
-
-  // Get the first day of the week that contains the first day of the current month
-  const firstDayOfWeek = startOfWeek(startOfCurrentMonth, { weekStartsOn: 1 }) // Week starts on Monday
-  // Get the last day of the week that contains the last day of the current month
+  const firstDayOfWeek = startOfWeek(startOfCurrentMonth, { weekStartsOn: 1 })
   const lastDayOfWeek = endOfWeek(endOfCurrentMonth, { weekStartsOn: 1 })
-
-  // Generate all the days between the start and end of the calendar view
   const monthDays = eachDayOfInterval({
     start: firstDayOfWeek,
     end: lastDayOfWeek
   })
-  console.log(monthDays)
-
-  const [events, setEvents] = useState([
-    { id: '1', title: 'Krank', start: '2025-03-05', end: '2025-03-06', color: 'bg-red-500' },
-    {
-      id: '2',
-      title: 'Urlaub',
-      start: '2025-03-10',
-      end: '2025-03-12',
-      color: 'bg-green-500'
-    },
-    {
-      id: '5',
-      title: 'Fortbildung',
-      start: '2025-03-27',
-      end: '2025-03-27',
-      color: 'bg-blue-500'
-    },
-    { id: '3', title: 'Urlaub', start: '2025-03-15', end: '2025-03-16', color: 'bg-green-500' }
-  ])
-
-  const moveEvent = (eventId, newDate) => {
-    setEvents((prev) =>
-      prev.map((event) =>
-        event.id === eventId
-          ? {
-              ...event,
-              start: format(newDate, 'yyyy-MM-dd'),
-              end: format(
-                addDays(
-                  newDate,
-                  (parseISO(event.end) - parseISO(event.start)) / (1000 * 60 * 60 * 24)
-                ),
-                'yyyy-MM-dd'
-              )
-            }
-          : event
-      )
-    )
+  const [dailyInformation, setDailyInformation] = useState(null)
+  const [showDailyInformation, setShowDailyInformation] = useState(false)
+  const [deleteMessage, setDeleteMessage] = useState(null)
+  const [deleteObject, setDeleteObject] = useState(null)
+  /* UPDATE STATES */
+  const [updateDialogStandard, setUpdateDialogStandard] = useState(false)
+  const [updateDialogRRule, setUpdateDialogRRule] = useState(false)
+  const [updateObject, setUpdateObject] = useState(null)
+  /** HANDLE DELETING EVENTS
+   * @function deleteMyEvent Open Dialog and set Delete Information
+   * @function deleteMessageClose Close DIalog
+   * @function deleteFunction execute Delete
+   */
+  const deleteMyEvent = async (id, type) => {
+    console.log(id, type)
+    if (!hasPermission('delete:calendar')) return
+    setDeleteObject({ id: id, type: type })
+    setDeleteMessage(true)
   }
-  const getFeiertage = () => {
-    console.log(date)
-    const [aday, amonth, ayear] =
-      date != null
-        ? date.split('.')
-        : [new Date().getDate(), new Date().getMonth(), new Date().getFullYear()]
-    const parsedDate = new Date(`${ayear}-${amonth}-${aday}T00:00:00`).toISOString().split('T')[0]
-    // console.log(formatDateTimeAlarmToString(parsedDate).split(' ')[0])
-    let Feiertage = getGermanHolidays(date.split('.')[2])
-    /**
-     * {
-  "id": 1740388137775,
-  "time": 8,
-  "realtimestart": "08:00",
-  "duration": 9,
-  "realtimeend": "10:15",
-  "hexcolor": "#99ffFEFF",
-  "title": "Geburtstag Annemarie Hürten",
-  "datum": "2025-03-04",
-  "isNoteAttached": null,
-  "isEditable": false,
-  "isAlarm": false,
-  "isAlarmStamp": null,
-  "eventTyp": 0,
-  "isPublic": 1
-}
-     */
-    Feiertage = [
-      ...Feiertage,
-      {
-        id: 1740388137775,
-        time: 8,
-        realtimestart: calculateTime(8, 9).startTime,
-        duration: 9,
-        realtimeend: calculateTime(8, 9).endTime,
-        hexcolor: '#99ffFEFF',
-        title: 'Geburtstag Annemarie Hürten',
-        datum: parsedDate,
-        isNoteAttached: null,
-        isEditable: false,
-        isAlarm: false,
-        isAlarmStamp: null,
-        eventTyp: 0,
-        isPublic: 1
-      },
-      {
-        id: 1740388167780,
-        time: 0,
-        realtimestart: calculateTime(0, 3).startTime,
-        duration: 3,
-        realtimeend: calculateTime(0, 3).endTime,
-        hexcolor: '#c1cff7FF',
-        title: 'Team-Meeting',
-        datum: parsedDate,
-        isNoteAttached: 'hallo wie geht es dir',
-        isEditable: true,
-        isAlarm: true,
-        isAlarmStamp: '28.02.2025 13:25',
-        eventTyp: 0,
-        isPublic: 0
-      }
-    ]
-    setEvents(Feiertage.filter((e) => e.datum == parsedDate))
-    console.log(
-      date,
-      Feiertage.filter((e) => e.datum == parsedDate)
-    )
+  const deleteMessageClose = () => {
+    setDeleteMessage(null)
+    setDeleteObject(null)
   }
+  const deleteFunction = async (obj) => {
+    if (!hasPermission('delete:calendar')) return
+    if (deleteObject == null) return
+    const query = await useFetchAuthAll(
+      'http://' +
+        apache +
+        '/electronbackend/index.php?path=deleteEventOnDailyView&a=' +
+        util.encode64(
+          JSON.stringify({
+            id: obj.id,
+            typed: obj.type
+          })
+        ),
+      'ssdsdsd',
+      'DELETE',
+      null,
+      null
+    )
+    updateFilteredEvents()
+  }
+  /**HANDLE UPDATE STANDARD EVENT
+   * @function updateMyEventStandard Open Dialog and set Update Information
+   * @function updateStandardClose Close DIalog and reset Update Information
+   */
+  const updateMyEventStandard = (item) => {
+    if (!hasPermission('update:calendar')) return
+    setUpdateObject(item)
+    setUpdateDialogStandard(true)
+  }
+  const updateStandardClose = () => {
+    setUpdateDialogStandard(false)
+    setUpdateObject(null)
+    updateFilteredEvents()
+  }
+
+  /** HANDLE UPDATE RRULE EVENT
+   * @function updateMyEventRRule Open Dialog and set Update Information
+   * @function updateRRuleClose Close DIalog and reset Update Information
+   */
+  const updateMyEventRRule = (item) => {
+    //if (!hasPermission('update:calendar')) return
+    setUpdateObject(item)
+    setUpdateDialogRRule(true)
+  }
+  const updateRRuleClose = () => {
+    setUpdateDialogRRule(false)
+    setUpdateObject(null)
+    updateFilteredEvents()
+  }
+  const showDayList = (day) => {
+    setDailyInformation({
+      events: filteredevents,
+      daystamp: day
+    })
+    setShowDailyInformation(true)
+  }
+  const closeDayList = () => {
+    setDailyInformation(null)
+    setShowDailyInformation(false)
+  }
+
   return (
-    <DndProvider
-      backend={HTML5Backend}
-      className="w-full h-full flex flex-col items-start justify-start "
-    >
+    <div className="w-full h-full flex flex-col items-start justify-start ">
       <div className="w-full h-10">
-        <div className="grid grid-cols-7  h-full w-full  dark:bg-gray-900 bg-white divide-x dark:divide-gray-600 divide-gray-300 ">
+        <div className="grid grid-cols-7  h-full w-full  dark:bg-gray-900 bg-white dark:text-white divide-x dark:divide-gray-600 divide-gray-400 ">
           {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((day) => (
             <div
               key={day}
-              className={`flex flex-col items-center justify-center  w-full h-full font-bold ${day === 'Sa' || day === 'So' ? ' dark:bg-gray-800 bg-blue-100/50 ' : ''}`}
+              className={`flex flex-col items-center justify-center  w-full h-full font-bold ${day === 'Sa' || day === 'So' ? ' dark:bg-gray-700/80 bg-gray-400/50 ' : ''}`}
             >
               {day}
             </div>
@@ -157,21 +129,61 @@ const MonthGrid = ({ date }) => {
         </div>
       </div>
       <div className="w-full flex flex-grow h-[95%]">
-        <div className="grid grid-cols-7 w-full h-full divide-x divide-y dark:divide-gray-600 divide-gray-300  ">
-          {/* Render the days in the grid, including overflow days from previous and next month */}
-          {monthDays.map((day) => (
-            <DayCell
-              key={day}
-              date={day}
-              events={events.filter((e) =>
-                isWithinInterval(day, { start: parseISO(e.start), end: parseISO(e.end) })
+        <div className="grid grid-cols-7 w-full h-full divide-x divide-y dark:divide-gray-600 divide-gray-400  ">
+          {monthDays.map((day, index) => (
+            <DayContainer
+              filteredevents={filteredevents.filter(
+                (a) =>
+                  (a.datum.toString() === format(day, 'Y-MM-dd').toString() &&
+                    a.ddate == undefined) ||
+                  (a.ddate != undefined && a.ddate.toString() == format(day, 'dd.MM.Y').toString())
               )}
-              moveEvent={moveEvent}
+              key={day + index}
+              day={day}
+              date={day}
+              handleDrop={handleDrop}
+              showDayList={showDayList}
             />
           ))}
         </div>
       </div>
-    </DndProvider>
+      <DailyListHeader
+        show={showDailyInformation}
+        closer={closeDayList}
+        information={dailyInformation}
+        updateEventStandard={updateMyEventStandard}
+        updateEventRRule={updateMyEventRRule}
+        deleteMyEvent={deleteMyEvent}
+      />
+      <DeleteAlertDialog
+        show={deleteMessage}
+        cancel={deleteMessageClose}
+        deleteObj={deleteObject}
+        deletefunc={deleteFunction}
+      />
+      {updateDialogStandard ? (
+        <UpdateEntryStandard
+          show={updateDialogStandard}
+          close={updateStandardClose}
+          title={'Termin bearbeiten'}
+          updateObject={updateObject}
+          kategorien={kategorien}
+        />
+      ) : (
+        ''
+      )}
+      {updateDialogRRule ? (
+        <UpdateEntryRRuleSerie
+          show={updateDialogRRule}
+          close={updateRRuleClose}
+          title={'Serien-Termin bearbeiten'}
+          updateObject={updateObject}
+          kategorien={kategorien}
+        />
+      ) : (
+        ''
+      )}
+    </div>
   )
 }
 

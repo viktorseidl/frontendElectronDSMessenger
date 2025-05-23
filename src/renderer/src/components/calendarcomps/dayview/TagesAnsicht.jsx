@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import DayGrid from './DayGrid'
 import { MdArrowLeft, MdArrowRight, MdClose, MdPerson } from 'react-icons/md'
 import { FaSearch } from 'react-icons/fa'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   adjustForMode,
   formatGermanDate,
@@ -22,6 +22,7 @@ const TagesAnsicht = ({
   kategorien,
   updateFilteredEvents
 }) => {
+  const { jahr, monat, tag } = useParams()
   const { theme } = useTheme()
   const divRef = useRef(null)
   const viewRef = useRef(null)
@@ -76,16 +77,7 @@ const TagesAnsicht = ({
   }
   const changeView = () => {
     const layer = viewRef.current.value
-    navigate(
-      '/calendar/' +
-        layer +
-        '/' +
-        parseInt(getTodayDate().split('.')[2]) +
-        '/' +
-        parseInt(getTodayDate().split('.')[1]) +
-        '/' +
-        parseInt(getTodayDate().split('.')[0])
-    )
+    navigate('/calendar/' + layer + '/' + jahr + '/' + monat + '/' + tag)
   }
 
   useEffect(() => {
@@ -174,8 +166,7 @@ const TagesAnsicht = ({
         </div>
       </div>
       <div className="w-full h-[91.8%] shadow-inner dark:shadow-gray-200">
-        <div className="w-full flex flex-col items-start justify-start max-h-full pb-4 overflow-y-scroll dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
-          {console.log(filteredevents)}
+        <div className="w-full flex flex-col items-start justify-start max-h-full pb-10 overflow-y-scroll dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
           {filteredevents.filter(
             (e) =>
               e.katBezeichnung !== null &&
@@ -469,7 +460,7 @@ const TagesAnsicht = ({
                         }, [])
                         .map((item, index) => (
                           <div
-                            title={'📅 ' + item.titel + ': ' + item.Bewohner}
+                            title={'📅' + item.titel + ': ' + item.Bewohner}
                             key={'bname' + item + index}
                             className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
                           >

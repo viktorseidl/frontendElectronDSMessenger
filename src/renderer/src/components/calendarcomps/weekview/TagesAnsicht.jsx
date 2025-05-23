@@ -1,87 +1,86 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { MdArrowLeft, MdArrowRight, MdClose } from 'react-icons/md'
 import { FaSearch } from 'react-icons/fa'
-import { Link, useNavigate } from 'react-router-dom'
-import { formatGermanDate, getShiftedDateWeek, getTodayDate } from './functions/functionHandler'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { getShiftedDateWeek, getTodayDate } from './functions/functionHandler'
 import ColumnIntervalRow from './ColumnIntervalRow'
-import {
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-  getWeek,
-  format,
-  addWeeks,
-  subWeeks,
-  isToday,
-  parseISO,
-  isDate
-} from 'date-fns'
+import { startOfWeek, endOfWeek, eachDayOfInterval, getWeek } from 'date-fns'
 import dayjs from 'dayjs'
 import WeekGrid from './WeekGrid'
-import DndProviderWrapper from './DndProviderWrapper'
+import DeleteAlertDialog from './DeleteAlertDialog'
+import { useRoles } from '../../../styles/RoleContext'
+import { util } from 'node-forge'
+import { useFetchAuthAll } from '../../../services/useFetchAll'
+import UpdateEntryStandard from './UpdateEntryStandard'
+import UpdateEntryRRuleSerie from './UpdateEntryRRuleSerie'
 
-const TagesAnsicht = ({ date, publicView, layer }) => {
+const TagesAnsicht = ({
+  date,
+  layer,
+  newEntryAlertValue,
+  newEntryAlertSetter,
+  filteredevents,
+  kategorien,
+  updateFilteredEvents,
+  handleDrop
+}) => {
+  const apache = localStorage.getItem('dbConfig')
+    ? JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost
+    : 'localhost'
+  const { hasPermission } = useRoles()
+  const { jahr, monat, tag } = useParams()
   const divRef = useRef(null)
   const viewRef = useRef(null)
   const navigate = useNavigate()
-  const [minHeight, setMinHeight] = useState(0)
-  const [events, setEvents] = useState([
-    {
-      id: '1',
-      title: 'Meeting',
-      start: new Date('2025-03-17T09:00:00'),
-      end: new Date('2025-03-17T10:00:00')
-    },
-    {
-      id: '2',
-      title: 'Krank',
-      start: new Date('2025-03-19T11:00:00'),
-      end: new Date('2025-03-19T12:00:00')
-    },
-    {
-      id: '3',
-      title: 'Telefon Meeting',
-      start: new Date('2025-03-17T12:00:00'),
-      end: new Date('2025-03-17T13:00:00')
-    },
-    {
-      id: '4',
-      title: 'Mitarbeiter Gespräch',
-      start: new Date('2025-03-17T09:00:00'),
-      end: new Date('2025-03-17T10:00:00')
-    }
-  ])
+  const [deleteMessage, setDeleteMessage] = useState(null)
+  const [deleteObject, setDeleteObject] = useState(null)
+  /* UPDATE STATES */
+  const [updateDialogStandard, setUpdateDialogStandard] = useState(false)
+  const [updateDialogRRule, setUpdateDialogRRule] = useState(false)
+  const [updateObject, setUpdateObject] = useState(null)
+
   const rows = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
   ]
-  const getWeekDays = (date) => {
-    console.log(date)
-    let b = date == null ? new Date() : dayjs(date, 'DD.MM:YYYY').toDate()
-    const startOfCurrentWeek = startOfWeek(b, { weekStartsOn: 1 }) // Week starts on Monday
-    const endOfCurrentWeek = endOfWeek(b, { weekStartsOn: 1 })
-    return eachDayOfInterval({
-      start: startOfCurrentWeek,
-      end: endOfCurrentWeek
-    })
-  }
-  const moveEvent = (eventId, newStart, newEnd) => {
-    setEvents((prev) =>
-      prev.map((event) =>
-        event.id === eventId ? { ...event, start: newStart, end: newEnd } : event
-      )
-    )
-  }
-  const CurrentTimeLine = ({ pixel }) => {
+  const CurrentTimeLine = () => {
     const [currentTime, setCurrentTime] = useState(new Date())
 
+    const verify =
+      filteredevents.filter(
+        (e) =>
+          e.katBezeichnung !== null &&
+          (e.katBezeichnung === 'Feiertag' ||
+            e.katBezeichnung === 'Personalausweis' ||
+            e.katBezeichnung === 'BewohnerGEZ' ||
+            e.katBezeichnung === 'BewohnerGeburtstag' ||
+            e.katBezeichnung === 'BewohnerGenehmigung' ||
+            e.katBezeichnung === 'Pflegewohngeld' ||
+            e.katBezeichnung === 'Tabellenwohngeld' ||
+            e.katBezeichnung === 'Schwerbehindertausweis' ||
+            e.katBezeichnung === 'Pflegevisite' ||
+            e.katBezeichnung === 'Evaluierung' ||
+            e.katBezeichnung === 'Wundauswertung' ||
+            e.katBezeichnung === 'Wundvermessung' ||
+            e.katBezeichnung === 'Evaluierung Betreuung' ||
+            e.katBezeichnung === 'Bradenskala' ||
+            e.katBezeichnung === 'Nortonskala' ||
+            e.katBezeichnung === 'Dekubitusprophylaxemaßnahmen' ||
+            e.katBezeichnung === 'Sicherheitstechnische Kontrolle' ||
+            e.katBezeichnung === 'Evaluierung Kontraktur' ||
+            e.katBezeichnung === 'Ergebniserfassung' ||
+            e.katBezeichnung === 'Geburtstag' ||
+            (e.katBezeichnung === 'rrule' && e.zeitraum == 1440))
+      ).length > 0
+        ? true
+        : false
     useEffect(() => {
       const interval = setInterval(() => {
         setCurrentTime(new Date())
       }, 1000)
       return () => clearInterval(interval)
-    }, [publicView])
-
-    const currentTimePixels = currentTime.getHours() * 60 + currentTime.getMinutes()
+    }, [])
+    const currentTimePixels =
+      currentTime.getHours() * 60 + currentTime.getMinutes() + parseInt(verify ? 183 : 16) //183 on week grid because of ereignisse
     return (
       <div
         className="w-[88%] absolute inset left-32 right-0 h-[1px] dark:bg-red-500 bg-gray-800 z-0"
@@ -102,22 +101,84 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
   }
   const changeView = () => {
     const layer = viewRef.current.value
-    navigate(
-      '/calendar/' +
-        layer +
-        '/' +
-        parseInt(getTodayDate().split('.')[2]) +
-        '/' +
-        parseInt(getTodayDate().split('.')[1]) +
-        '/' +
-        parseInt(getTodayDate().split('.')[0])
-    )
+    navigate('/calendar/' + layer + '/' + jahr + '/' + monat + '/' + tag)
   }
-  useEffect(() => {
-    if (divRef.current && minHeight == 0) {
-      setMinHeight(divRef.current.clientHeight)
-    }
-  }, [])
+  const getWeekDays = (date) => {
+    let b = date == null ? new Date() : dayjs(date, 'DD.MM:YYYY').toDate()
+    const startOfCurrentWeek = startOfWeek(b, { weekStartsOn: 1 }) // Week starts on Monday
+    const endOfCurrentWeek = endOfWeek(b, { weekStartsOn: 1 })
+    return eachDayOfInterval({
+      start: startOfCurrentWeek,
+      end: endOfCurrentWeek
+    })
+  }
+
+  /** HANDLE DELETING EVENTS
+   * @function deleteMyEvent Open Dialog and set Delete Information
+   * @function deleteMessageClose Close DIalog
+   * @function deleteFunction execute Delete
+   */
+  const deleteMyEvent = async (id, type) => {
+    console.log(id, type)
+    if (!hasPermission('delete:calendar')) return
+    setDeleteObject({ id: id, type: type })
+    setDeleteMessage(true)
+  }
+  const deleteMessageClose = () => {
+    setDeleteMessage(null)
+    setDeleteObject(null)
+  }
+  const deleteFunction = async (obj) => {
+    if (!hasPermission('delete:calendar')) return
+    if (deleteObject == null) return
+    const query = await useFetchAuthAll(
+      'http://' +
+        apache +
+        '/electronbackend/index.php?path=deleteEventOnDailyView&a=' +
+        util.encode64(
+          JSON.stringify({
+            id: obj.id,
+            typed: obj.type
+          })
+        ),
+      'ssdsdsd',
+      'DELETE',
+      null,
+      null
+    )
+    updateFilteredEvents()
+    setEvents((prev) => prev.filter((ev) => ev.id !== obj.id))
+  }
+  /**HANDLE UPDATE STANDARD EVENT
+   * @function updateMyEventStandard Open Dialog and set Update Information
+   * @function updateStandardClose Close DIalog and reset Update Information
+   */
+  const updateMyEventStandard = (item) => {
+    if (!hasPermission('update:calendar')) return
+    setUpdateObject(item)
+    setUpdateDialogStandard(true)
+  }
+  const updateStandardClose = () => {
+    setUpdateDialogStandard(false)
+    setUpdateObject(null)
+    updateFilteredEvents()
+  }
+
+  /** HANDLE UPDATE RRULE EVENT
+   * @function updateMyEventRRule Open Dialog and set Update Information
+   * @function updateRRuleClose Close DIalog and reset Update Information
+   */
+  const updateMyEventRRule = (item) => {
+    //if (!hasPermission('update:calendar')) return
+    setUpdateObject(item)
+    setUpdateDialogRRule(true)
+  }
+  const updateRRuleClose = () => {
+    setUpdateDialogRRule(false)
+    setUpdateObject(null)
+    updateFilteredEvents()
+  }
+
   return (
     <div ref={divRef} className="w-full h-full  flex flex-col items-start justify-start ">
       <div className="w-full h-20 py-4 px-4 flex flex-row items-center justify-start gap-x-2">
@@ -227,19 +288,89 @@ const TagesAnsicht = ({ date, publicView, layer }) => {
         </div>
       </div>
       <div className="w-full h-[91.8%] shadow-inner dark:shadow-gray-200">
-        <div className="w-full flex flex-col items-start justify-start max-h-full overflow-y-scroll dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
+        <div className="w-full flex flex-col items-start justify-start max-h-full pb-10 overflow-y-scroll dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200">
           <div className="w-full relative  dark:bg-gray-900 bg-blue-50 flex flex-row items-start justify-start ">
             <div className="w-40 flex flex-col dark:bg-gray-800 bg-white items-start justify-evenly h-full  divide-y dark:divide-gray-700 divide-gray-300">
-              <div className="w-full h-[40px] text-sm dark:bg-gray-950 bg-stone-100">&nbsp;</div>
+              <div className="w-full h-[50px] text-sm dark:bg-gray-950 bg-stone-100">&nbsp;</div>
+              {filteredevents.filter(
+                (e) =>
+                  e.katBezeichnung !== null &&
+                  (e.katBezeichnung === 'Feiertag' ||
+                    e.katBezeichnung === 'Personalausweis' ||
+                    e.katBezeichnung === 'BewohnerGEZ' ||
+                    e.katBezeichnung === 'BewohnerGeburtstag' ||
+                    e.katBezeichnung === 'BewohnerGenehmigung' ||
+                    e.katBezeichnung === 'Pflegewohngeld' ||
+                    e.katBezeichnung === 'Tabellenwohngeld' ||
+                    e.katBezeichnung === 'Schwerbehindertausweis' ||
+                    e.katBezeichnung === 'Pflegevisite' ||
+                    e.katBezeichnung === 'Evaluierung' ||
+                    e.katBezeichnung === 'Wundauswertung' ||
+                    e.katBezeichnung === 'Wundvermessung' ||
+                    e.katBezeichnung === 'Evaluierung Betreuung' ||
+                    e.katBezeichnung === 'Bradenskala' ||
+                    e.katBezeichnung === 'Nortonskala' ||
+                    e.katBezeichnung === 'Dekubitusprophylaxemaßnahmen' ||
+                    e.katBezeichnung === 'Sicherheitstechnische Kontrolle' ||
+                    e.katBezeichnung === 'Evaluierung Kontraktur' ||
+                    e.katBezeichnung === 'Ergebniserfassung' ||
+                    e.katBezeichnung === 'Geburtstag' ||
+                    (e.katBezeichnung === 'rrule' && e.zeitraum == 1440))
+              ).length > 0 ? (
+                <div className="w-full h-28 text-sm dark:bg-gray-950 bg-stone-100">
+                  🗓️ Ereignisse
+                </div>
+              ) : (
+                ''
+              )}
               {rows.map((item, index) => (
                 <ColumnIntervalRow key={index + item + '1stcolumn'} T={item} />
               ))}
             </div>
-            <DndProviderWrapper>
-              <WeekGrid events={events} moveEvent={moveEvent} date={getWeekDays(date)[0]} />
-            </DndProviderWrapper>
+            <div className="w-full h-full bg-transparent">
+              <WeekGrid
+                handleDrop={handleDrop}
+                date={getWeekDays(date)[0]}
+                newEntryAlertValue={newEntryAlertValue}
+                newEntryAlertSetter={newEntryAlertSetter}
+                filteredevents={filteredevents}
+                updateFilteredEvents={updateFilteredEvents}
+                kategorien={kategorien}
+                deleteMyEvent={deleteMyEvent}
+                updateEventStandard={updateMyEventStandard}
+                updateEventRRule={updateMyEventRRule}
+              />
+            </div>
             <CurrentTimeLine pixel={2.5} />
           </div>
+          <DeleteAlertDialog
+            show={deleteMessage}
+            cancel={deleteMessageClose}
+            deleteObj={deleteObject}
+            deletefunc={deleteFunction}
+          />
+          {updateDialogStandard ? (
+            <UpdateEntryStandard
+              show={updateDialogStandard}
+              close={updateStandardClose}
+              title={'Termin bearbeiten'}
+              updateObject={updateObject}
+              kategorien={kategorien}
+            />
+          ) : (
+            ''
+          )}
+          {updateDialogRRule ? (
+            <UpdateEntryRRuleSerie
+              show={updateDialogRRule}
+              close={updateRRuleClose}
+              title={'Serien-Termin bearbeiten'}
+              updateObject={updateObject}
+              kategorien={kategorien}
+            />
+          ) : (
+            ''
+          )}
         </div>
       </div>
     </div>

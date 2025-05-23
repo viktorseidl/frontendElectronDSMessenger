@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatDateTimeAlarmToString } from '../dayview/functions/functionHandler'
+import { formatDateTimeAlarmToStringEntryInterface } from './functionHandler'
 import RRuleFormZusammenfassungYearly from './RRuleFormZusammenfassungYearly'
 import RRuleFormZusammenfassungMontly from './RRuleFormZusammenfassungMontly'
 
@@ -29,7 +29,7 @@ const RRuleFormZusammenfassung = ({
             <div className="w-full">
               Startet am:{' '}
               {rruleTerminStartDatumZeit != null
-                ? formatDateTimeAlarmToString(rruleTerminStartDatumZeit).split(' ')[0]
+                ? formatDateTimeAlarmToStringEntryInterface(rruleTerminStartDatumZeit).split(' ')[0]
                 : 'Kein Startdatum vorhanden'}
             </div>
             <div className="w-full">
@@ -38,7 +38,9 @@ const RRuleFormZusammenfassung = ({
                 ? 'Kein Enddatum'
                 : rruleTerminEndeType == 'DATE'
                   ? rruleTerminEndeTypeDatum != null
-                    ? formatDateTimeAlarmToString(rruleTerminEndeTypeDatum).split(' ')[0]
+                    ? formatDateTimeAlarmToStringEntryInterface(rruleTerminEndeTypeDatum).split(
+                        ' '
+                      )[0]
                     : 'Kein Enddatum vorhanden'
                   : ''}{' '}
             </div>
@@ -47,7 +49,7 @@ const RRuleFormZusammenfassung = ({
             <div className="w-full">
               Uhrzeit:{' '}
               {rruleTerminStartDatumZeit != null
-                ? formatDateTimeAlarmToString(rruleTerminStartDatumZeit).split(' ')[1]
+                ? formatDateTimeAlarmToStringEntryInterface(rruleTerminStartDatumZeit).split(' ')[1]
                 : 'HH:MM'}
             </div>
             <div className="w-full">

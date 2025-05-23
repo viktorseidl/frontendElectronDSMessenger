@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDrop } from 'react-dnd'
 import Event from './Event'
-import { useRoles } from '../../../styles/RoleContext'
 import EventRR from './EventRR'
 const TimeSlot = ({
   time,
@@ -51,7 +50,6 @@ const TimeSlot = ({
             <EventRR
               key={event.id + index}
               event={event}
-              ityp={ityp}
               deleteEvent={deleteEvent}
               updateEventRRule={updateEventRRule}
             />

@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { registerLocale } from 'react-datepicker'
 import { de } from 'date-fns/locale/de'
-import { MdRepeat, MdTimelapse, MdTimer } from 'react-icons/md'
+import { MdRepeat, MdTimer } from 'react-icons/md'
 registerLocale('de-DE', de)
 const RRuleFormSerienmuster = ({
   rruleterminfrequenz,

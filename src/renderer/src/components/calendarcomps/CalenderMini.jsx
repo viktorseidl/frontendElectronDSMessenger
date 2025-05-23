@@ -2,15 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { MdArrowLeft, MdArrowRight } from 'react-icons/md'
 import dayjs from 'dayjs'
 import 'dayjs/locale/de' // German month names
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import {
-  getShiftedDate,
-  getShiftedDateMonth,
-  getTodayDate
-} from './dayview/functions/functionHandler'
+import { Link } from 'react-router-dom'
+import { getShiftedDateMonthMini } from './functionHandler'
 
 const CalendarMini = ({ date, layout }) => {
-  const navigate = useNavigate()
   const [initialDate, setInitialDate] = useState(dayjs(date, 'DD.MM.YYYY').locale('de'))
   const [currentDate, setCurrentDate] = useState(initialDate)
 
@@ -40,11 +35,11 @@ const CalendarMini = ({ date, layout }) => {
               '/calendar/' +
               layout +
               '/' +
-              parseInt(getShiftedDateMonth(true, currentDate).split('.')[2]) +
+              parseInt(getShiftedDateMonthMini(true, currentDate).split('.')[2]) +
               '/' +
-              parseInt(getShiftedDateMonth(true, currentDate).split('.')[1]) +
+              parseInt(getShiftedDateMonthMini(true, currentDate).split('.')[1]) +
               '/' +
-              parseInt(getShiftedDateMonth(true, currentDate).split('.')[0])
+              parseInt(getShiftedDateMonthMini(true, currentDate).split('.')[0])
             }
             className="p-1 bg-transparent hover:bg-blue-300/40 rounded-full text-2xl"
           >
@@ -55,11 +50,11 @@ const CalendarMini = ({ date, layout }) => {
               '/calendar/' +
               layout +
               '/' +
-              parseInt(getShiftedDateMonth(false, currentDate).split('.')[2]) +
+              parseInt(getShiftedDateMonthMini(false, currentDate).split('.')[2]) +
               '/' +
-              parseInt(getShiftedDateMonth(false, currentDate).split('.')[1]) +
+              parseInt(getShiftedDateMonthMini(false, currentDate).split('.')[1]) +
               '/' +
-              parseInt(getShiftedDateMonth(false, currentDate).split('.')[0])
+              parseInt(getShiftedDateMonthMini(false, currentDate).split('.')[0])
             }
             className="p-1 bg-transparent hover:bg-blue-300/40 rounded-full text-2xl"
           >
