@@ -7,6 +7,7 @@ import { filterOnMonthShortener, getTodayDate } from './functions/functionHandle
 import dayjs from 'dayjs'
 import { util } from 'node-forge'
 import MonatGrid from './MonatGrid'
+import Search from './Search'
 
 const TagesAnsicht = ({
   date,
@@ -33,87 +34,14 @@ const TagesAnsicht = ({
   const apache = localStorage.getItem('dbConfig')
     ? JSON.parse(util.decode64(JSON.parse(localStorage.getItem('dbConfig')).value)).localhost
     : 'localhost'
-  const { hasPermission } = useRoles()
   const { jahr, monat, tag } = useParams()
   const viewRef = useRef(null)
   const navigate = useNavigate()
-  const [deleteMessage, setDeleteMessage] = useState(null)
-  const [deleteObject, setDeleteObject] = useState(null)
-  /* UPDATE STATES */
-  const [updateDialogStandard, setUpdateDialogStandard] = useState(false)
-  const [updateDialogRRule, setUpdateDialogRRule] = useState(false)
-  const [updateObject, setUpdateObject] = useState(null)
 
   const changeView = () => {
     const layer = viewRef.current.value
     navigate('/calendar/' + layer + '/' + jahr + '/' + monat + '/' + tag)
   }
-  /** HANDLE DELETING EVENTS
-   * @function deleteMyEvent Open Dialog and set Delete Information
-   * @function deleteMessageClose Close DIalog
-   * @function deleteFunction execute Delete
-   */
-  /*const deleteMyEvent = async (id, type) => {
-    console.log(id, type)
-    if (!hasPermission('delete:calendar')) return
-    setDeleteObject({ id: id, type: type })
-    setDeleteMessage(true)
-  }
-  const deleteMessageClose = () => {
-    setDeleteMessage(null)
-    setDeleteObject(null)
-  }
-  const deleteFunction = async (obj) => {
-    if (!hasPermission('delete:calendar')) return
-    if (deleteObject == null) return
-    const query = await useFetchAuthAll(
-      'http://' +
-        apache +
-        '/electronbackend/index.php?path=deleteEventOnDailyView&a=' +
-        util.encode64(
-          JSON.stringify({
-            id: obj.id,
-            typed: obj.type
-          })
-        ),
-      'ssdsdsd',
-      'DELETE',
-      null,
-      null
-    )
-    updateFilteredEvents()
-    setEvents((prev) => prev.filter((ev) => ev.id !== obj.id))
-  }*/
-
-  /**HANDLE UPDATE STANDARD EVENT
-   * @function updateMyEventStandard Open Dialog and set Update Information
-   * @function updateStandardClose Close DIalog and reset Update Information
-   */
-  /*const updateMyEventStandard = (item) => {
-    if (!hasPermission('update:calendar')) return
-    setUpdateObject(item)
-    setUpdateDialogStandard(true)
-  }
-  const updateStandardClose = () => {
-    setUpdateDialogStandard(false)
-    setUpdateObject(null)
-    updateFilteredEvents()
-  }*/
-
-  /** HANDLE UPDATE RRULE EVENT
-   * @function updateMyEventRRule Open Dialog and set Update Information
-   * @function updateRRuleClose Close DIalog and reset Update Information
-   */
-  /*const updateMyEventRRule = (item) => {
-    //if (!hasPermission('update:calendar')) return
-    setUpdateObject(item)
-    setUpdateDialogRRule(true)
-  }
-  const updateRRuleClose = () => {
-    setUpdateDialogRRule(false)
-    setUpdateObject(null)
-    updateFilteredEvents()
-  }*/
 
   const getShiftedDateYear = (goBack, dateString) => {
     const parsedDate = dayjs(dateString, 'DD.MM.YYYY')
@@ -175,22 +103,7 @@ const TagesAnsicht = ({
         </div>
         <div className="w-[60%] h-20 flex flex-col items-center justify-center ">
           <div className="w-full h-full  flex flex-row items-center justify-between gap-x-2">
-            <label className="  w-[70%] flex flex-col items-center justify-center relative">
-              <input
-                title="Suche nach Einträgen"
-                className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
-                placeholder="Suche nach..."
-                value={''}
-                onChange={(e) => 'handleFilterChange("Betrefftxt", e.target.value)'}
-              />
-              <FaSearch className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
-              <MdClose
-                onClick={() => 'handleFilterChange("Betrefftxt", "")'}
-                className={
-                  'absolute hidden cursor-pointer inset right-3 text-2xl top-[0.1rem] text-gray-500 hover:text-gray-400'
-                }
-              />
-            </label>
+            <Search filteredevents={filteredevents} />
             <select
               title="Kalenderansicht ändern"
               ref={viewRef}
@@ -204,7 +117,6 @@ const TagesAnsicht = ({
               <option value={'week'}>Woche</option>
               <option value={'month'}>Monat</option>
               <option value={'year'}>Jahr</option>
-              <option value={'agenda'}>Terminübersicht</option>
             </select>
           </div>
         </div>

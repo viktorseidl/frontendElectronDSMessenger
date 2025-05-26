@@ -8,7 +8,6 @@ const Tag = ({ day, month, filteredevents, setLoading }) => {
     filteredevents.filter((e) => (e.ddate != undefined ? format(day, 'dd.MM.Y') == e.ddate : ''))
       .length > 0
   const isToday = isSameDay(day, new Date())
-  console.log(format(day, 'Y-MM-dd'), isToday, hasEvents, filteredevents)
   const [dailyInformation, setDailyInformation] = useState(null)
   const [showDailyInformation, setShowDailyInformation] = useState(false)
   const showDayList = (day) => {
@@ -22,6 +21,7 @@ const Tag = ({ day, month, filteredevents, setLoading }) => {
     setDailyInformation(null)
     setShowDailyInformation(false)
   }
+
   useEffect(() => {
     requestAnimationFrame(() => {
       setLoading()

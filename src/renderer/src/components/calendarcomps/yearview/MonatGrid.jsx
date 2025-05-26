@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import 'dayjs/locale/de' // German month names
+import 'dayjs/locale/de'
 import { useParams } from 'react-router-dom'
-import DayLayer from './DayLayer'
 import {
   format,
   startOfMonth,

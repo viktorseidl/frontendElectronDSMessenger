@@ -13,6 +13,7 @@ import { util } from 'node-forge'
 import { useFetchAuthAll } from '../../../services/useFetchAll'
 import UpdateEntryStandard from './UpdateEntryStandard'
 import UpdateEntryRRuleSerie from './UpdateEntryRRuleSerie'
+import Search from './Search'
 
 const TagesAnsicht = ({
   date,
@@ -253,22 +254,12 @@ const TagesAnsicht = ({
         </div>
         <div className="w-[60%] h-20 flex flex-col items-center justify-center ">
           <div className="w-full h-full  flex flex-row items-center justify-between gap-x-2">
-            <label className="  w-[70%] flex flex-col items-center justify-center relative">
-              <input
-                title="Suche nach Einträgen"
-                className=" w-full font-[arial]  dark:placeholder:text-blue-200/60 bg-[#edeae9] dark:text-white dark:hover:bg-gray-800 hover:bg-blue-300/40 placeholder:text-gray-500 rounded text-gray-800 dark:bg-transparent ring-1 ring-gray-700   outline-none py-2 px-3 pl-14 text-sm"
-                placeholder="Suche nach..."
-                value={''}
-                onChange={(e) => 'handleFilterChange("Betrefftxt", e.target.value)'}
-              />
-              <FaSearch className="absolute inset left-4 text-lg top-[0.55rem] dark:text-blue-200/60 text-gray-900/40 " />
-              <MdClose
-                onClick={() => 'handleFilterChange("Betrefftxt", "")'}
-                className={
-                  'absolute hidden cursor-pointer inset right-3 text-2xl top-[0.1rem] text-gray-500 hover:text-gray-400'
-                }
-              />
-            </label>
+            <Search
+              filteredevents={filteredevents}
+              deleteMyEvent={deleteMyEvent}
+              updateEventStandard={updateMyEventStandard}
+              updateEventRRule={updateMyEventRRule}
+            />
             <select
               title="Kalenderansicht ändern"
               ref={viewRef}
@@ -282,7 +273,6 @@ const TagesAnsicht = ({
               <option value={'week'}>Woche</option>
               <option value={'month'}>Monat</option>
               <option value={'year'}>Jahr</option>
-              <option value={'agenda'}>Terminübersicht</option>
             </select>
           </div>
         </div>

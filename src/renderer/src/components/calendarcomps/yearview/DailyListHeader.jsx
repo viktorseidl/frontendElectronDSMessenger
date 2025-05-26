@@ -1,11 +1,9 @@
 import React from 'react'
-import { MdClose, MdDelete, MdEdit, MdList } from 'react-icons/md'
+import { MdClose, MdList } from 'react-icons/md'
 import imgs from './../../../assets/Logo.png'
-import { format } from 'date-fns'
+import { format, isSameDay } from 'date-fns'
 import { checkSeason, filterOnKategorieShortener } from './functions/functionHandler'
 import { useTheme } from '../../../styles/ThemeContext'
-import { useRoles } from '../../../styles/RoleContext'
-import { util } from 'node-forge'
 import Winter from './../../../assets/winter.png'
 import Spring from './../../../assets/spring.png'
 import Summer from './../../../assets/summer.png'
@@ -19,10 +17,10 @@ import Christmas from './../../../assets/christmas.png'
 import Pfingsten from './../../../assets/pfingsten.png'
 import TagEinheit from './../../../assets/tagdereinheit.png'
 import TagArbeit from './../../../assets/tagarbeit.png'
+import { useNavigate } from 'react-router-dom'
 const DailyListHeader = ({ information, show, closer }) => {
   const { theme } = useTheme()
-  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
-  const { hasPermission } = useRoles()
+  const navigate = useNavigate()
   const events = information !== null ? information.events : null
   const day = information !== null ? information.daystamp : null
   const myevents =
@@ -38,18 +36,22 @@ const DailyListHeader = ({ information, show, closer }) => {
       closer()
     }
   }
-  const updateshow = (id, type) => {
-    if (type == 'standard') {
-      updateEventStandard(id)
-    } else {
-      updateEventRRule(id)
-    }
+
+  const navigateOnDoubleClick = () => {
+    navigate(
+      '/calendar/day/' +
+        parseInt(format(day, 'Y')) +
+        '/' +
+        parseInt(format(day, 'MM')) +
+        '/' +
+        parseInt(format(day, 'dd'))
+    )
   }
   return (
     <>
       {show && (
         <div
-          className="fixed inset-0 z-10  dark:bg-gray-600 bg-black dark:bg-opacity-50 bg-opacity-40 flex justify-center items-center"
+          className="fixed inset-0 z-20  dark:bg-gray-600 bg-black dark:bg-opacity-50 bg-opacity-40 flex justify-center items-center"
           onClick={(e) => closertab(e)}
         >
           <div
@@ -70,7 +72,10 @@ const DailyListHeader = ({ information, show, closer }) => {
               </span>
               <MdClose onClick={closer} className="inline cursor-pointer" />
             </div>
-            <div className="w-full flex flex-col dark:bg-gray-900 bg-white pb-4 ">
+            <div
+              onDoubleClick={navigateOnDoubleClick}
+              className="w-full flex flex-col dark:bg-gray-900 bg-white pb-4 "
+            >
               <div className="w-full h-[40rem]   flex flex-col items-center justify-start px-4 py-4 overflow-auto  dark:scrollbar-thumb-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-track-gray-600 scrollbar-track-gray-200 ">
                 <div className="w-full h-full mb-6  flex flex-col items-center justify-start ">
                   <div className="w-full mb-6 mt-2">
@@ -105,6 +110,13 @@ const DailyListHeader = ({ information, show, closer }) => {
                       className="obeject-cover w-full h-40 rounded "
                     />
                   </div>
+                  {isSameDay(day, new Date()) ? (
+                    <div className="w-full font-[Arial] uppercase  dark:text-white text-black dark:bg-blue-800/80 bg-blue-500/50 border dark:border-blue-700 border-blue-400 pl-4 py-2 mb-4 text-xs ">
+                      HEUTE
+                    </div>
+                  ) : (
+                    ''
+                  )}
                   <div className="w-full font-[Arial] uppercase  dark:text-gray-300 text-gray-700 dark:bg-blue-900/40 bg-blue-700/10 border dark:border-gray-700 border-gray-400 pl-4 py-2 mb-4 text-xs ">
                     🔵 Ganztags-Termine:
                   </div>

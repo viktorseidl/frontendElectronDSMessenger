@@ -9,6 +9,7 @@ import { util } from 'node-forge'
 import { useRoles } from '../styles/RoleContext'
 import { getGermanHolidays } from '../components/calendarcomps/yearview/functions/functionHandler'
 import { useFetchAuthAll } from '../services/useFetchAll'
+import NewCalendarEntryDialog from '../components/calendarcomps/NewCalendarEntryDialog'
 const CalendarYear = () => {
   const Wohnbereiche = JSON.parse(util.decode64(window.sessionStorage.getItem('userWohnbereiche')))
   const apache = localStorage.getItem('dbConfig')
@@ -124,6 +125,10 @@ const CalendarYear = () => {
       />
     )
   })
+  const closeNewEntryDialog = () => {
+    setNewEntryAlert(!newEntryAlert)
+    getEventsDB()
+  }
   useEffect(() => {
     if (jahr && monat && tag) {
       getEventsDB()
@@ -320,6 +325,12 @@ const CalendarYear = () => {
           </div>
         </div>
       </div>
+      <NewCalendarEntryDialog
+        show={newEntryAlert}
+        close={closeNewEntryDialog}
+        title={'Neuer Termin'}
+        kategorien={kategorien}
+      />
     </div>
   )
 }
