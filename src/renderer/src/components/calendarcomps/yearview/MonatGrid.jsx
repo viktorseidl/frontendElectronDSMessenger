@@ -64,15 +64,19 @@ const MonatGrid = ({ date, monthnum, filteredevents }) => {
                   day={day}
                   month={monthnum}
                   filteredevents={
-                    filteredevents.filter(
-                      (e) =>
-                        (e.datum === format(day, 'Y-MM-dd') && e.ddate == undefined) ||
-                        (e.ddate != undefined && e.ddate === format(day, 'dd.MM.Y'))
+                    filteredevents.filter((e) =>
+                      e.ddate == undefined
+                        ? e.datum == format(day, 'Y-MM-dd') ||
+                          (dayjs(e.realtimestartDate, 'DD.MM.YYYY').toDate() <= day &&
+                            dayjs(e.realtimeendDate, 'DD.MM.YYYY').toDate() >= day)
+                        : e.ddate === format(day, 'dd.MM.Y')
                     ).length > 0
-                      ? filteredevents.filter(
-                          (e) =>
-                            (e.datum === format(day, 'Y-MM-dd') && e.ddate == undefined) ||
-                            (e.ddate != undefined && e.ddate === format(day, 'dd.MM.Y'))
+                      ? filteredevents.filter((e) =>
+                          e.ddate == undefined
+                            ? e.datum == format(day, 'Y-MM-dd') ||
+                              (dayjs(e.realtimestartDate, 'DD.MM.YYYY').toDate() <= day &&
+                                dayjs(e.realtimeendDate, 'DD.MM.YYYY').toDate() >= day)
+                            : e.ddate === format(day, 'dd.MM.Y')
                         )
                       : []
                   }

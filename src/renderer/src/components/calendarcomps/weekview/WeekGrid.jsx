@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { format } from 'date-fns'
+import { format, isDate } from 'date-fns'
 import DayColumn from './DayColumn'
 import { MdPerson } from 'react-icons/md'
 import { useTheme } from '../../../styles/ThemeContext'
 import NewCalendarEntryDialog from '../NewCalendarEntryDialog'
 import DailyListHeader from './DailyListHeader'
 import { filterOnKategorieShortener } from './functions/functionHandler'
+import dayjs from 'dayjs'
+import { util } from 'node-forge'
 
 const WeekGrid = ({
   handleDrop,
@@ -17,9 +19,14 @@ const WeekGrid = ({
   kategorien,
   deleteMyEvent,
   updateEventStandard,
-  updateEventRRule
+  updateEventRRule,
+  showDayList,
+  closeDayList,
+  dailyInformation,
+  showDailyInformation
 }) => {
   const { theme } = useTheme()
+  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const weekStart = date
   const feiertage = filterOnKategorieShortener(filteredevents, 'Feiertag')
   const geburtstag = filterOnKategorieShortener(filteredevents, 'Geburtstag')
@@ -51,23 +58,11 @@ const WeekGrid = ({
     filteredevents,
     'Schwerbehindertausweis'
   )
-  const [dailyInformation, setDailyInformation] = useState(null)
-  const [showDailyInformation, setShowDailyInformation] = useState(false)
   const closeNewEntryDialog = () => {
     newEntryAlertSetter(!newEntryAlertValue)
     updateFilteredEvents()
   }
-  const showDayList = (day) => {
-    setDailyInformation({
-      events: filteredevents,
-      daystamp: day
-    })
-    setShowDailyInformation(true)
-  }
-  const closeDayList = () => {
-    setDailyInformation(null)
-    setShowDailyInformation(false)
-  }
+
   useEffect(() => {}, [date])
   return (
     <>
@@ -545,7 +540,12 @@ const WeekGrid = ({
                       .map((item, index) => (
                         <div
                           title={
-                            '🔁 Serie: ' +
+                            (item.isprivate == false &&
+                            item.ersteller.toString().toUpperCase() !=
+                              User.Name.toString().toUpperCase()
+                              ? '🔁🌍 - '
+                              : '🔁🔒 Privat - ') +
+                            ' Serie: ' +
                             item.titel +
                             ' | Betreff: ' +
                             item.betreff +
@@ -560,7 +560,12 @@ const WeekGrid = ({
                           onClick={() => showDayList(day)}
                         >
                           <div className="w-full py-0.5 px-2 flex flex-row items-center text-xs justify-start bg-white/65 truncate  rounded">
-                            🔁 {item.titel + (item.betreff ? item.betreff : 'keine Angabe')}
+                            {item.isprivate == false &&
+                            item.ersteller.toString().toUpperCase() !=
+                              User.Name.toString().toUpperCase()
+                              ? '🔁🌍 - '
+                              : '🔁🔒 Privat - '}{' '}
+                            {item.titel + (item.betreff ? item.betreff : 'keine Angabe')}
                           </div>
                         </div>
                       ))}
@@ -583,7 +588,10 @@ const WeekGrid = ({
                 day={day}
                 events={filteredevents.filter(
                   (a) =>
-                    (a.datum == day.toISOString().slice(0, 10) && a.katBezeichnung == 'Termin') ||
+                    ((a.datum == day.toISOString().slice(0, 10) ||
+                      (dayjs(a.realtimestartDate, 'DD.MM.YYYY').toDate().setHours(12) <= day &&
+                        dayjs(a.realtimeendDate, 'DD.MM.YYYY').toDate().setHours(12) >= day)) &&
+                      a.katBezeichnung == 'Termin') ||
                     (a.datum == day.toISOString().slice(0, 10) &&
                       a.katBezeichnung == 'rrule' &&
                       a.zeitraum != 1440)

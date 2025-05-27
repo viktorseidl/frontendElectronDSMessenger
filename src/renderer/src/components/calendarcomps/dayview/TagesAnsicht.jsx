@@ -12,6 +12,9 @@ import {
 import ColumnIntervalRow from './ColumnIntervalRow'
 import { useTheme } from '../../../styles/ThemeContext'
 import UpdateEntryRRuleSerie from './UpdateEntryRRuleSerie'
+import { useRoles } from '../../../styles/RoleContext'
+import { util } from 'node-forge'
+import { addMinutesToTime } from '../functionHandler'
 
 const TagesAnsicht = ({
   date,
@@ -22,6 +25,8 @@ const TagesAnsicht = ({
   kategorien,
   updateFilteredEvents
 }) => {
+  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
+  const { hasPermission } = useRoles()
   const { jahr, monat, tag } = useParams()
   const { theme } = useTheme()
   const divRef = useRef(null)
@@ -1191,37 +1196,108 @@ const TagesAnsicht = ({
                       {filteredevents
                         .filter((e) => e.katBezeichnung === 'rrule')
                         .map((item, index) => (
-                          <div
-                            key={'sjdhopo' + item + index + 'sds'}
-                            onClick={() => updateMyEventRRule(item)}
-                            className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer"
-                          >
-                            <div
-                              title={
-                                '🔁 Serie: ' +
-                                item.titel +
-                                ' | Betreff: ' +
-                                item.betreff +
-                                ' | Zeitraum: ' +
-                                (item.zeitraum == 1440 ? 'ganztags' : `${item.von} - ${item.bis}`)
-                              }
-                              key={'bname' + item + index}
-                              className=" p-2 py-1 flex flex-col items-center justify-start rounded-sm "
-                              style={{
-                                background: theme ? item.boxColor + '55' : item.boxColor + '88'
-                              }}
-                            >
-                              <a className="w-full truncate"> 🔁 {item.titel}</a>
-                              <a className="w-full truncate">🗒️ {item.betreff}</a>
-                              {item.zeitraum == 1440 ? (
-                                <a className="w-full truncate">🔵 ganztags</a>
-                              ) : (
-                                <a className="w-full truncate">
-                                  🕟 {item.von} - {item.bis}
-                                </a>
-                              )}
-                            </div>
-                          </div>
+                          <>
+                            {(hasPermission('update:calendar') &&
+                              item.ersteller.toString().toUpperCase() ==
+                                User.Name.toString().toUpperCase()) ||
+                            (hasPermission('update:calendar') &&
+                              item.ersteller.toString().toUpperCase() !=
+                                User.Name.toString().toUpperCase()) ||
+                            (hasPermission('update:calendar') && User.usertypeVP != 'P') ? (
+                              <div
+                                key={'sjdhopo' + item + index + 'sds'}
+                                onClick={() => updateMyEventRRule(item)}
+                                className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer"
+                              >
+                                <div
+                                  title={
+                                    (item.isprivate == false &&
+                                    item.ersteller.toString().toUpperCase() !=
+                                      User.Name.toString().toUpperCase()
+                                      ? '🔁🌍 -'
+                                      : '🔁🔒 Privat - ') +
+                                    ' Serie: ' +
+                                    item.titel +
+                                    ' | Betreff: ' +
+                                    item.betreff +
+                                    ' | Zeitraum: ' +
+                                    (item.zeitraum == 1440
+                                      ? 'ganztags'
+                                      : `${item.von} - ${addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}`)
+                                  }
+                                  key={'bname' + item + index}
+                                  className=" p-2 py-1 flex flex-col items-center justify-start rounded-sm "
+                                  style={{
+                                    background: theme ? item.boxColor + '55' : item.boxColor + '88'
+                                  }}
+                                >
+                                  <a className="w-full truncate">
+                                    {' '}
+                                    {item.isprivate == false &&
+                                    item.ersteller.toString().toUpperCase() !=
+                                      User.Name.toString().toUpperCase()
+                                      ? '🔁🌍 -'
+                                      : '🔁🔒 Privat - '}{' '}
+                                    {item.titel}
+                                  </a>
+                                  <a className="w-full truncate">🗒️ {item.betreff}</a>
+                                  {item.zeitraum == 1440 ? (
+                                    <a className="w-full truncate">🔵 ganztags</a>
+                                  ) : (
+                                    <a className="w-full truncate">
+                                      🕟 {item.von} -{' '}
+                                      {addMinutesToTime(
+                                        item.von.toString(),
+                                        parseInt(item.zeitraum)
+                                      )}
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            ) : (
+                              <div
+                                key={'sjdhopo' + item + index + 'sds'}
+                                className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer"
+                              >
+                                <div
+                                  title={
+                                    (item.isprivate == false &&
+                                    item.ersteller.toString().toUpperCase() !=
+                                      User.Name.toString().toUpperCase()
+                                      ? '🔁🌍 -'
+                                      : '🔁🔒 Privat - ') +
+                                    ' Serie: ' +
+                                    item.titel +
+                                    ' | Betreff: ' +
+                                    item.betreff +
+                                    ' | Zeitraum: ' +
+                                    (item.zeitraum == 1440
+                                      ? 'ganztags'
+                                      : `${item.von} - ${addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}`)
+                                  }
+                                  key={'bname' + item + index}
+                                  className=" p-2 py-1 flex flex-col items-center justify-start rounded-sm "
+                                  style={{
+                                    background: theme ? item.boxColor + '55' : item.boxColor + '88'
+                                  }}
+                                >
+                                  <a className="w-full truncate"> 🔁 {item.titel}</a>
+                                  <a className="w-full truncate">🗒️ {item.betreff}</a>
+                                  {item.zeitraum == 1440 ? (
+                                    <a className="w-full truncate">🔵 ganztags</a>
+                                  ) : (
+                                    <a className="w-full truncate">
+                                      🕟 {item.von} -{' '}
+                                      {addMinutesToTime(
+                                        item.von.toString(),
+                                        parseInt(item.zeitraum)
+                                      )}
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </>
                         ))}
                     </div>
                   </div>

@@ -9,7 +9,10 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import DraggableEvent from './DraggableEvent'
 import { useTheme } from '../../../styles/ThemeContext'
+import { util } from 'node-forge'
+import { addMinutesToTime } from '../functionHandler'
 const DayContainer = ({ filteredevents, day, handleDrop, showDayList }) => {
+  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const { theme } = useTheme()
   const navigate = useNavigate()
   const feiertage = filterOnKategorieShortener(filteredevents, 'Feiertag')
@@ -179,7 +182,12 @@ const DayContainer = ({ filteredevents, day, handleDrop, showDayList }) => {
                       .map((item, index) => (
                         <div
                           title={
-                            '🔁 Serie: ' +
+                            (item.isprivate == false &&
+                            item.ersteller.toString().toUpperCase() !=
+                              User.Name.toString().toUpperCase()
+                              ? '🔁🌍 -'
+                              : '🔁🔒 Privat - ') +
+                            ' Serie: ' +
                             item.titel +
                             ' | Betreff: ' +
                             item.betreff +
@@ -194,7 +202,12 @@ const DayContainer = ({ filteredevents, day, handleDrop, showDayList }) => {
                           onClick={() => showDayList(day)}
                         >
                           <div className="w-full py-0.5 px-2 flex flex-row items-center text-xs justify-start bg-white/65 truncate  rounded">
-                            🔁 {item.titel + (item.betreff ? item.betreff : 'keine Angabe')}
+                            {item.isprivate == false &&
+                            item.ersteller.toString().toUpperCase() !=
+                              User.Name.toString().toUpperCase()
+                              ? '🔁🌍 -'
+                              : '🔁🔒 Privat - '}{' '}
+                            {item.titel + (item.betreff ? ' ' + item.betreff : 'keine Angabe')}
                           </div>
                         </div>
                       ))}
@@ -514,7 +527,10 @@ const DayContainer = ({ filteredevents, day, handleDrop, showDayList }) => {
               {filteredevents
                 .filter(
                   (a) =>
-                    (a.datum == format(day, 'Y-MM-dd') && a.katBezeichnung == 'Termin') ||
+                    (a.katBezeichnung == 'Termin' &&
+                      (a.datum == format(day, 'Y-MM-dd') ||
+                        (dayjs(a.realtimestartDate, 'DD.MM.YYYY').toDate().setHours(12) <= day &&
+                          dayjs(a.realtimeendDate, 'DD.MM.YYYY').toDate().setHours(12) >= day))) ||
                     (a.datum == format(day, 'Y-MM-dd') &&
                       a.katBezeichnung == 'rrule' &&
                       a.zeitraum != 1440)
@@ -525,23 +541,33 @@ const DayContainer = ({ filteredevents, day, handleDrop, showDayList }) => {
                   ) : (
                     <div
                       title={
-                        '(' +
-                        item.realtimestart +
-                        ' - ' +
-                        item.realtimeend +
-                        ') | ' +
+                        (item.isprivate == false &&
+                        item.ersteller.toString().toUpperCase() !=
+                          User.Name.toString().toUpperCase()
+                          ? '🔁🌍 - '
+                          : '🔁🔒 - ') +
+                        ' Serie: ' +
                         item.titel +
-                        ' - ' +
-                        item.betreff
+                        ' | Betreff: ' +
+                        item.betreff +
+                        ' | Zeitraum: ' +
+                        (item.zeitraum == 1440
+                          ? 'ganztags'
+                          : `${item.von} - ${addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}`)
                       }
                       style={{ background: item.boxColor }}
                       key={'conta' + 'rrule' + item + index}
                       className="w-full py-[2px] px-2  select-none  cursor-pointer text-black ring-1 dark:ring-gray-700  ring-gray-400   flex flex-row items-center text-xs justify-start rounded truncate"
                     >
-                      🔁 ({item.realtimestart} - {item.realtimeend}) |
+                      {item.isprivate == false &&
+                      item.ersteller.toString().toUpperCase() != User.Name.toString().toUpperCase()
+                        ? '🔁🌍 -'
+                        : '🔁🔒 Privat - '}{' '}
+                      ({item.realtimestart} -{' '}
+                      {addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}) |
                       <b title={item.titel} className="px-1  truncate">
                         {' '}
-                        {item.titel} {item.betreff}
+                        {item.titel + ' ' + item.betreff}
                       </b>
                     </div>
                   )

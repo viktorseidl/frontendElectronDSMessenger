@@ -5,6 +5,7 @@ import { calculateHeight } from './functions/functionHandler'
 import { useRoles } from '../../../styles/RoleContext'
 import { util } from 'node-forge'
 import { useTheme } from '../../../styles/ThemeContext'
+import { addMinutesToTime } from '../functionHandler'
 const EventRR = ({ event, deleteEvent, updateEventRRule }) => {
   const { theme } = useTheme()
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
@@ -24,7 +25,12 @@ const EventRR = ({ event, deleteEvent, updateEventRRule }) => {
       >
         <div className="w-full text-xs bg-gray-200 dark:bg-gray-200 px-1 pb-[2px] rounded-t-sm">
           <div className="w-full flex flex-row items-center justify-start  truncate">
-            🔁 ({event.realtimestart} - {event.realtimeend}) |
+            {event.isprivate == false &&
+            event.ersteller.toString().toUpperCase() != User.Name.toString().toUpperCase()
+              ? '🔁🌍 -'
+              : '🔁🔒 Privat - '}{' '}
+            ({event.realtimestart} -{' '}
+            {addMinutesToTime(event.von.toString(), parseInt(event.zeitraum))}) |
             <b title={event.titel} className="px-1  truncate">
               {' '}
               {event.titel} {event.betreff}
@@ -60,7 +66,7 @@ const EventRR = ({ event, deleteEvent, updateEventRRule }) => {
           {(hasPermission('delete:calendar') &&
             event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
           (hasPermission('delete:calendar') &&
-            event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
+            event.ersteller.toString().toUpperCase() != User.Name.toString().toUpperCase()) ||
           (hasPermission('delete:calendar') && User.usertypeVP != 'P') ? (
             <button
               title="Eintrag löschen"
@@ -76,8 +82,8 @@ const EventRR = ({ event, deleteEvent, updateEventRRule }) => {
           {(hasPermission('update:calendar') &&
             event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
           (hasPermission('update:calendar') &&
-            event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()) ||
-          (hasPermission('delete:calendar') && User.usertypeVP != 'P') ? (
+            event.ersteller.toString().toUpperCase() != User.Name.toString().toUpperCase()) ||
+          (hasPermission('update:calendar') && User.usertypeVP != 'P') ? (
             <button
               title="Eintrag bearbeiten"
               className=" w-auto ml-1 bg-blue-600 hover:bg-blue-500 text-white p-1 rounded text-xs"

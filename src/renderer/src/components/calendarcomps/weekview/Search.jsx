@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { MdClose } from 'react-icons/md'
-import { useParams } from 'react-router-dom'
-import DailyListHeader from './DailyListHeader'
 import dayjs from 'dayjs'
+import { util } from 'node-forge'
 
-const Search = ({ filteredevents, deleteMyEvent, updateEventStandard, updateEventRRule }) => {
-  console.log(filteredevents)
+const Search = ({ filteredevents, showDayList }) => {
+  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const [searchtxt, setSearchtxt] = useState('')
   const _scrollDiv = useRef(null)
   const [hoverSelection, setHoverSelection] = useState(0)
@@ -32,8 +31,7 @@ const Search = ({ filteredevents, deleteMyEvent, updateEventStandard, updateEven
     })
   }, [searchtxt])
   const handleKeys = (e) => {
-    if (event.key === 'ArrowDown') {
-      console.log('Arrow Down key pressed')
+    if (e.key === 'ArrowDown') {
       if (parseInt(hoverSelection + 1) >= filterMEvents.length) {
         setHoverSelection(filterMEvents.length)
       } else if (parseInt(hoverSelection + 1) <= filterMEvents.length) {
@@ -41,39 +39,39 @@ const Search = ({ filteredevents, deleteMyEvent, updateEventStandard, updateEven
         _scrollDiv.current.scrollTop += 28
       }
     }
-    if (event.key === 'ArrowUp') {
+    if (e.key === 'ArrowUp') {
       if (parseInt(hoverSelection - 1) <= 0) {
         setHoverSelection(0)
       } else if (parseInt(hoverSelection - 1) >= 1) {
         setHoverSelection(parseInt(hoverSelection - 1))
         _scrollDiv.current.scrollTop -= 28
       }
-    } else if (event.key === 'Enter') {
-      console.log('Enter key pressed')
-      showDayList()
+    } else if (e.key === 'Enter') {
+      showDayListNow()
     }
   }
-  const [dailyInformation, setDailyInformation] = useState(null)
-  const [showDailyInformation, setShowDailyInformation] = useState(false)
-  const showDayList = (day) => {
+  const showDayListNow = (day) => {
     setSearchtxt('')
-    setDailyInformation({
-      events: filteredevents,
-      daystamp:
-        filterMEvents[hoverSelection].kategorie == 'holidays'
-          ? dayjs(filterMEvents[hoverSelection].ddate, 'DD.MM.YYYY').toDate()
-          : dayjs(filterMEvents[hoverSelection].datum, 'YYYY-MM-DD').toDate()
-    })
-    setShowDailyInformation(true)
+    showDayList(
+      filterMEvents[hoverSelection].kategorie == 'holidays'
+        ? dayjs(filterMEvents[hoverSelection].ddate, 'DD.MM.YYYY').toDate()
+        : dayjs(filterMEvents[hoverSelection].datum, 'YYYY-MM-DD').toDate()
+    )
+
     setHoverSelection(0)
   }
-  const closeDayList = () => {
-    setDailyInformation(null)
-    setShowDailyInformation(false)
-  }
-  useEffect(() => {}, [])
+  document.addEventListener('click', function (event) {
+    const searchBox = document.getElementById('searchboxhover')
+    if (searchBox && !searchBox.contains(event.target)) {
+      setSearchtxt('')
+      setHoverSelection(0)
+    }
+  })
   return (
-    <label className="  w-[70%] flex flex-col items-center justify-center relative overflow-visible">
+    <label
+      id="searchboxhover"
+      className="  w-[70%] flex flex-col items-center justify-center relative overflow-visible"
+    >
       <input
         title="Suche nach Einträgen"
         onKeyDown={(e) => handleKeys(e)}
@@ -104,14 +102,24 @@ const Search = ({ filteredevents, deleteMyEvent, updateEventStandard, updateEven
                       <div
                         key={'searview' + item + index}
                         onMouseOver={() => setHoverSelection(index)}
-                        onClick={() => showDayList()}
+                        onClick={() => showDayListNow()}
                         className={`${hoverSelection == index ? 'dark:bg-blue-500/20 bg-blue-300/40 ' : ''} w-full flex flex-row items-start justify-start dark:hover:bg-blue-500/20 hover:bg-blue-300/40 py-1 cursor-pointer`}
                       >
-                        <div className="w-28 text-right mr-6">
+                        <div className="w-40 text-right mr-6">
                           <span className="float-left">🗓️</span>{' '}
-                          {item.kategorie == 'holidays' ? item.ddate : item.realtimestartDate}
+                          {item.kategorie == 'holidays'
+                            ? item.ddate
+                            : item.realtimestartDate === item.realtimeendDate
+                              ? item.realtimestartDate
+                              : item.katBezeichnung != 'rrule'
+                                ? item.realtimestartDate.split('.')[0] +
+                                  '.' +
+                                  item.realtimestartDate.split('.')[1] +
+                                  ' - ' +
+                                  item.realtimeendDate
+                                : item.realtimestartDate}
                         </div>
-                        <div className="w-[75%] text-left truncate ">
+                        <div className="w-[78%] text-left truncate  ">
                           {item.kategorie == 'holidays'
                             ? '⭐ Feiertag - '
                             : item.katBezeichnung == 'BewohnerGeburtstag'
@@ -156,11 +164,38 @@ const Search = ({ filteredevents, deleteMyEvent, updateEventStandard, updateEven
                                                                     'Nortonskala'
                                                                   ? '📊 Braden-Skala - '
                                                                   : item.katBezeichnung == 'rrule'
-                                                                    ? '🔁 Serie - '
+                                                                    ? (item.isprivate == false &&
+                                                                      item.ersteller
+                                                                        .toString()
+                                                                        .toUpperCase() !=
+                                                                        User.Name.toString().toUpperCase()
+                                                                        ? '🔁🌍 - '
+                                                                        : '🔁🔒 Privat - ') +
+                                                                      ' Serie - '
                                                                     : item.katBezeichnung ==
-                                                                        'Termin'
-                                                                      ? '📌 Privat - '
-                                                                      : ''}
+                                                                          'Termin' &&
+                                                                        item.ersteller
+                                                                          .toString()
+                                                                          .toUpperCase() ==
+                                                                          User.Name.toString().toUpperCase() &&
+                                                                        item.isprivate == false
+                                                                      ? '📌  '
+                                                                      : item.katBezeichnung ==
+                                                                            'Termin' &&
+                                                                          item.ersteller
+                                                                            .toString()
+                                                                            .toUpperCase() ==
+                                                                            User.Name.toString().toUpperCase() &&
+                                                                          item.isprivate !== false
+                                                                        ? '🔒 Privat - '
+                                                                        : item.katBezeichnung ==
+                                                                              'Termin' &&
+                                                                            item.ersteller
+                                                                              .toString()
+                                                                              .toUpperCase() !==
+                                                                              User.Name.toString().toUpperCase()
+                                                                          ? '🌍 '
+                                                                          : ''}
                           {item.katBezeichnung == 'BewohnerGEZ' ||
                           item.katBezeichnung == 'BewohnerGenehmigung' ||
                           item.katBezeichnung == 'Pflegevisite' ||
@@ -195,14 +230,6 @@ const Search = ({ filteredevents, deleteMyEvent, updateEventStandard, updateEven
       ) : (
         ''
       )}
-      <DailyListHeader
-        show={showDailyInformation}
-        closer={closeDayList}
-        deleteMyEvent={deleteMyEvent}
-        updateEventStandard={updateEventStandard}
-        updateEventRRule={updateEventRRule}
-        information={dailyInformation}
-      />
     </label>
   )
 }

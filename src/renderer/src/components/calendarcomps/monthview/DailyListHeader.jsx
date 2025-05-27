@@ -20,6 +20,8 @@ import Christmas from './../../../assets/christmas.png'
 import Pfingsten from './../../../assets/pfingsten.png'
 import TagEinheit from './../../../assets/tagdereinheit.png'
 import TagArbeit from './../../../assets/tagarbeit.png'
+import dayjs from 'dayjs'
+import { addMinutesToTime } from '../functionHandler'
 const DailyListHeader = ({
   information,
   show,
@@ -37,7 +39,10 @@ const DailyListHeader = ({
     information !== null
       ? information.events.filter(
           (a) =>
-            (a.datum == format(day, 'Y-MM-dd') && a.katBezeichnung == 'Termin') ||
+            ((a.datum == format(day, 'Y-MM-dd') ||
+              (dayjs(a.realtimestartDate, 'DD.MM.YYYY').toDate() <= day &&
+                dayjs(a.realtimeendDate, 'DD.MM.YYYY').toDate() >= day)) &&
+              a.katBezeichnung == 'Termin') ||
             (a.datum == format(day, 'Y-MM-dd') && a.katBezeichnung == 'rrule' && a.zeitraum != 1440)
         )
       : []
@@ -695,12 +700,19 @@ const DailyListHeader = ({
                             .map((item, index) => (
                               <div
                                 title={
-                                  '🔁 Serie: ' +
+                                  (item.isprivate == false &&
+                                  item.ersteller.toString().toUpperCase() !=
+                                    User.Name.toString().toUpperCase()
+                                    ? '🔁🌍 - '
+                                    : '🔁🔒 Privat - ') +
+                                  ' Serie: ' +
                                   item.titel +
                                   ' | Betreff: ' +
                                   item.betreff +
                                   ' | Zeitraum: ' +
-                                  (item.zeitraum == 1440 ? 'ganztags' : `${item.von} - ${item.bis}`)
+                                  (item.zeitraum == 1440
+                                    ? 'ganztags'
+                                    : `${item.von} - ${addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}`)
                                 }
                                 key={'brrulesnameL' + item + index}
                                 className="w-full border dark:border-gray-800 border-gray-400  font-[Arial] dark:text-gray-800 text-gray-700 rounded flex flex-col items-start justify-start "
@@ -709,13 +721,20 @@ const DailyListHeader = ({
                                 }}
                               >
                                 <div className="w-full pt-1 uppercase font-bold px-2 flex flex-row items-center font-[Arial] text-xs justify-between bg-white/65 truncate  rounded-t">
-                                  <span>🔁 Serien-Termin | {item.titel}</span>
+                                  <span>
+                                    {item.isprivate == false &&
+                                    item.ersteller.toString().toUpperCase() !=
+                                      User.Name.toString().toUpperCase()
+                                      ? '🔁🌍 - '
+                                      : '🔁🔒 Privat - '}{' '}
+                                    Serien-Termin | {item.titel}
+                                  </span>
                                   <span>
                                     {(hasPermission('delete:calendar') &&
                                       item.ersteller.toString().toUpperCase() ==
                                         User.Name.toString().toUpperCase()) ||
                                     (hasPermission('delete:calendar') &&
-                                      item.ersteller.toString().toUpperCase() ==
+                                      item.ersteller.toString().toUpperCase() !=
                                         User.Name.toString().toUpperCase()) ||
                                     (hasPermission('delete:calendar') && User.usertypeVP != 'P') ? (
                                       <button
@@ -733,7 +752,7 @@ const DailyListHeader = ({
                                       item.ersteller.toString().toUpperCase() ==
                                         User.Name.toString().toUpperCase()) ||
                                     (hasPermission('update:calendar') &&
-                                      item.ersteller.toString().toUpperCase() ==
+                                      item.ersteller.toString().toUpperCase() !=
                                         User.Name.toString().toUpperCase()) ||
                                     (hasPermission('delete:calendar') && User.usertypeVP != 'P') ? (
                                       <button
@@ -791,7 +810,21 @@ const DailyListHeader = ({
                                 item.katBezeichnung == 'Termin' ? (
                                   <div
                                     title={
-                                      '📌' +
+                                      (item.katBezeichnung == 'Termin' &&
+                                      item.ersteller.toString().toUpperCase() ==
+                                        User.Name.toString().toUpperCase() &&
+                                      item.isprivate == false
+                                        ? '📌  '
+                                        : item.katBezeichnung == 'Termin' &&
+                                            item.ersteller.toString().toUpperCase() ==
+                                              User.Name.toString().toUpperCase() &&
+                                            item.isprivate !== false
+                                          ? '🔒 Privat - '
+                                          : item.katBezeichnung == 'Termin' &&
+                                              item.ersteller.toString().toUpperCase() !==
+                                                User.Name.toString().toUpperCase()
+                                            ? '🌍 '
+                                            : '') +
                                       item.titel +
                                       ' | Betreff: ' +
                                       (item.betreff == '' || item.betreff == null
@@ -805,7 +838,22 @@ const DailyListHeader = ({
                                   >
                                     <div className="w-full pt-1 uppercase font-bold px-2 flex flex-row items-center  font-[Arial] dark:text-gray-800 text-gray-700 text-xs justify-between bg-white/65 truncate  rounded-t">
                                       <span>
-                                        📌 ({item.realtimestart} - {item.realtimeend}) Termin |{' '}
+                                        {item.katBezeichnung == 'Termin' &&
+                                        item.ersteller.toString().toUpperCase() ==
+                                          User.Name.toString().toUpperCase() &&
+                                        item.isprivate == false
+                                          ? '📌  '
+                                          : item.katBezeichnung == 'Termin' &&
+                                              item.ersteller.toString().toUpperCase() ==
+                                                User.Name.toString().toUpperCase() &&
+                                              item.isprivate !== false
+                                            ? '🔒 Privat - '
+                                            : item.katBezeichnung == 'Termin' &&
+                                                item.ersteller.toString().toUpperCase() !==
+                                                  User.Name.toString().toUpperCase()
+                                              ? '🌍 '
+                                              : ''}{' '}
+                                        ({item.realtimestart} - {item.realtimeend}) Termin |{' '}
                                         {item.titel}
                                       </span>
                                       <span>
@@ -813,7 +861,7 @@ const DailyListHeader = ({
                                           item.ersteller.toString().toUpperCase() ==
                                             User.Name.toString().toUpperCase()) ||
                                         (hasPermission('delete:calendar') &&
-                                          item.ersteller.toString().toUpperCase() ==
+                                          item.ersteller.toString().toUpperCase() !=
                                             User.Name.toString().toUpperCase()) ||
                                         (hasPermission('delete:calendar') &&
                                           User.usertypeVP != 'P') ? (
@@ -832,9 +880,9 @@ const DailyListHeader = ({
                                           item.ersteller.toString().toUpperCase() ==
                                             User.Name.toString().toUpperCase()) ||
                                         (hasPermission('update:calendar') &&
-                                          item.ersteller.toString().toUpperCase() ==
+                                          item.ersteller.toString().toUpperCase() !=
                                             User.Name.toString().toUpperCase()) ||
-                                        (hasPermission('delete:calendar') &&
+                                        (hasPermission('update:calendar') &&
                                           User.usertypeVP != 'P') ? (
                                           <button
                                             title="Eintrag bearbeiten"
@@ -867,14 +915,19 @@ const DailyListHeader = ({
                                 ) : (
                                   <div
                                     title={
-                                      '🔁 Serie: ' +
+                                      (item.isprivate == false &&
+                                      item.ersteller.toString().toUpperCase() !=
+                                        User.Name.toString().toUpperCase()
+                                        ? '🔁🌍 - '
+                                        : '🔁🔒 Privat - ') +
+                                      ' Serie: ' +
                                       item.titel +
                                       ' | Betreff: ' +
                                       item.betreff +
                                       ' | Zeitraum: ' +
                                       (item.zeitraum == 1440
                                         ? 'ganztags'
-                                        : `${item.von} - ${item.bis}`)
+                                        : `${item.von} - ${addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}`)
                                     }
                                     style={{ background: item.boxColor }}
                                     key={'brrulesname' + item + index}
@@ -882,15 +935,24 @@ const DailyListHeader = ({
                                   >
                                     <div className="w-full pt-1 uppercase font-bold px-2 flex flex-row items-center font-[Arial] text-xs justify-between bg-white/65 truncate  rounded-t">
                                       <span>
-                                        🔁 ({item.realtimestart} - {item.realtimeend}) Serien-Termin
-                                        | {item.titel}
+                                        {item.isprivate == false &&
+                                        item.ersteller.toString().toUpperCase() !=
+                                          User.Name.toString().toUpperCase()
+                                          ? '🔁🌍 - '
+                                          : '🔁🔒 Privat - '}{' '}
+                                        ({item.realtimestart} -{' '}
+                                        {addMinutesToTime(
+                                          item.von.toString(),
+                                          parseInt(item.zeitraum)
+                                        )}
+                                        ) Serien-Termin | {item.titel}
                                       </span>
                                       <span>
                                         {(hasPermission('delete:calendar') &&
                                           item.ersteller.toString().toUpperCase() ==
                                             User.Name.toString().toUpperCase()) ||
                                         (hasPermission('delete:calendar') &&
-                                          item.ersteller.toString().toUpperCase() ==
+                                          item.ersteller.toString().toUpperCase() !=
                                             User.Name.toString().toUpperCase()) ||
                                         (hasPermission('delete:calendar') &&
                                           User.usertypeVP != 'P') ? (
@@ -909,9 +971,9 @@ const DailyListHeader = ({
                                           item.ersteller.toString().toUpperCase() ==
                                             User.Name.toString().toUpperCase()) ||
                                         (hasPermission('update:calendar') &&
-                                          item.ersteller.toString().toUpperCase() ==
+                                          item.ersteller.toString().toUpperCase() !=
                                             User.Name.toString().toUpperCase()) ||
-                                        (hasPermission('delete:calendar') &&
+                                        (hasPermission('update:calendar') &&
                                           User.usertypeVP != 'P') ? (
                                           <button
                                             title="Eintrag bearbeiten"

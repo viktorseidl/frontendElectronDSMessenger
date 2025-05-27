@@ -18,16 +18,23 @@ import Pfingsten from './../../../assets/pfingsten.png'
 import TagEinheit from './../../../assets/tagdereinheit.png'
 import TagArbeit from './../../../assets/tagarbeit.png'
 import { useNavigate } from 'react-router-dom'
+import { util } from 'node-forge'
+import dayjs from 'dayjs'
+import { addMinutesToTime } from '../functionHandler'
 const DailyListHeader = ({ information, show, closer }) => {
   const { theme } = useTheme()
   const navigate = useNavigate()
+  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const events = information !== null ? information.events : null
   const day = information !== null ? information.daystamp : null
   const myevents =
     information !== null
       ? information.events.filter(
           (a) =>
-            (a.datum == format(day, 'Y-MM-dd') && a.katBezeichnung == 'Termin') ||
+            ((a.datum == format(day, 'Y-MM-dd') ||
+              (dayjs(a.realtimestartDate, 'DD.MM.YYYY').toDate() <= day &&
+                dayjs(a.realtimeendDate, 'DD.MM.YYYY').toDate() >= day)) &&
+              a.katBezeichnung == 'Termin') ||
             (a.datum == format(day, 'Y-MM-dd') && a.katBezeichnung == 'rrule' && a.zeitraum != 1440)
         )
       : []
@@ -699,7 +706,12 @@ const DailyListHeader = ({ information, show, closer }) => {
                             .map((item, index) => (
                               <div
                                 title={
-                                  '🔁 Serie: ' +
+                                  (item.isprivate == false &&
+                                  item.ersteller.toString().toUpperCase() !=
+                                    User.Name.toString().toUpperCase()
+                                    ? '🔁🌍 - '
+                                    : '🔁🔒 Privat - ') +
+                                  ' Serie: ' +
                                   item.titel +
                                   ' | Betreff: ' +
                                   item.betreff +
@@ -713,7 +725,14 @@ const DailyListHeader = ({ information, show, closer }) => {
                                 }}
                               >
                                 <div className="w-full pt-1 uppercase font-bold px-2 flex flex-row items-center font-[Arial] text-xs justify-between bg-white/65 truncate  rounded-t">
-                                  <span>🔁 Serien-Termin | {item.titel}</span>
+                                  <span>
+                                    {item.isprivate == false &&
+                                    item.ersteller.toString().toUpperCase() !=
+                                      User.Name.toString().toUpperCase()
+                                      ? '🔁🌍 - '
+                                      : '🔁🔒 Privat - '}{' '}
+                                    Serien-Termin | {item.titel}
+                                  </span>
                                   <span></span>
                                 </div>
                                 <div className="w-full py-0.5 px-2 flex flex-row items-center text-xs justify-start bg-white/65 truncate  ">
@@ -758,7 +777,21 @@ const DailyListHeader = ({ information, show, closer }) => {
                                 item.katBezeichnung == 'Termin' ? (
                                   <div
                                     title={
-                                      '📌' +
+                                      (item.katBezeichnung == 'Termin' &&
+                                      item.ersteller.toString().toUpperCase() ==
+                                        User.Name.toString().toUpperCase() &&
+                                      item.isprivate == false
+                                        ? '📌  '
+                                        : item.katBezeichnung == 'Termin' &&
+                                            item.ersteller.toString().toUpperCase() ==
+                                              User.Name.toString().toUpperCase() &&
+                                            item.isprivate !== false
+                                          ? '🔒 Privat - '
+                                          : item.katBezeichnung == 'Termin' &&
+                                              item.ersteller.toString().toUpperCase() !==
+                                                User.Name.toString().toUpperCase()
+                                            ? '🌍 '
+                                            : '') +
                                       item.titel +
                                       ' | Betreff: ' +
                                       (item.betreff == '' || item.betreff == null
@@ -772,7 +805,22 @@ const DailyListHeader = ({ information, show, closer }) => {
                                   >
                                     <div className="w-full pt-1 uppercase font-bold px-2 flex flex-row items-center  font-[Arial] dark:text-gray-800 text-gray-700 text-xs justify-between bg-white/65 truncate  rounded-t">
                                       <span>
-                                        📌 ({item.realtimestart} - {item.realtimeend}) Termin |{' '}
+                                        {item.katBezeichnung == 'Termin' &&
+                                        item.ersteller.toString().toUpperCase() ==
+                                          User.Name.toString().toUpperCase() &&
+                                        item.isprivate == false
+                                          ? '📌  '
+                                          : item.katBezeichnung == 'Termin' &&
+                                              item.ersteller.toString().toUpperCase() ==
+                                                User.Name.toString().toUpperCase() &&
+                                              item.isprivate !== false
+                                            ? '🔒 Privat - '
+                                            : item.katBezeichnung == 'Termin' &&
+                                                item.ersteller.toString().toUpperCase() !==
+                                                  User.Name.toString().toUpperCase()
+                                              ? '🌍 '
+                                              : ''}{' '}
+                                        ({item.realtimestart} - {item.realtimeend}) Termin |{' '}
                                         {item.titel}
                                       </span>
                                       <span></span>
@@ -795,14 +843,19 @@ const DailyListHeader = ({ information, show, closer }) => {
                                 ) : (
                                   <div
                                     title={
-                                      '🔁 Serie: ' +
+                                      (item.isprivate == false &&
+                                      item.ersteller.toString().toUpperCase() !=
+                                        User.Name.toString().toUpperCase()
+                                        ? '🔁🌍 - '
+                                        : '🔁🔒 Privat - ') +
+                                      ' Serie: ' +
                                       item.titel +
                                       ' | Betreff: ' +
                                       item.betreff +
                                       ' | Zeitraum: ' +
                                       (item.zeitraum == 1440
                                         ? 'ganztags'
-                                        : `${item.von} - ${item.bis}`)
+                                        : `${item.von} - ${addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}`)
                                     }
                                     style={{ background: item.boxColor }}
                                     key={'brrulesname' + item + index}
@@ -810,8 +863,17 @@ const DailyListHeader = ({ information, show, closer }) => {
                                   >
                                     <div className="w-full pt-1 uppercase font-bold px-2 flex flex-row items-center font-[Arial] text-xs justify-between bg-white/65 truncate  rounded-t">
                                       <span>
-                                        🔁 ({item.realtimestart} - {item.realtimeend}) Serien-Termin
-                                        | {item.titel}
+                                        {item.isprivate == false &&
+                                        item.ersteller.toString().toUpperCase() !=
+                                          User.Name.toString().toUpperCase()
+                                          ? '🔁🌍 - '
+                                          : '🔁🔒 Privat - '}{' '}
+                                        ({item.realtimestart} -{' '}
+                                        {addMinutesToTime(
+                                          item.von.toString(),
+                                          parseInt(item.zeitraum)
+                                        )}
+                                        ) Serien-Termin | {item.titel}
                                       </span>
                                       <span></span>
                                     </div>

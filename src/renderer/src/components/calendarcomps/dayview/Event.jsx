@@ -45,7 +45,10 @@ const Event = ({ event, updateEventStandard, deleteEvent, ityp }) => {
     >
       <div className="w-full text-xs bg-blue-300 px-1 pb-[2px] rounded-t-sm">
         <div className="w-full flex flex-row items-center justify-start  truncate">
-          📌 ({event.realtimestart} - {event.realtimeend}) |
+          {event.ersteller.toString().toUpperCase() == User.Name.toString().toUpperCase()
+            ? (event.isprivate = false ? '📌' : '🔒')
+            : '🌍'}{' '}
+          ({event.realtimestart} - {event.realtimeend}) |
           <b title={event.titel} className="px-1  truncate">
             {' '}
             {event.titel} {event.betreff}

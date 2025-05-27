@@ -366,12 +366,18 @@ export function filterOnKategorieShortener(events, filter) {
 export function filterOnMonthShortener(events, filter) {
   return events.filter(
     (e) =>
-      (parseInt(e.datum.split('-')[1]) === parseInt(filter) && e.ddate == undefined) ||
+      (e.ddate == undefined &&
+        (parseInt(e.datum.split('-')[1]) === parseInt(filter) ||
+          (parseInt(e.realtimeendDate.split('.')[1]) >= parseInt(filter) &&
+            parseInt(e.realtimeendDate.split('.')[1]) >= parseInt(filter - 1)))) ||
       (e.ddate != undefined && parseInt(e.ddate.split('.')[1]) === parseInt(filter))
   ).length > 0
     ? events.filter(
         (e) =>
-          (parseInt(e.datum.split('-')[1]) === parseInt(filter) && e.ddate == undefined) ||
+          (e.ddate == undefined &&
+            (parseInt(e.datum.split('-')[1]) === parseInt(filter) ||
+              (parseInt(e.realtimeendDate.split('.')[1]) >= parseInt(filter) &&
+                parseInt(e.realtimeendDate.split('.')[1]) >= parseInt(filter - 1)))) ||
           (e.ddate != undefined && parseInt(e.ddate.split('.')[1]) === parseInt(filter))
       )
     : []

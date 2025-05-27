@@ -1,7 +1,10 @@
 import React, { useRef } from 'react'
 import { useDrop } from 'react-dnd'
 import DraggableEvent from './DraggableEvent'
+import { addMinutesToTime } from '../functionHandler'
+import { util } from 'node-forge'
 const Timeslot = ({ day, hour, handleDrop, events, showDayList }) => {
+  const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const myref = useRef(null)
   const ariaLabel =
     day.toLocaleString('sv-SE').replace(' ', 'T').split('T')[0] +
@@ -55,7 +58,7 @@ const Timeslot = ({ day, hour, handleDrop, events, showDayList }) => {
                         '(' +
                         item.realtimestart +
                         ' - ' +
-                        item.realtimeend +
+                        addMinutesToTime(item.von.toString(), parseInt(item.zeitraum)) +
                         ') | ' +
                         item.titel +
                         ' - ' +
@@ -65,7 +68,12 @@ const Timeslot = ({ day, hour, handleDrop, events, showDayList }) => {
                       key={'conta' + 'rrule' + item + index}
                       className="w-full py-[2px] px-2 select-none  cursor-pointer text-black ring-1 dark:ring-gray-700  ring-gray-400   flex flex-row items-center text-xs justify-start rounded truncate"
                     >
-                      🔁 ({item.realtimestart} - {item.realtimeend}) |
+                      {item.isprivate == false &&
+                      item.ersteller.toString().toUpperCase() != User.Name.toString().toUpperCase()
+                        ? '🔁🌍 - '
+                        : '🔁🔒 Privat - '}{' '}
+                      ({item.realtimestart} -{' '}
+                      {addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}) |
                       <b title={item.titel} className="px-1  truncate">
                         {' '}
                         {item.titel} {item.betreff}

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { MdArrowLeft, MdArrowRight, MdClose } from 'react-icons/md'
-import { FaSearch } from 'react-icons/fa'
+import { MdArrowLeft, MdArrowRight } from 'react-icons/md'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getShiftedDateWeek, getTodayDate } from './functions/functionHandler'
 import ColumnIntervalRow from './ColumnIntervalRow'
@@ -33,19 +32,22 @@ const TagesAnsicht = ({
   const divRef = useRef(null)
   const viewRef = useRef(null)
   const navigate = useNavigate()
+  /* DELETE STATES */
   const [deleteMessage, setDeleteMessage] = useState(null)
   const [deleteObject, setDeleteObject] = useState(null)
   /* UPDATE STATES */
   const [updateDialogStandard, setUpdateDialogStandard] = useState(false)
   const [updateDialogRRule, setUpdateDialogRRule] = useState(false)
   const [updateObject, setUpdateObject] = useState(null)
+  /* DAYLIST STATES */
+  const [dailyInformation, setDailyInformation] = useState(null)
+  const [showDailyInformation, setShowDailyInformation] = useState(false)
 
   const rows = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
   ]
   const CurrentTimeLine = () => {
     const [currentTime, setCurrentTime] = useState(new Date())
-
     const verify =
       filteredevents.filter(
         (e) =>
@@ -113,7 +115,6 @@ const TagesAnsicht = ({
       end: endOfCurrentWeek
     })
   }
-
   /** HANDLE DELETING EVENTS
    * @function deleteMyEvent Open Dialog and set Delete Information
    * @function deleteMessageClose Close DIalog
@@ -179,7 +180,21 @@ const TagesAnsicht = ({
     setUpdateObject(null)
     updateFilteredEvents()
   }
-
+  /** HANDLE DAILY LISTVIEW
+   * @function showDayList Open Dialog and set Event Information
+   * @function closeDayList Close DIalog and reset Event Information
+   */
+  const showDayList = (day) => {
+    setDailyInformation({
+      events: filteredevents,
+      daystamp: day
+    })
+    setShowDailyInformation(true)
+  }
+  const closeDayList = () => {
+    setDailyInformation(null)
+    setShowDailyInformation(false)
+  }
   return (
     <div ref={divRef} className="w-full h-full  flex flex-col items-start justify-start ">
       <div className="w-full h-20 py-4 px-4 flex flex-row items-center justify-start gap-x-2">
@@ -254,12 +269,7 @@ const TagesAnsicht = ({
         </div>
         <div className="w-[60%] h-20 flex flex-col items-center justify-center ">
           <div className="w-full h-full  flex flex-row items-center justify-between gap-x-2">
-            <Search
-              filteredevents={filteredevents}
-              deleteMyEvent={deleteMyEvent}
-              updateEventStandard={updateMyEventStandard}
-              updateEventRRule={updateMyEventRRule}
-            />
+            <Search filteredevents={filteredevents} showDayList={showDayList} />
             <select
               title="Kalenderansicht ändern"
               ref={viewRef}
@@ -329,6 +339,10 @@ const TagesAnsicht = ({
                 deleteMyEvent={deleteMyEvent}
                 updateEventStandard={updateMyEventStandard}
                 updateEventRRule={updateMyEventRRule}
+                showDayList={showDayList}
+                closeDayList={closeDayList}
+                dailyInformation={dailyInformation}
+                showDailyInformation={showDailyInformation}
               />
             </div>
             <CurrentTimeLine pixel={2.5} />

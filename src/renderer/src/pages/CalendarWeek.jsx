@@ -182,21 +182,7 @@ const CalendarWeek = () => {
       null
     )
     if (query.length > 0 && query[0] == true) {
-      setFullEvents((prev) =>
-        prev.map((ev) =>
-          ev.id === item.id
-            ? {
-                ...ev,
-                datum: newSlotDate,
-                time: parseInt(newSlotTime.split(':')[0]),
-                realtimestart: query[1],
-                realtimestartDate: newSlotStartDate,
-                realtimeendDate: newSlotStartDate,
-                realtimeend: query[2]
-              }
-            : ev
-        )
-      )
+      getEventsDB()
     }
   }
   useEffect(() => {

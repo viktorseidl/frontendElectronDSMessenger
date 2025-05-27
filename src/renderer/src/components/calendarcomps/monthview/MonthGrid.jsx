@@ -134,9 +134,15 @@ const MonthGrid = ({ handleDrop, date, filteredevents, updateFilteredEvents, kat
             <DayContainer
               filteredevents={filteredevents.filter(
                 (a) =>
-                  (a.datum.toString() === format(day, 'Y-MM-dd').toString() &&
+                  (a.ddate == undefined &&
+                    a.katBezeichnung == 'Termin' &&
+                    (a.datum.toString() === format(day, 'Y-MM-dd').toString() ||
+                      (dayjs(a.realtimestartDate, 'DD.MM.YYYY').toDate() <= day &&
+                        dayjs(a.realtimeendDate, 'DD.MM.YYYY').toDate() >= day))) ||
+                  (a.katBezeichnung !== 'Termin' &&
+                    a.datum.toString() === format(day, 'Y-MM-dd').toString() &&
                     a.ddate == undefined) ||
-                  (a.ddate != undefined && a.ddate.toString() == format(day, 'dd.MM.Y').toString())
+                  (a.ddate !== undefined && a.ddate.toString() == format(day, 'dd.MM.Y').toString())
               )}
               key={day + index}
               day={day}
