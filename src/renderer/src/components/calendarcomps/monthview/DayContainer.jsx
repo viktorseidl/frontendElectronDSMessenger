@@ -36,6 +36,7 @@ const DayContainer = ({ filteredevents, day, handleDrop, showDayList }) => {
   const wundvermessung = filterOnKategorieShortener(filteredevents, 'Wundvermessung')
   const wundauswertung = filterOnKategorieShortener(filteredevents, 'Wundauswertung')
   const tabellenwohngeld = filterOnKategorieShortener(filteredevents, 'Tabellenwohngeld')
+  const katheterwechsel = filterOnKategorieShortener(filteredevents, 'Katheterwechsel')
   const evaluierung = filterOnKategorieShortener(filteredevents, 'Evaluierung')
   const bradenskala = filterOnKategorieShortener(filteredevents, 'Bradenskala')
   const nortonskala = filterOnKategorieShortener(filteredevents, 'Nortonskala')
@@ -426,6 +427,25 @@ const DayContainer = ({ filteredevents, day, handleDrop, showDayList }) => {
                     >
                       <div className="w-full py-0.5 px-2 flex flex-row items-center text-xs justify-start bg-white/65 truncate  rounded">
                         📄 {item.Bewohner}
+                      </div>
+                    </div>
+                  ))}
+              {katheterwechsel.length > 0 &&
+                katheterwechsel
+                  .reduce((acc, curr) => {
+                    if (!acc.find((e) => e.Betreff === curr.Betreff)) {
+                      acc.push(curr)
+                    }
+                    return acc
+                  }, [])
+                  .map((item, index) => (
+                    <div
+                      title={'🧼 ' + item.titel + ': ' + item.Betreff}
+                      key={'tabwohngeldbTTname' + item + index}
+                      className="w-full bg-[#c8f542] border dark:border-gray-800 border-gray-400 text-black rounded "
+                    >
+                      <div className="w-full py-0.5 px-2 flex flex-row items-center text-xs justify-start bg-white/65 truncate  rounded">
+                        🧼 {item.Betreff}
                       </div>
                     </div>
                   ))}

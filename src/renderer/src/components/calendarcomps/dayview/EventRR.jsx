@@ -1,5 +1,5 @@
 import React from 'react'
-import { MdDelete, MdEdit } from 'react-icons/md'
+import { MdDelete, MdEdit, MdOpenInNew } from 'react-icons/md'
 import { motion } from 'framer-motion'
 import { calculateHeight } from './functions/functionHandler'
 import { useRoles } from '../../../styles/RoleContext'
@@ -10,6 +10,11 @@ const EventRR = ({ event, deleteEvent, updateEventRRule }) => {
   const { theme } = useTheme()
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const { hasPermission } = useRoles()
+  const saveFileandOpen = async (item) => {
+    const base64 = btoa(unescape(encodeURIComponent(item)))
+    console.log(base64)
+    const a = await window.api.electronFiles.saveIcs(base64, 'DS_Messenger.ics')
+  }
   return (
     <motion.div
       className={`w-60  text-black rounded-sm dark:ring-1 ring-1 bg-white dark:ring-gray-700 flex flex-col ring-gray-400 relative calshadow `}
@@ -95,6 +100,14 @@ const EventRR = ({ event, deleteEvent, updateEventRRule }) => {
           ) : (
             ''
           )}
+          <button
+            title="Kalendereintrag exportieren"
+            className=" w-auto ml-1 bg-white hover:bg-gray-200 text-black p-1 rounded text-xs"
+            onClick={() => saveFileandOpen(event.icstxt)}
+            aria-label="isbuttondoubleclick"
+          >
+            <MdOpenInNew aria-label="isbuttondoubleclick" />
+          </button>
         </div>
       </div>
     </motion.div>

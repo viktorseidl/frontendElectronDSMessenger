@@ -302,6 +302,7 @@ const TagesAnsicht = ({
                     e.katBezeichnung === 'BewohnerGenehmigung' ||
                     e.katBezeichnung === 'Pflegewohngeld' ||
                     e.katBezeichnung === 'Tabellenwohngeld' ||
+                    e.katBezeichnung === 'Katheterwechsel' ||
                     e.katBezeichnung === 'Schwerbehindertausweis' ||
                     e.katBezeichnung === 'Pflegevisite' ||
                     e.katBezeichnung === 'Evaluierung' ||

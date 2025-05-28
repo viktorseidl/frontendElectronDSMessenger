@@ -1,5 +1,5 @@
 import React from 'react'
-import { MdClose, MdDelete, MdEdit, MdList } from 'react-icons/md'
+import { MdClose, MdDelete, MdEdit, MdList, MdOpenInFull, MdOpenInNew } from 'react-icons/md'
 import imgs from './../../../assets/Logo.png'
 import { format } from 'date-fns'
 import { checkSeason, filterOnKategorieShortener } from './functions/functionHandler'
@@ -57,6 +57,12 @@ const DailyListHeader = ({
       updateEventRRule(id)
     }
   }
+  const saveFileandOpen = async (item) => {
+    const base64 = btoa(unescape(encodeURIComponent(item)))
+    console.log(base64)
+    const a = await window.api.electronFiles.saveIcs(base64, 'DS_Messenger.ics')
+  }
+
   return (
     <>
       {show && (
@@ -134,6 +140,8 @@ const DailyListHeader = ({
                         (e.katBezeichnung === 'Pflegewohngeld' &&
                           format(day, 'Y-MM-dd') == e.datum) ||
                         (e.katBezeichnung === 'Tabellenwohngeld' &&
+                          format(day, 'Y-MM-dd') == e.datum) ||
+                        (e.katBezeichnung === 'Katheterwechsel' &&
                           format(day, 'Y-MM-dd') == e.datum) ||
                         (e.katBezeichnung === 'Schwerbehindertausweis' &&
                           format(day, 'Y-MM-dd') == e.datum) ||
@@ -551,6 +559,34 @@ const DailyListHeader = ({
                                 </div>
                               </div>
                             ))}
+                        {filterOnKategorieShortener(events, 'Katheterwechsel').filter(
+                          (e) => format(day, 'Y-MM-dd') == e.datum
+                        ).length > 0 &&
+                          filterOnKategorieShortener(events, 'Katheterwechsel')
+                            .filter((e) => format(day, 'Y-MM-dd') == e.datum)
+                            .reduce((acc, curr) => {
+                              if (!acc.find((e) => e.Betreff === curr.Betreff)) {
+                                acc.push(curr)
+                              }
+                              return acc
+                            }, [])
+                            .map((item, index) => (
+                              <div
+                                title={'🧼 ' + item.titel + ': ' + item.Betreff}
+                                key={'tabwohngeldbTTname' + item + index}
+                                className="w-full bg-[#c8f542] border dark:border-gray-800 border-gray-400  font-[Arial] dark:text-gray-800 text-gray-700 rounded "
+                              >
+                                <div className="w-full pt-1 uppercase font-bold px-2 flex flex-row items-center font-[Arial] text-xs justify-start bg-white/65 truncate  rounded-t">
+                                  🧼 Katheterwechsel
+                                </div>
+                                <div className="w-full py-0.5 px-2 flex flex-row items-center text-xs justify-start bg-white/65 truncate  ">
+                                  <span>
+                                    <b>Betreff: </b>
+                                    {item.Betreff}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
                         {filterOnKategorieShortener(events, 'Schwerbehindertausweis').filter(
                           (e) => format(day, 'Y-MM-dd') == e.datum
                         ).length > 0 &&
@@ -763,6 +799,14 @@ const DailyListHeader = ({
                                     ) : (
                                       ''
                                     )}
+                                    <button
+                                      title="Kalendereintrag exportieren"
+                                      className=" w-auto mr-1 bg-white hover:bg-gray-200 text-black p-1 rounded text-xs"
+                                      onClick={() => saveFileandOpen(item.icstxt)}
+                                      aria-label="isbuttondoubleclick"
+                                    >
+                                      <MdOpenInNew aria-label="isbuttondoubleclick" />
+                                    </button>
                                   </span>
                                 </div>
                                 <div className="w-full py-0.5 px-2 flex flex-row items-center text-xs justify-start bg-white/65 truncate  ">
@@ -978,6 +1022,14 @@ const DailyListHeader = ({
                                         ) : (
                                           ''
                                         )}
+                                        <button
+                                          title="Kalendereintrag exportieren"
+                                          className=" w-auto mr-1 bg-white hover:bg-gray-200 text-black p-1 rounded text-xs"
+                                          onClick={() => saveFileandOpen(item.icstxt)}
+                                          aria-label="isbuttondoubleclick"
+                                        >
+                                          <MdOpenInNew aria-label="isbuttondoubleclick" />
+                                        </button>
                                       </span>
                                     </div>
                                     <div className="w-full py-0.5 px-2 flex flex-row items-center text-xs justify-start bg-white/65 truncate  ">

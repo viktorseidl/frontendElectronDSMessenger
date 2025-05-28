@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import DayGrid from './DayGrid'
-import { MdArrowLeft, MdArrowRight, MdClose, MdPerson } from 'react-icons/md'
+import { MdArrowLeft, MdArrowRight, MdClose, MdOpenInNew, MdPerson } from 'react-icons/md'
 import { FaSearch } from 'react-icons/fa'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
@@ -25,6 +25,7 @@ const TagesAnsicht = ({
   kategorien,
   updateFilteredEvents
 }) => {
+  console.log(filteredevents)
   const User = JSON.parse(util.decode64(window.sessionStorage.getItem('user')))
   const { hasPermission } = useRoles()
   const { jahr, monat, tag } = useParams()
@@ -50,6 +51,11 @@ const TagesAnsicht = ({
     setUpdateDialogRRule(false)
     setUpdateObject(null)
     updateFilteredEvents()
+  }
+  const saveFileandOpen = async (item) => {
+    const base64 = btoa(unescape(encodeURIComponent(item)))
+    console.log(base64)
+    const a = await window.api.electronFiles.saveIcs(base64, 'DS_Messenger.ics')
   }
   const CurrentTimeLine = () => {
     const [currentTime, setCurrentTime] = useState(new Date())
@@ -89,7 +95,7 @@ const TagesAnsicht = ({
     if (divRef.current && minHeight == 0) {
       setMinHeight(divRef.current.clientHeight)
     }
-  }, [date])
+  }, [date, filteredevents])
   return (
     <div ref={divRef} className="w-full h-full  flex flex-col items-start justify-start ">
       <div className="w-full h-20 py-4 px-4 flex flex-row items-center justify-start gap-x-2">
@@ -166,6 +172,7 @@ const TagesAnsicht = ({
                 e.katBezeichnung === 'BewohnerGenehmigung' ||
                 e.katBezeichnung === 'Pflegewohngeld' ||
                 e.katBezeichnung === 'Tabellenwohngeld' ||
+                e.katBezeichnung === 'Katheterwechsel' ||
                 e.katBezeichnung === 'Schwerbehindertausweis' ||
                 e.katBezeichnung === 'Pflegevisite' ||
                 e.katBezeichnung === 'Evaluierung' ||
@@ -1120,6 +1127,54 @@ const TagesAnsicht = ({
                 ) : (
                   ''
                 )}
+                {filteredevents.filter((e) => e.katBezeichnung === 'Katheterwechsel').length > 0 ? (
+                  <div
+                    style={{
+                      background: `${adjustForMode(
+                        filteredevents.filter((e) => e.katBezeichnung === 'Katheterwechsel')[0]
+                          .ColorHex,
+                        'dark'
+                      )}`
+                    }}
+                    className="w-full p-[2px] text-black text-xs grid grid-cols-10 items-start justify-items-start rounded-sm gap-1 "
+                  >
+                    <div
+                      style={{
+                        background: `${adjustForMode(
+                          filteredevents.filter((e) => e.katBezeichnung === 'Katheterwechsel')[0]
+                            .ColorHex,
+                          'light'
+                        )}`
+                      }}
+                      className="text-xs col-span-1 w-full h-full flex flex-row items-start justify-start pt-1"
+                    >
+                      <a title="Norton-Skala" className="w-full truncate px-2">
+                        Katheterwechsel
+                      </a>
+                    </div>
+                    <div className="w-full  col-span-9 flex-wrap flex flex-row items-center justify-start  gap-1 ">
+                      {filteredevents
+                        .filter((e) => e.katBezeichnung === 'Katheterwechsel')
+                        .reduce((acc, curr) => {
+                          if (!acc.find((e) => e.Betreff === curr.Betreff)) {
+                            acc.push(curr)
+                          }
+                          return acc
+                        }, [])
+                        .map((item, index) => (
+                          <div
+                            title={'🧼 Katheterwechsel: ' + item.Betreff}
+                            key={'bname' + item + index}
+                            className="w-auto max-w-40  p-2 py-1 dark:bg-white/85 bg-white/85 flex flex-col items-center justify-start rounded-sm "
+                          >
+                            <a className="w-full truncate"> 🧼 {item.Betreff}</a>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  ''
+                )}
                 {filteredevents.filter((e) => e.katBezeichnung === 'Nortonskala').length > 0 ? (
                   <div
                     style={{
@@ -1206,9 +1261,16 @@ const TagesAnsicht = ({
                             (hasPermission('update:calendar') && User.usertypeVP != 'P') ? (
                               <div
                                 key={'sjdhopo' + item + index + 'sds'}
-                                onClick={() => updateMyEventRRule(item)}
-                                className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer"
+                                className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer relative"
                               >
+                                <button
+                                  title="Kalendereintrag exportieren"
+                                  className=" absolute inset  top-0 z-10 -right-1 w-auto mr-1 border border-gray-600 bg-white hover:bg-gray-200 text-black p-0.5 rounded-sm text-xs"
+                                  onClick={() => saveFileandOpen(item.icstxt)}
+                                  aria-label="isbuttondoubleclick"
+                                >
+                                  <MdOpenInNew aria-label="isbuttondoubleclick" />
+                                </button>
                                 <div
                                   title={
                                     (item.isprivate == false &&
@@ -1226,6 +1288,7 @@ const TagesAnsicht = ({
                                       : `${item.von} - ${addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}`)
                                   }
                                   key={'bname' + item + index}
+                                  onClick={() => updateMyEventRRule(item)}
                                   className=" p-2 py-1 flex flex-col items-center justify-start rounded-sm "
                                   style={{
                                     background: theme ? item.boxColor + '55' : item.boxColor + '88'
@@ -1257,8 +1320,16 @@ const TagesAnsicht = ({
                             ) : (
                               <div
                                 key={'sjdhopo' + item + index + 'sds'}
-                                className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer"
+                                className="dark:bg-white bg-white w-40 rounded-sm cursor-pointer relative"
                               >
+                                <button
+                                  title="Kalendereintrag exportieren"
+                                  className=" absolute inset  top-0 z-10 -right-1 w-auto mr-1 border border-gray-600 bg-white hover:bg-gray-200 text-black p-0.5 rounded-sm text-xs"
+                                  onClick={() => saveFileandOpen(item.icstxt)}
+                                  aria-label="isbuttondoubleclick"
+                                >
+                                  <MdOpenInNew aria-label="isbuttondoubleclick" />
+                                </button>
                                 <div
                                   title={
                                     (item.isprivate == false &&
@@ -1275,6 +1346,7 @@ const TagesAnsicht = ({
                                       ? 'ganztags'
                                       : `${item.von} - ${addMinutesToTime(item.von.toString(), parseInt(item.zeitraum))}`)
                                   }
+                                  onClick={() => updateMyEventRRule(item)}
                                   key={'bname' + item + index}
                                   className=" p-2 py-1 flex flex-col items-center justify-start rounded-sm "
                                   style={{

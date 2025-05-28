@@ -95,20 +95,24 @@ const CalendarWeek = () => {
       // Filter by isprivate state
       const BereichMatches =
         selectedbereich != 'false' ? event.wohnbereich == selectedbereich : true
-      const categoryMatches =
-        selectedKategorien.length === 0 ||
-        selectedKategorien.some((category) => {
-          if (category.ID === 'serien') {
-            return category.ID == event.kategorieid
-          }
-          if (category.ID === 'holidays') {
-            return category.ID == event.kategorie // or event.kategorieid, depending on your structure
-          }
-          return category.ID == event.kategorie
-        })
+      let categoryMatches = true
+      if (selectedKategorien.length > 0) {
+        categoryMatches =
+          selectedKategorien.length === 0 ||
+          selectedKategorien.some((category) => {
+            if (category.ID === 'serien') {
+              return category.ID == event.kategorieid
+            }
+            if (category.ID === 'holidays') {
+              return category.ID == event.kategorie // or event.kategorieid, depending on your structure
+            }
+            return category.ID == parseInt(event.kategorie)
+          })
+      }
       return categoryMatches && privateMatches && BereichMatches
     })
   }, [fullEvents, selectedKategorien, btnmy, selectedbereich])
+
   const getEventsDB = async () => {
     const dailyFeiertage = getFeiertage()
     const query = await useFetchAuthAll(

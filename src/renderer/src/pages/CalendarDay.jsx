@@ -58,20 +58,13 @@ const CalendarDay = () => {
         }
         return acc
       }, [])
-
-      // Update selectedKategorien based on user type
-      /*if (User.usertypeVP === 'P') {
-        setSelectedKategorien(arr.filter((item) => item.pstart === true))
-      } else {
-        setSelectedKategorien(arr.filter((item) => item.vstart === true))
-      }*/
-
       setKategorien(uniqueBezeichnungen) // Update state with unique categories
     } else {
       setSelectedKategorien([])
       setKategorien([])
     }
   }
+
   const filterMEvents = useMemo(() => {
     return fullEvents.filter((event) => {
       // Filter by isprivate state
@@ -82,20 +75,24 @@ const CalendarDay = () => {
       // Filter by isprivate state
       const BereichMatches =
         selectedbereich != 'false' ? event.wohnbereich == selectedbereich : true
-      const categoryMatches =
-        selectedKategorien.length === 0 ||
-        selectedKategorien.some((category) => {
-          if (category.ID === 'serien') {
-            return category.ID == event.kategorieid
-          }
-          if (category.ID === 'holidays') {
-            return category.ID == event.kategorie // or event.kategorieid, depending on your structure
-          }
-          return category.ID == event.kategorie
-        })
+      let categoryMatches = true
+      if (selectedKategorien.length > 0) {
+        categoryMatches =
+          selectedKategorien.length === 0 ||
+          selectedKategorien.some((category) => {
+            if (category.ID === 'serien') {
+              return category.ID == event.kategorieid
+            }
+            if (category.ID === 'holidays') {
+              return category.ID == event.kategorie // or event.kategorieid, depending on your structure
+            }
+            return category.ID == parseInt(event.kategorie)
+          })
+      }
       return categoryMatches && privateMatches && BereichMatches
     })
   }, [fullEvents, selectedKategorien, btnmy, selectedbereich])
+  console.log(filterMEvents)
   const getEventsDB = async () => {
     const dailyFeiertage = getFeiertage()
     const query = await useFetchAuthAll(
