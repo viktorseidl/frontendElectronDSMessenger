@@ -71,8 +71,8 @@ const DatenbankConfigureSuccess = () => {
         {one ? returnfinal('EMailTable') : returnInitial('EMailTable')}
         {five ? returnfinal('EMailColumn') : returnInitial('EMailColumn')}
         {two ? returnfinal('EMail_AnhangTable') : returnInitial('EMail_AnhangTable')}
-        {six ? returnfinal('RRevents') : returnInitial('RRevents')}
-        {seven ? returnfinal('RReventExceptions') : returnInitial('RReventExceptions')}
+        {six ? returnfinal('rreventsTable') : returnInitial('rreventsTable')}
+        {seven ? returnfinal('rrevent_exceptionsTable') : returnInitial('rrevent_exceptionsTable')}
         {four ? (
           <div className="w-full mt-8 flex flex-col items-center dark:text-white text-black justify-center dark:bg-lime-700 bg-lime-600/40 rounded-sm py-2">
             Alle Tabellen wurden erfolgreich konfiguriert <MdDoneAll className="text-4xl mt-4" />

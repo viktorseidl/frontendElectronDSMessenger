@@ -7,7 +7,6 @@ const RRuleFormYearlyYearday = ({
   const _yearlybydayref = useRef('')
   return (
     <>
-      Jahrestag
       <div className="w-full col-span-4 flex flex-row items-start justify-start pl-6 mt-3">
         <div className=" h-8 flex flex-row items-center justify-start mr-8">
           <a className="mr-3 text-sm">Kalendertag:</a>

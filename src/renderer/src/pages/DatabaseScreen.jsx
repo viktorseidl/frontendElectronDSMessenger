@@ -34,10 +34,10 @@ const DatabaseScreen = () => {
     'EMailTable',
     'EMailColumn',
     'EMail_AnhangTable',
-    'RRevents',
-    'RReventExceptions'
+    'rreventsTable',
+    'rrevent_exceptionsTable'
   ]
-
+  //OK
   const handleCheckConnection = async () => {
     seterr(false)
     if (
@@ -141,7 +141,6 @@ const DatabaseScreen = () => {
           navigate('/overview')
         }, 18000)
       }, 4000)
-      console.log('functioniert')
     } else {
       setist(check.fehlt)
       setshowloader(10)
@@ -193,7 +192,7 @@ const DatabaseScreen = () => {
       ),
       expirationDate: Math.floor(Date.now() / 1000) + 3600 * 24 * 365 * 2 // Expires in 1 year
     }
-
+    console.log(cookie)
     return window.localStorage.setItem('dbConfig', JSON.stringify(cookie))
   }
   useEffect(() => {

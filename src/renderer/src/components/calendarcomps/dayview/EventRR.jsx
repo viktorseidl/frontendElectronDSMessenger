@@ -51,7 +51,7 @@ const EventRR = ({ event, deleteEvent, updateEventRRule }) => {
               📄
               <div
                 title="Notiz"
-                className={` -left-40 -top-[1.19rem] hidden group-hover:block shadow-lg shadow-[rgba(0,0,0,0.3)] rounded absolute  bg-yellow-100 text-black`}
+                className={` -left-[8.3rem] -top-[1.19rem] hidden group-hover:block shadow-lg shadow-[rgba(0,0,0,0.3)] rounded absolute  bg-yellow-100 text-black`}
                 style={{
                   height: '38px',
                   width: '235px'
